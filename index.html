@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>凡人登仙录 · v3</title>
+<style>
+:root{
+  --bg:#121317; --panel:#1a1b20; --panel2:#15161a;
+  --line:rgba(255,255,255,.10); --line2:rgba(255,255,255,.055);
+  --txt:#e8e6e3; --dim:#8f8b86; --dim2:#6d6a66;
+  --red:#c2493c; --gold:#c9a227; --jade:#5f9e7f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:14px;line-height:1.7;
+  height:100vh;height:100dvh;overflow:hidden;
+}
+.serif{font-family:"Songti SC","SimSun","Noto Serif SC",serif}
+
+.wrap{max-width:880px;margin:0 auto;height:100%;display:flex;flex-direction:column;min-height:0;position:relative}
+.topbar{flex:0 0 auto;position:relative;z-index:25}
+
+/* ---------------- HUD（主角面板 · 固定顶部） ---------------- */
+.hud{flex:0 0 auto;background:var(--panel2);border-bottom:1px solid var(--line);padding:7px 12px 8px}
+.hrow{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;overflow:hidden}
+.realm{font-size:16px;color:var(--gold);letter-spacing:1px;white-space:nowrap;flex:0 0 auto}
+.htags{display:flex;gap:6px;flex-wrap:nowrap;overflow:hidden;flex:0 1 auto;min-width:0}
+.chip{font-size:10px;padding:1px 6px;border:1px solid var(--line);border-radius:2px;color:var(--dim);white-space:nowrap}
+.chip.loc{color:#9fb6c9;border-color:rgba(159,182,201,.3)}
+.chip.sect{color:var(--gold);border-color:rgba(201,162,39,.35)}
+.chip.loose{color:var(--dim2)}
+.spacer{flex:1;min-width:4px}
+.hbtn{font-size:10.5px;padding:3px 7px;border:1px solid var(--line);background:transparent;color:var(--dim);cursor:pointer;border-radius:2px;font-family:inherit;transition:.15s;white-space:nowrap;flex:0 0 auto}
+.hbtn:hover{color:var(--txt);border-color:rgba(255,255,255,.28)}
+.hbtn.on{color:var(--gold);border-color:rgba(201,162,39,.5)}
+.bar{height:5px;background:rgba(255,255,255,.07);border-radius:1px;overflow:hidden;margin:5px 0 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#8a6a1e,var(--gold));transition:width .4s}
+.bar.hp i{background:linear-gradient(90deg,#7c2b23,var(--red))}
+.nums{display:flex;flex-wrap:wrap;gap:1px 11px;font-size:10.5px;color:var(--dim2);letter-spacing:.1px;line-height:1.5;margin-top:3px}
+.nums b{color:var(--txt);font-weight:500;margin-left:3px}
+.nums b.gold{color:var(--gold)}
+.nums b.red{color:var(--red)}
+
+/* ---------------- 抽屉 ---------------- */
+.drawer{
+  position:absolute;top:100%;left:0;right:0;background:var(--panel);
+  border-bottom:1px solid var(--line);max-height:66vh;overflow-y:auto;
+  opacity:0;pointer-events:none;transform:translateY(-8px);transition:.2s;
+  box-shadow:0 14px 30px rgba(0,0,0,.55);
+}
+.drawer.open{opacity:1;pointer-events:auto;transform:none}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:2px 22px;padding:12px 14px 16px}
+.sec-h{font-size:10px;letter-spacing:2px;color:var(--dim2);border-bottom:1px solid var(--line2);padding-bottom:4px;margin-bottom:7px}
+.sec{margin-bottom:12px}
+.prow{display:flex;justify-content:space-between;align-items:baseline;padding:2px 0;font-size:12.5px;gap:10px}
+.prow span:first-child{color:var(--dim);white-space:nowrap}
+.prow span:last-child{color:var(--txt);text-align:right}
+.prow em{font-style:normal;color:var(--dim2);font-size:11px;margin-left:5px}
+.threat{font-size:11.5px;color:var(--dim2);line-height:1.8;margin-top:4px}
+.threat b{color:var(--dim);font-weight:400}
+.locs{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.lc{font-size:10.5px;padding:1px 7px;border-radius:2px;border:1px solid var(--line2);color:var(--dim2)}
+.lc.on{color:var(--gold);border-color:rgba(201,162,39,.4)}
+.lc.here{background:rgba(201,162,39,.10)}
+.mini{font-size:11px;color:var(--dim2);line-height:1.75;margin-top:5px}
+.mini b{color:var(--dim);font-weight:400}
+
+/* ---------------- 叙事流 ---------------- */
+.logtools{flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:4px 12px;border-bottom:1px solid var(--line2);font-size:10.5px;color:var(--dim2);letter-spacing:1px}
+#log{flex:1 1 auto;overflow-y:auto;min-height:80px;padding:9px 14px 14px}
+.turn{border-bottom:1px solid var(--line2);padding:2px 0 5px}
+.turn>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 9px;padding:4px 2px;font-size:11.5px;color:var(--dim2)}
+.turn>summary::-webkit-details-marker{display:none}
+.turn>summary::before{content:"▸";color:var(--dim2);font-size:10px}
+.turn[open]>summary::before{content:"▾";color:var(--gold)}
+.turn>summary .ty{color:var(--dim)}
+.turn>summary .tc{color:var(--gold);opacity:.9}
+.turn>summary .ts{color:var(--dim2);font-size:11px}
+.tbody{padding:2px 0 4px 12px}
+.entry{margin:0 0 9px}
+.entry .who{font-size:10px;letter-spacing:2px;color:var(--dim2);margin-bottom:3px}
+.entry .prose{font-size:14.5px;line-height:1.9;color:#d7d4d0}
+.entry.choice .prose::before{content:"▸ ";color:var(--red);font-size:12px}
+.entry.sys .prose{color:var(--dim);font-size:12.5px;font-style:italic}
+.entry.big{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 0;margin:8px 0}
+.entry.big .prose{font-size:16px;color:var(--gold);letter-spacing:.5px}
+.engine{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:11px;color:var(--dim);background:rgba(255,255,255,.028);border-left:2px solid var(--line);padding:3px 9px;margin-top:6px;letter-spacing:.2px}
+.engine .pos{color:var(--jade)}
+.engine .neg{color:var(--red)}
+.bwrap{border-left:2px solid rgba(194,73,60,.45);padding:1px 0 1px 10px;margin:6px 0}
+.bwrap .engine{margin-top:3px}
+
+/* ---------------- 卡牌 ---------------- */
+#cards{flex:0 0 auto;border-top:1px solid var(--line);background:var(--panel2);padding:6px 11px 8px;max-height:54vh;overflow-y:auto}
+.cards-h{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:10px;letter-spacing:2px;color:var(--dim2)}
+.cards-h .q{margin-left:auto;letter-spacing:0;font-size:10px}
+.cgrid{display:flex;flex-direction:column;gap:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:7px 10px;transition:.15s}
+.card:hover{border-color:rgba(194,73,60,.4)}
+.chead{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.chead .cat{font-size:9.5px;letter-spacing:2px;color:var(--dim2)}
+.tier{font-size:9.5px;letter-spacing:1px;padding:0 5px;border:1px solid var(--line);border-radius:2px;color:var(--dim2);margin-left:auto}
+.tier.t-灵缘{color:#7fa8c9;border-color:rgba(127,168,201,.35)}
+.tier.t-宝缘{color:var(--gold);border-color:rgba(201,162,39,.4)}
+.tier.t-玄缘{color:#b98ad1;border-color:rgba(185,138,209,.4)}
+.ttitle{font-size:14.5px;color:var(--txt);letter-spacing:.5px;margin-bottom:3px}
+.tdesc{font-size:12.5px;line-height:1.7;color:#b8b4af;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card.ext .tdesc{-webkit-line-clamp:unset;display:block}
+.textra{display:none;margin-top:7px}
+.card.ext .textra{display:block}
+.tflav{font-size:11.5px;color:var(--dim2);font-style:italic}
+.tcost{font-size:11.5px;color:var(--dim);margin-top:6px;padding-top:6px;border-top:1px solid var(--line2)}
+.tcost::before{content:"代价 · ";color:var(--red);opacity:.8}
+.cfoot{display:flex;gap:8px;margin-top:6px}
+.cfoot button{font-family:inherit;font-size:11.5px;padding:4px 12px;border-radius:2px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--dim);transition:.15s}
+.cfoot .more{padding:4px 10px}
+.cfoot .more:hover{color:var(--txt)}
+.cfoot .pick{margin-left:auto;border-color:rgba(201,162,39,.45);color:var(--gold);letter-spacing:2px}
+.cfoot .pick:hover{background:rgba(201,162,39,.10)}
+.card.no .pick{border-color:rgba(255,255,255,.12);color:var(--dim2);cursor:not-allowed}
+.eng{display:none;margin-top:8px;padding-top:7px;border-top:1px dashed var(--line);font-family:ui-monospace,Consolas,monospace;font-size:10px;color:var(--dim);line-height:1.6}
+body.show-eng .eng{display:block}
+
+/* ---------------- 浮层 ---------------- */
+.ov{position:fixed;inset:0;background:rgba(8,9,11,.95);z-index:60;display:flex;align-items:center;justify-content:center;padding:18px}
+.ov.in{display:none}
+.box{max-width:620px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:24px 26px;max-height:92vh;overflow-y:auto}
+.box h1{font-size:22px;letter-spacing:5px;color:var(--gold);font-weight:400;margin-bottom:5px}
+.box .sub{font-size:11px;letter-spacing:2px;color:var(--dim2);margin-bottom:16px}
+.box .p{font-size:14px;line-height:1.95;color:#cfccc7;margin-bottom:11px}
+.box .roll{margin:14px 0;padding:12px 14px;background:var(--panel2);border:1px solid var(--line2);border-radius:3px}
+.box .roll .prow{font-size:12.5px}
+.box .go{margin-top:18px;padding:10px 26px;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:inherit;font-size:14px;letter-spacing:3px;cursor:pointer;border-radius:2px;transition:.15s}
+.box .go:hover{background:rgba(201,162,39,.10)}
+.box .end-t{font-size:25px;letter-spacing:7px;color:var(--gold);text-align:center;margin:4px 0 14px}
+.box .end-d{font-size:14px;line-height:1.95;color:#cfccc7;text-align:center;margin-bottom:16px}
+.opts{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.opts button{display:block;width:100%;text-align:left;font-family:inherit;font-size:13.5px;padding:9px 13px;border:1px solid var(--line);background:transparent;color:var(--txt);cursor:pointer;border-radius:2px;transition:.15s;line-height:1.6}
+.opts button:hover{border-color:rgba(201,162,39,.5);background:rgba(201,162,39,.07)}
+.opts button small{display:block;color:var(--dim2);font-size:11.5px;margin-top:3px;line-height:1.6}
+.opts button.dis{opacity:.38;cursor:not-allowed}
+.opts button.dis:hover{border-color:var(--line);background:transparent}
+
+@media(min-width:1000px){
+  .cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .card{min-height:176px}
+  .tdesc{-webkit-line-clamp:3}
+  #log{padding:14px 22px 18px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="hud">
+      <div class="hrow">
+        <span class="realm" id="h-realm">凡人</span>
+        <div class="htags" id="h-tags"></div>
+        <div class="spacer"></div>
+        <button class="hbtn" id="btn-drawer">详情</button>
+        <button class="hbtn" id="btn-eng">引擎</button>
+        <button class="hbtn" id="btn-re">重开</button>
+      </div>
+      <div class="bar"><i id="h-bar" style="width:0"></i></div>
+      <div class="bar hp"><i id="h-hp" style="width:100%"></i></div>
+      <div class="nums" id="h-nums"></div>
+    </div>
+    <div class="drawer" id="drawer"><div class="dgrid" id="dgrid"></div></div>
+  </div>
+
+  <div class="logtools">
+    <span>年 岁 纪 事</span>
+    <span id="h-life">—</span>
+    <div class="spacer"></div>
+    <button class="hbtn" id="btn-fold">收起历史</button>
+    <button class="hbtn" id="btn-all">展开全部</button>
+  </div>
+  <div id="log"></div>
+
+  <div id="cards">
+    <div class="cards-h"><span>本 回 合 机 缘</span><span class="q" id="quota"></span></div>
+    <div class="cgrid" id="cgrid"></div>
+  </div>
+</div>
+
+<div class="ov" id="ov-open">
+  <div class="box">
+    <h1>凡 人 登 仙 录</h1>
+    <div class="sub">寿 元 有 尽 · 此 生 何 归</div>
+    <div class="p">你是青石镇外一个佃户的儿子。三十岁那年，你在山道上遇见一个浑身是血的道人。</div>
+    <div class="p">他看了你一眼，说了一句——「你的根骨，不该埋在土里。」——就断了气。只留下半页沾血的口诀。</div>
+    <div class="p">你把口诀抄了三遍，烧了原纸。第二天，你放下了锄头。</div>
+    <div class="roll" id="roll-box"></div>
+    <div class="p" style="font-size:12px;color:var(--dim2);line-height:1.85">
+      一年一年地活下去。南荒地脉衰败，此界修士寿元远逊中州。<br>
+      寿元尽了，这一世就到头——到那时再看你走到了哪一步。
+    </div>
+    <button class="go" id="btn-start">放 下 锄 头</button>
+  </div>
+</div>
+
+<div class="ov in" id="ov-end">
+  <div class="box">
+    <div class="end-t" id="end-title">—</div>
+    <div class="end-d" id="end-desc"></div>
+    <div class="roll" id="end-stat"></div>
+    <button class="go" id="btn-again">再 来 一 世</button>
+  </div>
+</div>
+
+<div class="ov in" id="ov-ch">
+  <div class="box">
+    <div class="end-t" id="ch-title">—</div>
+    <div class="end-d" id="ch-desc"></div>
+    <div class="roll" id="ch-eng"></div>
+    <div class="opts" id="ch-opts"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   《凡人登仙录》v3 —— 离线单文件 · 无 LLM · 确定性
+   ---------------------------------------------------------
+   四层架构：底层状态 → 引擎配额（境界/地点/派系/混元三重门控）
+            → 卡牌（纯叙事） → 玩家 3 选 1 → 引擎结算 → 写回
+   红线：卡面正文（t / d / f / cost）不出现任何阿拉伯数字。
+         数值只在引擎层、结算行、HUD 面板出现。
+   终局：寿元耗尽（老死）/ 气血归零（战死）/ 冲境殒身 / 安全上限
+   ========================================================= */
+
+/* ---------- 0. 平衡表（19 档 · 首版锚点） ---------- */
+const STAGES = ['凡人','炼气一层','炼气二层','炼气三层','炼气四层','炼气五层',
+                '炼气六层','炼气七层','炼气八层','炼气九层',
+                '筑基初期','筑基中期','筑基后期',
+                '金丹初期','金丹中期','金丹后期',
+                '元婴初期','元婴中期','元婴后期'];
+const BIG = {9:'炼气 → 筑基', 12:'筑基 → 金丹', 15:'金丹 → 元婴'};
+const STEP       = [12,14,20,28,38,50,64,80,100, 320,420,560, 900,1100,1400, 2000,2400,3000];
+const REALM_COEF = [0.5, 0.9,0.9,0.9, 1.1,1.1,1.1, 1.4,1.4,1.4, 1.8,1.9,2.0, 2.4,2.6,2.8, 3.2,3.5,3.8];
+const HP_BASE    = [30,45,55,66,78,91,105,120,136,154, 230,275,330, 560,650,750, 1260,1440,1640];
+const ATK_BASE   = [5,10,14,18,23,28,34,40,47,55, 72,86,103, 160,188,220, 360,415,475];
+const DEF_BASE   = [3,6,8,11,14,17,21,25,29,34, 44,53,64, 100,118,138, 225,260,298];
+const LIFE_CAP   = [60,68,74,80,86,92,98,104,110,118, 150,160,170, 195,206,217, 250,263,276];
+
+const MAX_TURN = 300;                 // 安全上限（防死循环护栏，非设计目标）
+const TUNE     = 2;                   // 基础吐纳 / 年
+const R_MAX    = 5;                   // 交手轮上限
+const BAG_MAX  = 8;
+
+const ROOT_GRADES = [['伪灵根',0.80,-0.08],['下品',0.90,-0.03],['中品',1.00,0],
+                     ['上品',1.15, 0.05],['变异',1.25, 0.03],['天灵根',1.40,0.08]];
+const WUXING = ['金','木','水','火','土'];
+const BONE_MUL = b => b<=30?0.9 : b<=50?0.95 : b<=70?1.0 : b<=85?1.05 : b<=95?1.1 : 1.2;
+const DAO = [['破碎',-0.30],['不稳',-0.10],['平稳',0],['通明',0.15],['无垢',0.30]];
+const TIER_W = {'凡缘':6, '灵缘':3, '宝缘':1, '玄缘':0.4};
+
+/* ---------- 1. 五行 ---------- */
+const GEN_W  = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
+const OVER_W = {'木':'土','土':'水','水':'火','火':'金','金':'木'};
+const WX_NAME = {same:'同属', gen:'相生', neutral:'中性', ke:'相克', none:'无属'};
+function wxRel(a,b){
+  if(!a || !b || a==='天' || b==='天') return 'neutral';
+  if(a==='无' || b==='无') return 'none';
+  if(a===b) return 'same';
+  if(GEN_W[a]===b || GEN_W[b]===a) return 'gen';
+  if(OVER_W[a]===b || OVER_W[b]===a) return 'ke';
+  return 'neutral';
+}
+const WX_EXP  = {same:1.30, gen:1.15, neutral:1.00, ke:0.70, none:1.10};
+const WX_ATTR = {same:1.25, gen:1.10, neutral:1.00, ke:0.75, none:1.00};
+
+/* ---------- 2. 功法 ---------- */
+const ART_EXP = [0,20,60,140,300];
+const ART_LV  = ['入门','小成','大成','圆满','化境'];
+const ART_TYPES = ['攻伐','守御','炼体','遁法','养元'];
+/*  每格 = [atk, def, hp] */
+const ART_TBL = {
+  '攻伐': [[2,0,4],[5,1,10],[9,2,20],[15,4,36],[24,7,60]],
+  '守御': [[0,3,6],[1,7,15],[2,12,30],[4,19,52],[7,30,86]],
+  '炼体': [[1,2,12],[2,5,30],[4,9,60],[7,14,104],[11,22,170]],
+  '遁法': [[1,2,3],[2,5,8],[4,9,16],[7,15,28],[11,24,46]],
+  '养元': [[0,1,8],[1,3,20],[2,5,40],[3,8,68],[5,13,112]]
+};
+
+/* ---------- 3. 装备（5 槽 × 6 品阶） ---------- */
+const SLOTS = [['weapon','兵器'],['armor','护甲'],['treasure','法器'],['escape','遁器'],['ornament','佩饰']];
+const SLOT_N = {}; SLOTS.forEach(s=>{SLOT_N[s[0]]=s[1];});
+const GRADE_N   = ['凡铁','精钢','法器','灵器','宝器','道器'];
+const G_TBL     = [[2,2,6,2],[5,5,14,5],[11,10,30,11],[22,19,58,22],[40,33,100,40],[68,55,168,68]];
+const GRADE_MIN = [0,1,3,7,10,13];          // 品阶出现的最低境界
+const GRADE_SELL= [8,20,45,90,170,320];     // 折价基准
+const DUR_N     = ['完好','磨损','破损'];
+const DUR_MUL   = [1, 0.70, 0.40];          // 耐久三档 → 属性倍率
+/* 旧卡 equip:{n,p} 迁移表（卡面文案不动） */
+const OLD_EQUIP = {
+  '柴刀':['weapon',0],'猎弓':['weapon',0],'旧皮甲':['armor',0],'青锋剑':['weapon',2],
+  '护身玉符':['treasure',1],'断剑':['weapon',1],'青木剑':['weapon',2],'云纹道袍':['armor',1],
+  '护心石':['ornament',2],'古铜镜':['treasure',2],'蛟筋索':['weapon',3],'玄铁匣':['armor',3],
+  '寒铁剑':['weapon',3],'归墟古剑':['weapon',4],'流光剑':['weapon',4],'储物戒':['ornament',2]
+};
+/* 旧卡 mainArt 迁移 */
+const OLD_ART = {'粗浅吐纳诀':['无','养元'],'残卷引气术':['无','养元'],'青云引气经':['无','养元']};
+
+/* ---------- 4. 派系 ---------- */
+const FACTIONS = {
+  qy:{n:'青云宗',    short:'青云宗',   ranks:['外门弟子','内门弟子','真传弟子','宗门执事','长老'],
+      need:[0,40,110,220,400], pay:r=>(r+1)*4, axis:'宗门贡献', note:'规矩多、资源稳、名分重'},
+  xs:{n:'血煞门',    short:'血煞门',   ranks:['门外血徒','噬心堂众','血使','堂主','血煞长老'],
+      need:[0,30,90,200,380], pay:r=>(r+1)*6, axis:'献纳',   note:'用寿元和道心换力量'},
+  hs:{n:'黑石商盟',  short:'黑石商盟', ranks:['挂名伙计','押运伙计','柜上','掌事','大掌柜'],
+      need:[0,50,140,280,500], pay:r=>(r+1)*8, axis:'走货量', note:'一切都能标价'},
+  wd:{n:'无定散修盟',short:'无定盟',   ranks:['挂名','熟脸','香主','盟中说话的人','无定长老'],
+      need:[0,30,90,190,340], pay:r=>(r+1)*2, axis:'人情',   note:'不入宗者的互助'},
+  qq:{n:'青丘妖族',  short:'青丘',     ranks:['外客','结契','青丘客卿','月巡','祠堂守'],
+      need:[0,45,130,250,420], pay:r=>(r+1)*5, axis:'契',     note:'与人族互为异类'}
+};
+const FID_BY_NAME = {}; Object.keys(FACTIONS).forEach(k=>{FID_BY_NAME[FACTIONS[k].n]=k;});
+/* 敌对关系表： rows[玩家派系][对方派系] = 值 */
+const REL_TBL = {
+  qy:{ xs:-60, hs:  0, wd: 30, qq:-60, none:-10 },
+  xs:{ qy:-60, hs: 10, wd:-50, qq:  0, none:-40 },
+  hs:{ qy:  0, xs: 10, wd: 30, qq: 10, none:  0 },
+  wd:{ qy: 30, xs:-50, hs: 30, qq:  0, none: 40 },
+  qq:{ qy:-60, xs:  0, hs: 10, wd:  0, none:-20 },
+  none:{qy:-10,xs:-40, hs:  0, wd: 40, qq: -20 }
+};
+function factionRel(other){
+  const me = S.sect ? S.sect.id : 'none';
+  const row = REL_TBL[me] || REL_TBL.none;
+  const v = (row && typeof row[other] === 'number') ? row[other] : 0;
+  return v;
+}
+function relWord(v){ return v>=30?'友善' : v<=-41?'敌对' : v<=-21?'警惕' : '中立'; }
+
+/* ---------- 5. 地点（9 处） ---------- */
+const LOCS = [
+  {id:'镇', name:'青石镇',   min:0,  qi:15, own:null, enter:'你沿原路回了青石镇。',       foes:'野狗 · 地痞',      pw:[5,12]},
+  {id:'野', name:'南荒山野', min:1,  qi:25, own:null, enter:'你一头扎进南荒山野。',       foes:'野狼 · 山匪 · 妖鹿', pw:[8,45]},
+  {id:'市', name:'黑石坊市', min:3,  qi:20, own:'hs', enter:'你走进黑石坊市。',           foes:'打手 · 坐地散修',   pw:[25,35]},
+  {id:'墟', name:'无定墟',   min:4,  qi:18, own:'wd', enter:'山坳里有一片自己长出来的棚户，没人管，也没人赶。', foes:'醉鬼 · 讨债的 · 夺货的', pw:[18,48]},
+  {id:'秘', name:'落霞秘境', min:6,  qi:55, own:null, enter:'你踏进落霞秘境。',           foes:'守物兽 · 夺宝修士',  pw:[60,85]},
+  {id:'煞', name:'血煞岭',   min:6,  qi:45, own:'xs', enter:'岭上的土是红的，走近了才看清是旧血。', foes:'血徒 · 噬心堂众', pw:[70,130]},
+  {id:'泽', name:'云梦泽',   min:8,  qi:40, own:null, enter:'你到了云梦泽畔。',           foes:'水妖 · 魔修',        pw:[120,150]},
+  {id:'丘', name:'青丘',     min:9,  qi:60, own:'qq', enter:'林子里没有路，可你走的方向一直没错。', foes:'巡山妖 · 化形妖', pw:[140,220]},
+  {id:'天', name:'归墟洞天', min:10, qi:85, own:null, enter:'你踏入归墟洞天。',           foes:'化形妖 · 古修遗蜕',  pw:[220,300]}
+];
+const LOC_INDEX = {}; LOCS.forEach((L,i)=>{LOC_INDEX[L.id]=i;});
+
+/* ---------- 6. 战斗 / 突破 常量 ---------- */
+const LOOT_TBL = {
+  '凡缘':{ss:[8,20],   herb:[0,1], mat:[0,0], fame:1, drop:0.20, w:[8,2,0,0],    exp:[8,14,30,45][0]},
+  '灵缘':{ss:[25,60],  herb:[1,2], mat:[0,1], fame:2, drop:0.35, w:[5,5,2,0],    exp:14},
+  '宝缘':{ss:[80,180], herb:[2,3], mat:[1,2], fame:4, drop:0.50, w:[1,4,4,2],    exp:30},
+  '玄缘':{ss:[250,500],herb:[3,5], mat:[2,4], fame:8, drop:0.70, w:[0,1,4,4],    exp:45}
+};
+const LOOT_ART = {'凡缘':0,'灵缘':0.10,'宝缘':0.25,'玄缘':0.50};
+const BRK_FAIL = {
+  9 :{back:0.65, life:-6,  hp:-0.08, cd:3,  fire:0.30, dur:0},
+  12:{back:0.55, life:-12, hp:-0.14, cd:6,  fire:0.40, dur:1},
+  15:{back:0.45, life:-20, hp:-0.20, cd:10, fire:0.50, dur:0}
+};
+const P_ROOTSTEP = {'天灵根':0.08,'上品':0.05,'中品':0,'下品':-0.03,'伪灵根':-0.08,'变异':0.03};
+
+/* FDR-007 · 改投门庭的代价（由 askChoice 确认后才结算，不得静默发生） */
+const SWITCH_COST = { fame:3, rep:-20 };
+const HAIL_CD     = 6;                                // 站在别家地盘上时，这家人搭话的冷却回合数
+
+/* ---------- 7. 卡池 ----------
+   K(类目, 品阶, 标题, 描述, 风味, 代价, 效果, 门控)
+   门控：min / max 境界 · loc 地点 · entry 入门卡标记
+        sect：'in' 有门庭 / 'out' 无门庭 / 'join' 入伙或改投（ef.sectJoin 即目标派系）
+              / 派系名或 id（'血煞门' 与 'xs' 等价）/ '!名' 反向门控
+------------------------------------------------------------ */
+const K = (c,tier,t,d,f,cost,ef,o)=>Object.assign({c,tier,t,d,f,cost,ef}, o||{});
+
+const CARDS = [
+/* ===== 卡池 A · 旧版叙事卡（源码原文搬迁） ===== */
+/* ============ 天材地宝 · 20 ============ */
+K('天材地宝','凡缘','崖畔野参','石缝里斜长着一株野参，根须还带着湿土。你蹲下去，用手指一点一点把土刨开。','山里的东西，山里的规矩。','耗去半月的功夫。',{cultivate:12,herb:1},{max:3}),
+K('天材地宝','凡缘','雨后半坡菇','一场雨过后，坡上的菌子冒了头。你认得其中两样能入药，一样有毒。','雨是白下的，看你捡不捡。','要在山雨里跑一趟。',{herb:2,cultivate:8},{max:3}),
+K('天材地宝','凡缘','河滩上的铁砂','水退下去，滩上留下一层黑亮的沙。你用水一遍一遍地淘。','不值钱，可总归是铁。','淘上一整天，腰都直不起来。',{material:1,ss:8},{max:3}),
+K('天材地宝','凡缘','溪边的菖蒲','溪水边一丛菖蒲，根白如玉。你割了一小把，草汁染得手发黄。','水边的东西，最不起眼。','手上的黄印，半月才褪。',{herb:1,cultivate:6},{max:3}),
+K('天材地宝','凡缘','田埂上的土茯苓','翻地的时候刨出一块土茯苓，个头不小，你掂了掂，揣进了怀里。','地里长出来的，不稀奇，但有用。','你刨了半日的地。',{herb:2,cultivate:5},{max:3}),
+K('天材地宝','灵缘','老树洞里的蜜','半人高的树洞里，野蜂筑了几年。你趁着天没亮，蒙着布取了一罐。','甜的东西，蜂也护得紧。','被蜇上几十下，不划算也得认。',{cultivate:20,herb:2},{min:1,max:5}),
+K('天材地宝','灵缘','寒潭底的石乳','潭水冰得刺骨。你潜下去，在石壁下摸到湿滑的钟乳，掰了一小块就浮上来喘气。','越冷的水，养越好的东西。','水性不好的话，是要命的。',{cultivate:26,material:1},{min:2,max:9}),
+K('天材地宝','灵缘','废矿里的碎灵晶','塌了一半的旧矿洞，石壁里嵌着几点微光。你敲了两天，凑出一小把。','别人嫌废，你嫌手慢。','在暗处待久了，眼睛会花。',{material:2,ss:15},{min:2,max:9,loc:['野']}),
+K('天材地宝','灵缘','断崖间的幽兰','崖缝里斜生着一株兰，风口大，你要贴着石壁才够得着。','它长得险，你的命也险。','手脚一滑，就没有了。',{cultivate:24,fame:2},{min:2,max:8,loc:['野']}),
+K('天材地宝','宝缘','地脉交汇的泉眼','两股地气在一处石凹里汇了，水面浮着淡淡的白汽。你掬起一捧，凉得手心发麻。','这种地方，十年九不遇。','喝了会拉三天肚子，也说不定。',{cultivate:52,fame:3},{min:3,max:9}),
+K('天材地宝','灵缘','坊市药摊的边角料','药摊收摊时，你把摊主扫到地上的碎料一文一文地收了下来。','别人不要的，未必没用。','摊主看你的眼神不太好。',{herb:3,ss:-12},{min:3,max:9,loc:['市']}),
+K('天材地宝','宝缘','雾谷里的紫芝','谷底的雾散得晚，你在一截朽木上看见了它。伞盖上的纹路像是活的。','好东西都长在难走的地方。','你在雾里绕了三天。',{cultivate:70,herb:2},{min:6,max:9}),
+K('天材地宝','宝缘','云梦泽的浮萍心','泽心的浮萍密得能站人。你拔起一丛，根下坠着一颗青黑的核。','泽水里养出来的，都带水气。','半个身子泡在水里，凉透了。',{cultivate:60,herb:3},{min:8,max:9,loc:['泽']}),
+K('天材地宝','灵缘','幽潭底的火髓','潭底有一处不结冰的地方。你潜下去，摸到一块暖的石头。','冷的底下，往往有热的。','上来的时候你差点没气。',{cultivate:55,material:3},{min:8,max:9,loc:['泽']}),
+K('天材地宝','宝缘','千年古木的心材','倒下的古木芯子里还是湿的。你劈了半日，取出一段乌沉沉的木头。','活过千年的树，不会白活。','你劈坏了三把斧子。',{material:4,cultivate:65},{min:7,max:9,loc:['泽','秘']}),
+K('天材地宝','宝缘','会走的参','你追了一株参整整两天。它每回都在你要放弃的时候停下。','跑得动的药，才叫好药。','你两天没吃东西。',{cultivate:80,fame:4},{min:6,max:9,loc:['泽','秘']}),
+K('天材地宝','玄缘','洞天里的石髓','石钟乳的尖端凝着一滴乳白，百年才落一滴。你在底下等了很久。','等，也是修行的一种。','你在洞天里枯坐了一季。',{cultivate:120,material:5},{min:10,loc:['天']}),
+K('天材地宝','玄缘','归墟的星辰砂','洞天深处的沙是黑的，翻过来会闪。你抓了一把，指缝里漏走的比留下的多。','手里的东西，都是漏出来的。','你袖子里磨破了两个洞。',{material:6,ss:200},{min:10,loc:['天']}),
+K('天材地宝','玄缘','灵脉的碎片','秘境最深处的地面裂了一道缝，缝里渗着光。你撬下一小块。','地上的光，是地下的骨头。','地脉震了三日，你耳朵一直嗡响。',{cultivate:150,ss:150},{min:10,loc:['秘','天']}),
+K('天材地宝','玄缘','药王的旧圃','荒废的药圃仍有人打理过的痕迹。你拔起几株，根上还带着灵土。','前人种的，后人收。','圃主若在，你得赔命。',{herb:8,cultivate:90},{min:10,loc:['天']}),
+/* ============ 机缘奇遇 · 18 ============ */
+K('机缘奇遇','凡缘','山道上的雨','雨来得急。你躲进路边的草棚，听了一夜的雨声，倒也把气息顺了顺。','闲着也是闲着。','耽误了一天的脚程。',{cultivate:6},{max:3}),
+K('机缘奇遇','凡缘','渡口的先生','摆渡的老头会看相，说你印堂发暗，最近少去水边。你笑了笑，没当回事。','信不信，由你。','听了他半日的闲话。',{fame:3},{max:3}),
+K('机缘奇遇','凡缘','山寺的钟声','山坳里有座小庙，钟声传得很远。你站住听了一会儿，什么也没求。','有些声音，听过就静了。','你耽误了一顿饭。',{cultivate:5},{max:3}),
+K('机缘奇遇','凡缘','同路的老货郎','一个老货郎与你同路。他讲了一路的见闻，你听了一路，替他背了半程的担子。','走远路的，话总多。','你的肩膀压出了一道红痕。',{cultivate:6,fame:1},{max:3}),
+K('机缘奇遇','灵缘','夜宿破庙','庙里没神像，只有半堵墙。你生了火，就着火光坐了半宿。','神走了，地方还在。','夜里冷，风从破口灌进来。',{cultivate:16,ss:12},{min:1,max:5}),
+K('机缘奇遇','灵缘','货郎的旧书箱','挑担的货郎歇脚，你替他看了一下午的摊，他翻出半册破损的旧书塞给你。','书旧，字还认得出几个。','那书缺了头尾，你得自己凑。',{cultivate:18},{min:1,max:5}),
+K('机缘奇遇','灵缘','老药农的指点','镇上卖药的老头随手指了指后山，说哪片坡上药长得旺。你没多问，记下了。','老人的话，多半没错。','他说的那片坡，路难走。',{cultivate:22,herb:1},{min:2,max:8}),
+K('机缘奇遇','灵缘','山洪冲出的碑','一场大水过后，河床里翻出半块青碑，字被磨得只剩几个。你蹲着看了很久。','冲出来又冲回去，看你手快不快。','碑太重，你只拓了几笔。',{cultivate:20,material:1},{min:2,max:8}),
+K('机缘奇遇','灵缘','坊市的说书人','茶棚里说书的讲了一段剑仙旧事。别人听热闹，你听的是那几处地势。','说书的不懂，听的人懂。','一壶茶钱，你心疼了半天。',{fame:3,ss:-5},{min:3,max:9,loc:['市']}),
+K('机缘奇遇','灵缘','拍卖行外的一眼','你挤在门外看了一眼。台上那件东西你买不起，可你记住了它的样子。','看得起，买不起，也算见识。','你被人推搡得站不稳。',{cultivate:30,ss:-40},{min:3,max:9,loc:['市']}),
+K('机缘奇遇','宝缘','雾里的旧观','起雾的清晨，你看见山腰上有座道观。等你走近，只剩半截门框，和门框里的一线光。','它是不是一直在那儿，你不知道。','你在雾里转了大半天。',{cultivate:48},{min:4,max:9}),
+K('机缘奇遇','宝缘','洞天里的一缕清光','你追着一线清光走进洞深处，光落在一潭静水上。水上浮着你说不清的东西。','有些东西，看一眼就够用一辈子。','洞里没有路，你自己找出来。',{cultivate:55,dao:1},{min:5,max:9}),
+K('机缘奇遇','宝缘','玉简里的残念','玉简贴上额头的那一刻，你看见一个背影。只有一瞬，你就出了一身汗。','别人留的东西，不进你的脑子。','你头痛了整整一日。',{cultivate:72,dao:-1},{min:6,max:9,loc:['秘','泽']}),
+K('机缘奇遇','灵缘','无人的渡口','泽边的渡口空着，船缆系在木桩上，人不知去了哪里。你等了一夜，把船摇了过去。','没人收钱，也没人拦你。','你摇橹摇得两臂酸痛。',{cultivate:50,ss:30},{min:6,max:9,loc:['泽']}),
+K('机缘奇遇','宝缘','一场灵雨','雨落下来的时候你觉出不对——落在皮肤上，是凉的，凉的下面是暖。你站在雨里没躲。','天要给你，你别客气。','你回去病了三天。',{cultivate:85,herb:2},{min:7,max:9}),
+K('机缘奇遇','玄缘','洞天里的道音','没有声音，可你脑子里的嗡鸣越来越正。你坐下来，一坐就是三个月。','有些东西，得用年头换。','你醒来时骨头都是硬的。',{cultivate:160,dao:1},{min:10,loc:['天']}),
+K('机缘奇遇','玄缘','遗蜕旁的一炷香','你先拜了三拜，才敢上前。香烧完的时候，你觉得自己轻了一些。','敬人者，人恒敬之。','你在那儿守了一整年。',{cultivate:140,lifespan:10},{min:10,loc:['天']}),
+K('机缘奇遇','玄缘','云海上的日出','你在云上过了一夜。太阳出来的时候，你第一次觉得三十年不够长。','看得远，才知道自己小。','你冻得嘴唇发紫。',{cultivate:100,dao:2},{min:10,loc:['泽','天']}),
+/* ============ 人际 · 16 ============ */
+K('人际','凡缘','同村的阿石','阿石在镇上做短工，见了你，硬塞给你两个杂面饼，说城里人吃不惯这个。','从小一起偷过枣的。','你欠了他一顿饭。',{fame:1,rel:{n:'阿石',v:1}},{max:3}),
+K('人际','凡缘','借米的邻居','邻家断粮，来借半袋米。你给了。你家的坛子也见了底。','都是穷人家。','你自己也得勒一勒。',{ss:10,debts:1},{max:3}),
+K('人际','凡缘','渡口的船家','渡口的船家认得你了，摆摆手说不收你的船钱。','常来常往，就是交情。','下回你得替他摇一趟橹。',{fame:1,rel:{n:'渡口船家',v:1}},{max:3}),
+K('人际','凡缘','卖炭的老汉','卖炭的老汉摔了腿，挑不动了。你替他把炭挑到了镇上，卖了钱还给他。','举手之劳，人家会记在心上。','你的肩膀磨破了皮。',{ss:6,fame:1},{max:3}),
+K('人际','灵缘','药铺的掌柜','掌柜的认你懂几分药性，留你帮了半个月的工。工钱里搭了两味好药。','会看药的人，药铺不嫌多。','半个月不能练功。',{herb:2,rel:{n:'药铺掌柜',v:1}},{min:1,max:5}),
+K('人际','灵缘','旧相识的托付','一个旧相识临走托你看顾他的小女儿，说最多三年就回来。三年过去，人没来。','三年，他说话就是三年。','从此身边就多了个拖累。',{debts:1,fame:2,rel:{n:'旧相识',v:1}},{min:1,max:6}),
+K('人际','灵缘','路遇的散修','山道上遇见一个背着药篓的年轻人。聊了几句，原来也是个没门没派的散修。','话投机，酒就多喝了一碗。','他嘴不严，你得多留个心。',{cultivate:10,rel:{n:'散修陆某',v:1}},{min:2,max:6}),
+K('人际','灵缘','落水的老道','河湾里有人喊救命。你想了想，把一个湿透的老道拖上了岸。他咳了半天，攥着你的袖子。','救人的时候，没想那么多。','他湿了你一身，也惹了一身麻烦。',{rel:{n:'落水老道',v:2},debts:1,fame:2},{min:2,max:8}),
+K('人际','灵缘','卖消息的瘸子','镇上那个瘸腿的凑过来，说后山最近不太平，要几个铜钱。','他的消息，七分真三分假。','那几个铜钱，是你半个月的饭。',{ss:-10},{min:2,max:7}),
+K('人际','宝缘','独行的女修','山道上遇见一个独行的女修。她说前路凶险，愿与你同行一段。','同行的路，走一段算一段。','她的来路，你没问。',{cultivate:25,rel:{n:'独行女修',v:2}},{min:4,max:9}),
+K('人际','灵缘','坊市的老掌柜','你替老掌柜搬了半日的货，他多留你喝了一盏茶，说了些行价。','东西的价钱，不在货上。','你知道了些你不该知道的。',{ss:20,rel:{n:'坊市掌柜',v:1}},{min:3,max:9,loc:['市']}),
+K('人际','灵缘','同门的照应','你在山门口崴了脚，两个同门把你架了回去，一路上笑得很大声。','笑归笑，抬还是会抬。','你欠了他们一顿酒。',{fame:2,rel:{n:'同门',v:2}},{min:3,max:9,sect:'in'}),
+K('人际','宝缘','秘境里的陌生人','石室里还有一个人。你们背对着背退了出去，谁也没回头。','走着走着，就成了同行的人。','你不知道他叫什么。',{cultivate:40,rel:{n:'同行者',v:1}},{min:6,max:9,loc:['秘']}),
+K('人际','灵缘','泽边的渔家','泽边的渔家留你住了一宿，煮了一锅杂鱼。第二天临走，塞给你一把晒干的草。','水边的人，话少，手不空。','你替他们补了半天的渔网。',{herb:2,fame:2},{min:8,max:9,loc:['泽']}),
+K('人际','宝缘','散修的酒局','一伙散修在破庙里喝酒，见你进来，递过来一只碗。你坐下了。','散修的酒，喝的是抱团。','你听了一夜的牢骚。',{cultivate:30,ss:20,rel:{n:'散修一伙',v:2}},{min:4,max:9,sect:'out'}),
+K('人际','玄缘','金丹修士的一眼','那人从云上落下来时，你连呼吸都放轻了。他看了你一眼，什么也没说就走了。','被看一眼，就够你记十年。','你在原地站了很久。',{cultivate:60,fame:5},{min:10}),
+/* ============ 功法 · 16 ============ */
+K('功法','凡缘','村学先生的口诀','教书的先生不识修行，却会一套吐纳的法子，说是祖上传下来的。他教给了你。','先生说是养生的。','口诀残缺，你只能照着硬练。',{cultivate:8,mainArt:'粗浅吐纳诀'},{max:3}),
+K('功法','凡缘','打更人的调息法','夜里打更的老汉，一字一字地教你怎么把气吊在胸口不散。','他打了一辈子的更。','他的法子慢，你不一定等得及。',{cultivate:6},{max:3}),
+K('功法','凡缘','拳师的三招','镇上的老拳师教你三招站桩，说练熟了受用不尽。','功夫是一天一天磨出来的。','站到腿肚子打颤。',{cultivate:6},{max:3}),
+K('功法','凡缘','抄来的字帖','你照着旧字帖一笔一笔地练字，练着练着，竟也觉出些门道。','字里也有气。','费了不少灯油。',{cultivate:5},{max:3}),
+K('功法','灵缘','残页上的三式拳','集市上收来的一页残纸，上头画着三个起手式。你照着比划了几个月。','纸上没写怎么收势。','练岔了，筋骨要疼些日子。',{arts:1,cultivate:12},{min:1,max:5}),
+K('功法','灵缘','祠堂旧匾后的手抄','老祠堂的匾后塞着一卷手抄，纸都脆了。你小心展开，开头几句像是引气的路数。','前人藏东西，多半有道理。','你不敢全信，只挑着练。',{cultivate:18,mainArt:'残卷引气术'},{min:1,max:6}),
+K('功法','灵缘','老猎户的听风诀','山里的老猎户教你怎么听风辨物，说这比眼睛管用。你跟着他在山里蹲了好几个夜。','风里有东西，你得学会听。','山里的夜，冷得钻骨头。',{arts:1,cultivate:12},{min:2,max:8}),
+K('功法','灵缘','货栈换来的拓本','你把攒下的东西抵给了货栈，换回一册拓本。拓本旧，字口却清。','舍得出去，才换得回来。','你几乎掏空了自己。',{arts:1,ss:-12},{min:2,max:8}),
+K('功法','灵缘','丹房里的火诀','丹房的老师傅随手教了你两手看火的诀窍。他说这不算传功，算搭手。','火候不到，药就是草。','你在丹房里熏了一身药味。',{arts:1,cultivate:30},{min:3,max:9,sect:'in'}),
+K('功法','宝缘','石壁上的刻痕','洞窟深处的石壁上刻着一路指法。笔画深得几乎看不见了，你用手一寸寸摸过去。','刻它的人，早不在了。','你在暗处描了整整两日。',{arts:1,cultivate:40},{min:4,max:9}),
+K('功法','宝缘','藏经阁的一夜','你借着洒扫的差事在阁里留了一夜。第三层最里头的架子，落了很厚的灰。','有些书，就是等人来翻。','你被执事记了一笔。',{cultivate:55,mainArt:'青云引气经'},{min:4,max:9,sect:'in'}),
+K('功法','宝缘','秘境里的半卷帛书','帛书压在石台下，一半已经烂了。你只来得及记住前面的行气路数。','剩下的半卷，在别人手里。','你走的时候，听见了脚步声。',{arts:1,cultivate:60},{min:6,max:9,loc:['秘']}),
+K('功法','宝缘','泽底的水行诀','你在一艘沉船里摸到一只铜匣，匣里的帛还干着。','水里的东西，最会藏。','你在水底憋得太久，耳鸣了半旬。',{arts:1,cultivate:70},{min:8,max:9,loc:['泽']}),
+K('功法','玄缘','洞天石壁的道纹','石壁上的纹路不是刻的，是长出来的。你顺着它走了一遍，浑身发麻。','看得懂的人，才配站在这里。','你看完之后躺了三日。',{arts:1,cultivate:120},{min:10,loc:['天']}),
+K('功法','玄缘','剑冢里的残意','断剑插了一地，你拔不出任何一把。可你走了一圈，手里像是多了点什么。','剑不在手上，在眼睛里。','你的手被割了七道口子。',{arts:2,cultivate:110},{min:10}),
+K('功法','玄缘','长老的传功','长老把手按在你背上的时候，你觉得有一江水灌了进来。','到了这一步，得有人肯渡你。','你欠了宗门一份大情。',{arts:2,cultivate:150},{min:10,sect:'in'}),
+/* ============ 危险 · 16 ============ */
+K('危险','凡缘','荒山的野狼','天黑你还在山梁上，三只狼远远跟着。你捡了根烧火棍，退到崖边，才把它们熬走。','它们不急，你急。','胳膊上被撕开一道口子。',{lifespan:-1},{max:3}),
+K('危险','凡缘','夜路的坟地','夜里你路过一片坟地。风把纸钱吹得直响。你走得很快，但没跑。','心里有鬼，才有鬼。','一夜没敢合眼。',{dao:-1},{max:3}),
+K('危险','凡缘','坡上的滑石','下坡时脚下一滑，你滚出去老远，好在只是皮外伤。','山里的路，是给熟人走的。','擦破了半边身子。',{lifespan:-1},{max:3}),
+K('危险','灵缘','拦路的山匪','山口的三个汉子要你留下买路钱。你把大半的盘缠给了他们，一声没吭。','破财免灾，老话。','往后半个月，你只能喝粥。',{ss:-20,lifespan:-1},{min:1,max:5}),
+K('危险','灵缘','发了狂的野猪','灌木里冲出一头獠牙野猪。你躲不及时，被撞进了沟里。','山里的畜生，比人干脆。','肋骨断了一根。',{lifespan:-2},{min:1,max:6}),
+K('危险','灵缘','山中的毒瘴','谷底的瘴气是青色的。你掩着口鼻硬穿过去，出来时眼前一阵阵发黑。','山里的雾，不都是雾。','你歇了整整三日。',{lifespan:-3},{min:2,max:8,loc:['野']}),
+K('危险','灵缘','夜半的梦魇','连着几夜，你梦见同一个人在雾里叫你。醒来的时候，衣裳都是湿的。','梦是假的，怕是真的。','你有些分不清了。',{dao:-1},{min:2,max:8}),
+K('危险','灵缘','走火','你贪快，把周天的路线走岔了。一口气堵在膻中，半日才散开。','急于求成，总要还的。','你退了半步。',{progressPct:-0.12,lifespan:-2},{min:2,max:9}),
+K('危险','灵缘','两修士的争斗','两个修士在半空斗法，你在崖下躲着。等他们走了，你上去捡了些散落的东西。','神仙打架，凡人捡漏。','余波扫下来，你半天爬不起来。',{ss:25,lifespan:-2,cultivate:15},{min:3,max:9}),
+K('危险','灵缘','坊市的口角','你挡了人家的路，对方身后站着三个人。你低声道了歉。','低头不丢人，断腿才丢人。','你赔了一笔钱。',{ss:-25,lifespan:-1},{min:3,max:9,loc:['市']}),
+K('危险','灵缘','同门相争','为了一份差事，同门在山道上拦住了你。你们谁也没动手，但话都说尽了。','撕破脸，只在一句话。','你多了一个仇人。',{dao:-1,enemy:1},{min:4,max:9,sect:'in'}),
+K('危险','宝缘','守物兽','洞最深处的暗处卧着一头似鹿非鹿的东西。你屏着气绕过去，捡了它脚边的东西就退。','拿了别人的，总要付点什么。','它追了你半里地。',{cultivate:35,lifespan:-4},{min:6,max:9,loc:['秘']}),
+K('危险','宝缘','沼泽里的陷足','一脚踩空，半个人陷了下去。你抓着草根，一点一点把自己拔出来。','泽地不拦人，它只是不收。','你丢了鞋子，也丢了半条命。',{lifespan:-5,herb:1},{min:8,max:9,loc:['泽']}),
+K('危险','宝缘','水妖的试探','水面浮起一串泡泡，然后是一只手。你后退了三步，它没有追。','它只是在看你够不够吃。','你丢了水边搭的窝棚。',{ss:40,lifespan:-4,cultivate:30},{min:8,max:9,loc:['泽']}),
+K('危险','玄缘','洞天里的傀儡','石人从壁上走了下来，一步一个坑。你退到坑道里，屏了半个时辰的气。','老东西守老地方。','你的左肩废了三个月。',{cultivate:80,material:4,lifespan:-8},{min:10,loc:['天']}),
+K('危险','玄缘','遗蜕的威压','那具遗蜕坐得笔直。你只看了一眼，膝盖就软了。','有的人死了，还在看着。','你爬出洞天的时候，头发白了一片。',{cultivate:100,dao:-1,lifespan:-6},{min:10,loc:['天']}),
+/* ============ 抉择 · 16 ============ */
+K('抉择','凡缘','路边的钱袋','路边的草里有个钱袋，鼓鼓的。四下无人。你想了想，把它捡起来，在地头等了半日。','等不来人，钱就归你；等来了，就当白等。','你等了半日，回来时天黑了。',{ss:18,fame:1},{max:3}),
+K('抉择','凡缘','村里的苛捐','里正又来摊派。别人都躲，你出头说了几句，说得里正脸上挂不住。','出头的人，都记在别人心里。','你被记了一笔。',{ss:-12,fame:3},{max:3}),
+K('抉择','凡缘','邻家的门户','邻里丢了鸡，挨家挨户地找。没人来问你，你还是把自家院子开给他看了。','问心无愧，就不怕人看。','你耽误了半日的活。',{fame:1},{max:3}),
+K('抉择','凡缘','集上多找的铜钱','集上买东西，摊主多找了你几个铜钱。你走出十几步，又折了回去。','几个铜钱的事。','你多跑了一趟。',{fame:2},{max:3}),
+K('抉择','灵缘','受伤的陌生人','山路上躺着一个人，气息还在。你把他背到了镇上，中途后悔了三次。','背他的时候，你骂了自己一路。','他伤得重，你的药也搭了进去。',{herb:-1,fame:3,rel:{n:'受伤的陌生人',v:2},debts:1},{min:1,max:6}),
+K('抉择','灵缘','散修的路','有人劝你去投个宗门，说背靠大树好乘凉。你在山门口站了一整夜，转身走了。','有门有派，也有门有派的苦。','你成了真正的散修，也真的一无所有。',{ss:40,fame:2},{min:2,max:9,sect:'out'}),
+K('抉择','灵缘','同门的求助','同门来信，说手头紧，问你借些灵石，年底就还。','借出去的钱，多半回不来。','你借了，心里空了一块。',{ss:-15,rel:{n:'同门',v:1},fame:1},{min:2,max:7,sect:'in'}),
+K('抉择','灵缘','旧友的旧账','多年前的一个旧相识找上门来，说你欠他的，该还了。你其实记不清。','记不清的账，最难还。','你还了，心里别扭。',{ss:-20,rel:{n:'旧相识',v:-1}},{min:2,max:8}),
+K('抉择','灵缘','墙外的传功','夜里你去看了一场传功。你躲在墙外，把该听的不该听的都听了。','听来的东西，用起来总不踏实。','你怕人认出你来。',{cultivate:28,dao:-1,fame:-1},{min:3,max:8}),
+K('抉择','宝缘','一地灵脉的归属','两伙人为一片灵脉争了起来。有人来拉你入伙，许你一份。','入了伙，就由不得自己。','你点头了。从此有了一伙人，也有了对面的人。',{cultivate:30,ss:40,enemy:1},{min:4,max:9}),
+K('抉择','灵缘','长老的暗示','长老把手里的茶盏放下，说山上的事，总要有人去做。你听懂了，也没全懂。','有些话，是拿来猜的。','你接了一桩不好推的差事。',{contrib:20,ss:20},{min:5,max:9,sect:'in'}),
+K('抉择','宝缘','同道的夺宝之争','石室里还有一个人，也在盯着那卷东西。你们对视了一瞬。','先动手的，未必赢。','你抢在了前面，也留下了个仇人。',{cultivate:45,enemy:1},{min:6,max:9,loc:['秘']}),
+K('抉择','灵缘','泽边船家的求助','船家的孩子在泽里走丢了两天。你下水找了一夜，捞上来的时候人是活的。','泽水很冷，你也没多想。','你冻伤了肺，咳嗽了小半年。',{fame:3,rel:{n:'泽边船家',v:2},ss:-20,lifespan:-2},{min:8,max:9,loc:['泽']}),
+K('抉择','宝缘','旧宗的残卷','有人在坊市暗中兜售一册残卷，价钱高得离谱，来路也不干净。','便宜的东西，才最贵。','你买下之后，总觉得有人在跟着你。',{cultivate:50,ss:-80,enemy:1},{min:5,max:9,loc:['市']}),
+K('抉择','玄缘','拍卖行上的压价','一件东西你势在必得。你把价喊到了自己都心虚的地方。','心里没底的人，喊价最响。','你几乎掏空了积蓄。',{ss:-200,material:6,fame:3},{min:10,loc:['市']}),
+K('抉择','玄缘','洞天里的三问','石壁上有三问，你答了两问，第三问答不出来。你在那儿坐到天亮。','答不出来，也是答案。','你出洞时，把两问忘了。',{cultivate:80,dao:1},{min:10,loc:['天']}),
+/* ============ 心境 · 14 ============ */
+K('心境','凡缘','照常打坐','你在柴房里坐了半宿。没什么变化，也没什么不好。','日子就是这么过去的。','一夜就这么过去了。',{cultivate:6},{max:3}),
+K('心境','凡缘','一场梦','你梦见自己站在很高的地方。醒来时，枕头是湿的。','梦里的风，也是风。','你发了半天呆。',{cultivate:5},{max:3}),
+K('心境','凡缘','灶前的火星','你守着灶火，看火苗一跳一跳。心里也跟着慢慢静下来。','火有火的脾气。','一锅饭烧糊了。',{cultivate:5},{max:3}),
+K('心境','凡缘','屋后的月亮','夜里睡不着，你到屋后坐了坐。月亮很亮，照得地上像落了一层霜。','看过月亮的人，心都不太一样。','第二天你起晚了。',{cultivate:6,dao:1},{max:3}),
+K('心境','灵缘','夜里的静','这一夜格外静。你听着自己的呼吸，一呼一吸都落到了实处。','有时候，静就是药。','你坐到天亮，忘了睡。',{cultivate:12,dao:1},{min:2,max:6}),
+K('心境','灵缘','心头的刺','有件事一直横在心里。你越想越烦，越练越乱。','心不静，气就散。','你白练了一晚。',{cultivate:10,dao:-1},{min:2,max:9}),
+K('心境','灵缘','雨天的顿悟','雨打在瓦上，你忽然想起很多年前的一件事。那一瞬间，有什么东西松了。','顿悟不多，一辈子就那么几次。','你错过了半场雨，也想通了半句话。',{cultivate:25,dao:1},{min:3,max:9}),
+K('心境','灵缘','旧仇的回响','走在路上，你忽然想起那个人的脸。握拳的时候，指甲掐进了掌心。','仇是记在肉里的。','你这一路都不得安生。',{cultivate:15,dao:-1},{min:3,max:9}),
+K('心境','灵缘','走火入魔的一夜','你练得太急，夜里忽然听见有人在耳边数数。数到七的时候你咬破了舌头。','有些路，走快一步就出事。','你两颊凹陷，歇了小半年。',{dao:-2,cultivate:40,lifespan:-2},{min:4,max:9}),
+K('心境','宝缘','闭关三日','你封了门窗，谁也不见。三天后出来的时候，人瘦了一圈，眼睛却亮。','人是要在黑里待一待的。','这三天你什么也没吃。',{cultivate:45,dao:1},{min:5,max:9}),
+K('心境','宝缘','月下的剑意','你对着月亮把学过的拳脚走了一遍。走到最后一遍的时候，你听见了风声。','东西是练出来的，不是想出来的。','你练到两腿发软。',{cultivate:60,arts:1,dao:1},{min:6,max:9}),
+K('心境','宝缘','泽边的独坐','你在泽边坐了很久。水面什么也没有，你还是坐着。','空的地方，才能装东西。','你被蚊子咬了一身。',{cultivate:70,dao:1},{min:8,max:9,loc:['泽']}),
+K('心境','玄缘','洞天里的枯坐','你在洞天里坐着，什么也不想。中间醒过几次，不记得是哪一年。','不记得的事，都长在身上了。','你出去的时候，胡子长到了胸口。',{cultivate:130,dao:2},{min:10,loc:['天']}),
+K('心境','玄缘','心魔','夜里你看见一个人站在床前，长得和你一模一样。他什么也没说，你也没动。','看见自己，是件很累的事。','你这一夜之后老了很多。',{dao:-2,cultivate:60,lifespan:-5},{min:10}),
+/* ============ 器物 · 16 ============ */
+K('器物','凡缘','铁匠铺的旧刀','铁匠把炉底的旧刀翻出来，说砍柴使得，砍人使不得。','刀旧，钢还在。','你攒了半年的钱。',{ss:-15,equip:{n:'柴刀',p:3}},{max:4}),
+K('器物','灵缘','猎户的短弓','老猎户的弓用了十几年，弓弦上还留着他的手汗。','东西认人，也认手。','你替他打了三个冬天的柴。',{ss:-20,equip:{n:'猎弓',p:4}},{min:1,max:6,loc:['野','镇']}),
+K('器物','灵缘','一件旧皮甲','旧皮甲上补了七八处，缝线却结实。你把它套在身上试了试。','补过的，才牢。','你脱下来的时候一身汗。',{ss:-25,equip:{n:'旧皮甲',p:3}},{min:1,max:6}),
+K('器物','灵缘','坊市里的青锋剑','剑鞘是新的，剑是旧的。老板说这叫物有所值。','会挑的人，看刃不看鞘。','你花光了全部身家。',{ss:-60,equip:{n:'青锋剑',p:9}},{min:3,max:9,loc:['市']}),
+K('器物','灵缘','坊市里的护身符','摊主说这符能挡一劫。你问他挡不挡第二劫，他笑了。','挡一劫就值一劫的钱。','你半信半疑地付了钱。',{ss:-45,equip:{n:'护身玉符',p:6}},{min:3,max:9,loc:['市']}),
+K('器物','灵缘','一柄断剑','剑断了半截，断口却很平。你握着剩下的一半试了试，比新的还沉手。','断了的东西，反而实在。','你用了半个月才找到合适的手感。',{material:1,equip:{n:'断剑',p:7}},{min:4,max:9,loc:['野','秘']}),
+K('器物','灵缘','同门转手的法器','同门急着用钱，把一件使了多年的法器折价让给了你。','急用钱的人，最好说话。','你欠了他一个人情。',{ss:-70,equip:{n:'青木剑',p:11}},{min:4,max:9,sect:'in'}),
+K('器物','灵缘','宗门赐下的道袍','你办完第一桩门派差事，执事给了你一件新的道袍。','穿上它，别人就知道你是谁家的。','这件袍子，穿上了就不好脱。',{equip:{n:'云纹道袍',p:8}},{min:5,max:9,sect:'in'}),
+K('器物','灵缘','一枚温养的灵石','那石头攥久了会热。你把它缝在贴身的衣袋里。','护心的东西，都不出声。','你为此把攒的钱又掏空了。',{ss:-80,equip:{n:'护心石',p:10}},{min:5,max:9}),
+K('器物','宝缘','秘境里拾得的铜镜','铜镜背面刻着东西。你不认得，可它握在手里比石头重。','古时的东西，都压手。','你盯着它看久了，有点晕。',{equip:{n:'古铜镜',p:12}},{min:6,max:9,loc:['秘']}),
+K('器物','宝缘','云梦泽的蛟筋','泽里的老渔家说这是蛟的筋。你试着拉了拉，手被弹开了。','水里的东西，性子都硬。','你花了三年的积蓄。',{ss:-90,equip:{n:'蛟筋索',p:14}},{min:8,max:9,loc:['泽']}),
+K('器物','宝缘','泽底捞出的铁匣','匣子沉得离谱，你把水倒了三遍才提得动。','沉的东西，里面装着沉的东西。','你的肩膀脱了臼。',{equip:{n:'玄铁匣',p:16}},{min:8,max:9,loc:['泽']}),
+K('器物','宝缘','坊市的千年寒铁','摊主赌咒说是千年寒铁。你敲了敲，声是闷的。','买定离手，各认各的命。','回去才发现里头有砂眼。',{ss:-120,equip:{n:'寒铁剑',p:18}},{min:7,max:9,loc:['市']}),
+K('器物','玄缘','洞天里的古剑','剑插在石里，你拔了三天。第四天早上，它自己滑了出来。','不是你的剑，不会认你。','你拔剑的时候，掌心裂了一道口。',{equip:{n:'归墟古剑',p:30}},{min:10,loc:['天']}),
+K('器物','玄缘','铸剑师的一炉','铸剑师说他这辈子只开三次炉。前两次的剑，都死了主人。','好剑是拿命换的。','你把所有身家都押了上去。',{ss:-260,equip:{n:'流光剑',p:38}},{min:10,loc:['市']}),
+K('器物','玄缘','遗蜕手上的戒指','戒指戴在骨头上，你取了很久才取下来。','死人的东西，最干净也最脏。','你戴上去的时候，手指凉了一整年。',{ss:-150,equip:{n:'储物戒',p:12}},{min:10,loc:['天']}),
+/* ============ 地方 · 12（行路与落脚） ============ */
+K('地方','灵缘','入山','你收拾了一个包袱，往南荒深处走。回头时，青石镇的屋顶已经看不见了。','走的人，才知道路有多长。','你把家门的钥匙埋在了门槛下。',{locate:'野'},{min:1,loc:['镇']}),
+K('地方','灵缘','回镇','山里待久了，你还是回了趟镇子。街上的人还在为米价吵架。','你在山上待惯了，看他们像看画。','来回一趟，走了半个月。',{locate:'镇'},{min:2,loc:['野']}),
+K('地方','灵缘','下山采买','你揣着钱下山。坊市比你记得的热闹得多。','有人的地方，就有价钱。','你在人堆里挤了一整天。',{locate:'市'},{min:3,loc:['镇','野']}),
+K('地方','灵缘','离开坊市','坊市里的味道让你睡不着。天没亮你就出了城。','闻惯了钱味，就闻不惯草味。','你走的时候没跟任何人打招呼。',{locate:'野'},{min:4,loc:['市']}),
+K('地方','宝缘','寻访落霞','你花了两季打听落霞秘境的入口。最后是一个醉汉指的路。','没人去的地方，才轮得到你。','你在山口等了三个月，等雾散。',{locate:'秘'},{min:6,loc:['镇','野','市']}),
+K('地方','灵缘','出了秘境','你从秘境里出来的时候，身上的衣服已经不遮体了。','进去的人多，出来的人少。','你在山口躺了两天。',{locate:'野'},{min:7,loc:['秘']}),
+K('地方','宝缘','向云梦去','你沿江往南走了半年。越走水气越重，天越低。','大的地方，说话都慢。','你走坏了两双鞋。',{locate:'泽'},{min:8,loc:['野','市']}),
+K('地方','灵缘','离开云梦','泽边的雾气你受够了。你顺着水往回走。','待不住的地方，就是不该待。','你走出泽地的时候，鞋子还在滴水。',{locate:'野'},{min:9,loc:['泽']}),
+K('地方','玄缘','入归墟','你站在洞口看了很久。洞里没有风，也没有回声。','往里走一步，就回不了头。','你把随身的东西都留在了洞口。',{locate:'天'},{min:10,loc:['野','秘','泽']}),
+K('地方','灵缘','山中的落脚','你在背风处搭了个窝棚，一住就是一季。','人总要有个屋顶。','下雨的时候，窝棚漏得像筛子。',{cultivate:15,lifespan:1},{min:2,max:9,loc:['野']}),
+K('地方','灵缘','荒村的一夜','山里有个荒村，房梁还立着。你在灶边睡了一夜。','空房子比破庙暖和。','你走的时候，把灶灰抹平了。',{cultivate:10,herb:1},{min:3,max:9,loc:['野']}),
+K('地方','宝缘','泽畔的草庐','你在泽边搭了间草庐，住下就不想动。','水边住久了，人也会软。','潮气进了骨头。',{cultivate:40,dao:1,lifespan:3},{min:8,max:9,loc:['泽']}),
+/* ============ 秘境 · 14（只在秘境 / 泽 / 洞天出现） ============ */
+K('秘境','宝缘','落霞的门','雾散的那一刻，崖下露出一道石门。门上的刻字已经风化得看不出了。','门开着的时候，不算藏。','你在门前站了很久才进去。',{cultivate:45,lifespan:-2},{min:6,max:9,loc:['秘']}),
+K('秘境','宝缘','石门后的石室','石室空得反常。只有靠墙的地方，摆着几个倒扣的陶罐。','空得反常的地方，往往不空。','你踩碎了一个陶罐，声音在洞里滚了很久。',{ss:60,material:3},{min:6,max:9,loc:['秘']}),
+K('秘境','宝缘','古碑前的一坐','碑上没有字，只有几道刻痕。你看着看着就坐下了。','看不懂的东西，看久了会有用。','你坐到腿麻。',{cultivate:60,dao:1},{min:6,max:9,loc:['秘']}),
+K('秘境','宝缘','秘境的水池','池水清得能看见底下的石头，石头缝里长的东西你叫不出名字。','越清的水，越看不出深浅。','你喝了之后吐了两天。',{herb:4,cultivate:35},{min:6,max:9,loc:['秘']}),
+K('秘境','宝缘','深处的尸骸','尸骸靠着石壁，坐得很正。他手边放着一个没打开的匣子。','死在这里的人，都是自己走进来的。','你把尸骸埋了，才去拿匣子。',{material:4,ss:80,lifespan:-3},{min:7,max:9,loc:['秘']}),
+K('秘境','宝缘','秘境里的幻阵','你走了一个时辰，回到了同一个地方。第三次的时候你坐下了。','困住你的不是路，是你自己。','你出来的时候，头发乱得像草。',{dao:-1,cultivate:70},{min:7,max:9,loc:['秘']}),
+K('秘境','宝缘','云梦的水府','水府的柱子是活的，摸上去会缩。你在里面不敢大声喘气。','水底下的东西，比岸上老。','你出来的时候，耳朵一直在响。',{ss:120,material:5},{min:8,max:9,loc:['泽']}),
+K('秘境','宝缘','泽底的沉船','船身半埋在淤泥里，桅杆还立着。舱里的箱子锁着，你用石头砸开了。','沉下去的，总有浮上来的一天。','你在水里呛了三次。',{material:4,ss:90,lifespan:-2},{min:8,max:9,loc:['泽']}),
+K('秘境','宝缘','泽心岛的一夜','岛上什么也没有，只有草。你躺了一夜，听见水里一直有东西在动。','岛是给累了的人准备的。','你没敢合眼。',{cultivate:90,dao:1},{min:8,max:9,loc:['泽']}),
+K('秘境','宝缘','水府的残卷','卷子泡了不知多少年，字迹却还在。你把它摊在石头上晾了一夜。','水泡过的东西，最难保存，也最难毁。','你晾了三天才敢卷起来。',{arts:1,cultivate:80},{min:9,max:9,loc:['泽']}),
+K('秘境','玄缘','归墟第一重','门后是一段很长的台阶。你走了很久，回头看，入口还是那么大。','越深的地方，越不讲道理。','你数着台阶，数到一半就忘了。',{cultivate:150,ss:200},{min:10,loc:['天']}),
+K('秘境','玄缘','归墟深处','你看见的东西不是给你看的。你只看了一眼，就往回走。','有些地方，来过就算赢了。','你的手一直在抖。',{material:8,cultivate:180,lifespan:-10},{min:10,loc:['天']}),
+K('秘境','玄缘','洞天里的时间','你出来的时候，外面的树粗了一圈。你说不清自己在里面待了多久。','时间在有的地方，是弯的。','你少了好几年的寿。',{cultivate:220,lifespan:-15},{min:10,loc:['天']}),
+K('秘境','玄缘','遗蜕前的一拜','你先拜了三拜。那具遗蜕像是点了一下头——也可能是你的错觉。','敬，是给自己留后路。','你起身的时候，膝盖在响。',{dao:2,arts:1,cultivate:160},{min:10,loc:['天']}),
+/* ============ 宗门 · 19（青云宗） ============ */
+K('宗门','灵缘','外门考选','青云宗在山下设了考选。三百人里取十二个，你排到了最后一个。','名次不重要，进去了才重要。','你在山门外跪了一夜。',{sect:true},{min:2,max:9,sect:'out',entry:1}),
+K('宗门','灵缘','山门前的长队','山门外排着长队，有人已经等了两年。你排在队尾，看着山上的云。','门里的人，看不见门外的队。','你等了整整一季。',{sect:true,fame:1},{min:2,max:9,sect:'out',entry:1}),
+K('宗门','灵缘','外门杂役','你被分去看药圃。每天除草、挑水，手上的茧比在山里的时候还厚。','先学会干活，再学做事。','你一年没正经练过功。',{contrib:8,ss:10,herb:1},{min:2,max:5,sect:'in'}),
+K('宗门','灵缘','讲经堂的一场','外门每月开一次讲经。你挤在后排，把能听懂的那几句记了下来。','听不懂的，先记下来。','你回来抄了三个晚上。',{contrib:5,cultivate:30},{min:3,max:9,sect:'in'}),
+K('宗门','灵缘','采药差事','执事发下竹篓，让你们往南荒深处采药。同去的人各走各的路。','差事是借口，出去才是真的。','你摔下山坡，磕破了额头。',{contrib:12,herb:2,ss:15},{min:3,max:7,sect:'in'}),
+K('宗门','灵缘','巡山','巡山是苦差。你在山道上来回了两个月，见到的野物比人多。','守着山的人，最先知道山里的变化。','你被冻掉了两个脚趾的知觉。',{contrib:15,ss:20,lifespan:-1},{min:4,max:8,sect:'in'}),
+K('宗门','灵缘','丹房帮工','丹房缺人手，你被调去烧火。三个月下来，你能闻出哪一炉要废。','火候是闻出来的。','你被熏得半年闻不见饭香。',{contrib:10,pill:2},{min:4,max:9,sect:'in'}),
+K('宗门','灵缘','演武场的比试','你在演武场赢了三场，输了两场。第四场结束的时候，有人给你递了水。','输赢都记在同一本册子上。','你被打掉了两颗牙。',{contrib:18,fame:2,lifespan:-1},{min:4,max:9,sect:'in'}),
+K('宗门','灵缘','内门的门槛','执事把你的名字圈了出来，说下一批内门有你。','圈出来的名字，也会划掉。','你为了这份差，把该走的关系都走了。',{contrib:25,ss:30},{min:5,max:9,sect:'in'}),
+K('宗门','灵缘','阁里的差事','藏经阁要一个识字的人抄书。你去了，抄了半年的目录。','抄目录的人，迟早会想翻书。','你抄到手腕发炎。',{contrib:12,cultivate:45},{min:5,max:9,sect:'in'}),
+K('宗门','宝缘','长老的点拨','你运气走岔，长老路过，抬手在你背上按了一下。那口气就顺了。','有人的一句话，顶你自己想三年。','你从此欠着一份人情。',{contrib:10,cultivate:60,dao:1},{min:6,max:9,sect:'in'}),
+K('宗门','宝缘','同门的倾轧','有人把你的差事抢了，还说你办事不妥。你去找执事，执事说知道了。','知道，就是不办。','你从此多留了个心眼。',{dao:-1,contrib:-5,enemy:1},{min:6,max:9,sect:'in'}),
+K('宗门','宝缘','真传之争','三个内门争一个真传的名额。你的名字在最后。','站到台面上的人，都得挨一刀。','有人在你的丹里动了手脚。',{contrib:40,fame:4,enemy:1},{min:7,max:9,sect:'in'}),
+K('宗门','宝缘','驻守坊市','宗门要人在黑石坊市看着铺子。你去了，一守就是两年。','看铺子的人，最先学会算账。','你被山下的风气泡软了。',{contrib:20,ss:60},{min:7,max:9,sect:'in',loc:['市']}),
+K('宗门','宝缘','宗门大比','大比三年一次。你站在台上，看见底下站着很多张不认识的脸。','赢下来的人，才算进了山门。','你被打断了两根肋骨。',{contrib:60,fame:6,ss:50,lifespan:-2},{min:8,max:9,sect:'in'}),
+K('宗门','宝缘','长老的召见','长老问你话，你答得谨慎。他听完，只说了一句「还行」。','还行，是很好的评价了。','你出了一身冷汗。',{contrib:30,pill:3},{min:8,max:9,sect:'in'}),
+K('宗门','宝缘','执事的差遣','执事把一桩说不清的事交给你。你做完了，他也没问你怎么办的。','有些差事，办完就当没办过。','你得罪了不该得罪的人。',{contrib:35,ss:80,enemy:1},{min:9,max:9,sect:'in'}),
+K('宗门','玄缘','授职','门中给了你一个正式的职司。你穿上那件袍子，站在了堂上。','站上去容易，站住难。','从此你的名字写在了一本册子上。',{contrib:80,fame:8},{min:10,sect:'in'}),
+K('宗门','玄缘','丹房首座','丹房的钥匙交到了你手上。炉里还烧着一炉没开的东西。','管钥匙的人，最先学会闭嘴。','你半夜常常去看那炉火。',{contrib:100,pill:5},{min:10,sect:'in'}),
+
+/* ===== 卡池 B · v3 新增（规范 §9 原文） ===== */
+{"c":"器物","tier":"凡缘","t":"炉底翻出的旧刀","d":"铁匠从炉底抽出一把卷了刃的旧刀，柄上还缠着别人留下的麻绳。你握了握，比空手强。","f":"刀旧，钢还在。","cost":"你攒了半年的钱。","ef":{"ss":-15,"equip":{"n":"旧柴刀","slot":"weapon","g":0,"atk":2}},"min":0,"max":4,"loc":["镇","野"]},
+{"c":"器物","tier":"凡缘","t":"猎户留下的角弓","d":"老猎户死在山上，弓还挂在墙上。你取下来试了试，弦是新的，弦上还有他的手汗。","f":"东西认人，也认手。","cost":"你替他修了坟。","ef":{"equip":{"n":"猎户角弓","slot":"weapon","g":0,"atk":3}},"min":0,"max":5,"loc":["野","镇"]},
+{"c":"器物","tier":"凡缘","t":"补过的鹿皮甲","d":"皮甲上补了七八处，缝线却结实。你套上试了试，肩膀有点紧。","f":"补过的，才牢。","cost":"你脱下来的时候出了一身汗。","ef":{"ss":-20,"equip":{"n":"鹿皮甲","slot":"armor","g":0,"def":2,"hp":4}},"min":0,"max":6},
+{"c":"器物","tier":"凡缘","t":"草编的遁靴","d":"编草鞋的老人多给了你一双，说走山路别光着脚。你穿上，脚底果然不打滑了。","f":"路是脚走出来的。","cost":"你替他割了一下午的草。","ef":{"equip":{"n":"草编遁靴","slot":"escape","g":0,"def":1,"esc":2}},"min":0,"max":4,"loc":["野","镇"]},
+{"c":"器物","tier":"灵缘","t":"铁匠新打的钢剑","d":"铁匠把炉火烧到最旺，打了整整一夜。天亮时他把剑递给你，手上全是燎泡。","f":"好钢是敲出来的。","cost":"你付了几乎全部身家。","ef":{"ss":-35,"equip":{"n":"新打钢剑","slot":"weapon","g":1,"atk":5}},"min":1,"max":8,"loc":["镇","野","市"]},
+{"c":"器物","tier":"灵缘","t":"走镖人穿的锁子甲","d":"一个走镖的死在路边，甲还在身上。你解下来的时候，他的血已经干了。","f":"穿它的人没了，它还在。","cost":"你把他埋了。","ef":{"ss":-40,"equip":{"n":"锁子甲","slot":"armor","g":1,"def":5,"hp":9}},"min":1,"max":8},
+{"c":"器物","tier":"灵缘","t":"坊市里的青铜法剑","d":"剑身泛着青，刃口有一道很细的线。老板说这叫开了刃，你其实是看不出来的。","f":"会挑的人看刃，不会挑的人看鞘。","cost":"你花光了攒下的灵石。","ef":{"ss":-70,"equip":{"n":"青铜法剑","slot":"weapon","g":2,"atk":11}},"min":3,"max":11,"loc":["市","墟"]},
+{"c":"器物","tier":"灵缘","t":"云纹护心镜","d":"一面巴掌大的铜镜，说是护心的。你挂在胸前，凉，压手，倒也踏实。","f":"护心的东西，都不出声。","cost":"你把买药的钱挪了过来。","ef":{"ss":-85,"equip":{"n":"云纹护心镜","slot":"armor","g":2,"def":10,"hp":18}},"min":3,"max":11,"loc":["市"]},
+{"c":"器物","tier":"灵缘","t":"旧货摊上的铜符","d":"摊主说这是从死人身上取下来的。你翻过来看了看背面，什么也没刻。","f":"没字的符，最不好说。","cost":"你半信半疑地付了钱。","ef":{"ss":-50,"equip":{"n":"无字铜符","slot":"treasure","g":2,"atk":6,"def":3}},"min":3,"max":12,"loc":["市","墟"]},
+{"c":"器物","tier":"灵缘","t":"风行的麻鞋","d":"一个赶路的人换下来的鞋，他说他穿了三年，越穿越跟脚。你穿上走了两步，是真的。","f":"走过路的鞋，才认路。","cost":"你分了他半袋干粮。","ef":{"ss":-30,"equip":{"n":"风行麻鞋","slot":"escape","g":1,"def":3,"esc":5}},"min":2,"max":10},
+{"c":"器物","tier":"灵缘","t":"崖上采的温玉","d":"崖缝里嵌着一块玉，摸上去是温的。你抠了半天才弄下来，指甲劈了一片。","f":"它暖，不是你暖。","cost":"你差点滑下去。","ef":{"equip":{"n":"温玉","slot":"ornament","g":2,"hp":24,"spec":"heal"}},"min":4,"max":12,"loc":["野","秘"]},
+{"c":"器物","tier":"灵缘","t":"宗门发的弟子玉牌","d":"执事把一块玉牌丢给你，说戴着它，山下的铺子认。你翻过来看了看，背面刻着宗门的名字。","f":"戴上容易，摘下难。","cost":"从此你的名字写在一本册子上。","ef":{"equip":{"n":"弟子玉牌","slot":"ornament","g":1,"hp":10,"spec":"fame"}},"min":3,"max":12,"sect":"青云宗"},
+{"c":"器物","tier":"宝缘","t":"坊市买的云头履","d":"鞋头翘着，说是云头的样式。走起来轻，快，可你总觉得脚底发飘。","f":"快的东西，总有点不实。","cost":"价钱够你吃半年。","ef":{"ss":-120,"equip":{"n":"云头履","slot":"escape","g":2,"def":6,"esc":11}},"min":5,"max":13,"loc":["市","墟"]},
+{"c":"器物","tier":"宝缘","t":"秘境石台上的残剑","d":"石台正中插着一截剑，剑柄还在，剑身只剩一半。你握住的时候，虎口麻了一下。","f":"断了的东西，认人的时候更狠。","cost":"你拔它的时候掌心裂了一道口。","ef":{"equip":{"n":"秘境残剑","slot":"weapon","g":3,"atk":22}},"min":6,"max":12,"loc":["秘"]},
+{"c":"器物","tier":"宝缘","t":"沉船里的玄铁护腕","d":"船舱最里头有一只护腕，沉得离谱。你把它套在小臂上，胳膊往下坠了一下。","f":"沉东西，压得住手。","cost":"你在水里呛了三次。","ef":{"equip":{"n":"玄铁护腕","slot":"armor","g":3,"def":19,"hp":35}},"min":8,"max":13,"loc":["泽"]},
+{"c":"器物","tier":"宝缘","t":"同门折让的青木剑","d":"同门急着用钱，把一把使了多年的剑折价让给你。他说这剑跟过他三次险。","f":"跟过险的剑，认得险。","cost":"你欠了他一个人情。","ef":{"ss":-75,"equip":{"n":"青木剑","slot":"weapon","g":2,"atk":10}},"min":4,"max":12,"sect":"青云宗"},
+{"c":"器物","tier":"玄缘","t":"拍卖行压轴的那件","d":"台上的东西盖着布。掀开的时候，前排的人同时往前挪了半步。你也挪了。","f":"心里没底的人，喊价最响。","cost":"你几乎掏空了积蓄。","ef":{"ss":-260,"equip":{"n":"压轴之器","slot":"weapon","g":4,"atk":40}},"min":10,"loc":["市","墟"]},
+{"c":"器物","tier":"玄缘","t":"遗蜕手上的戒指","d":"戒指戴在骨头上，你取了很久才取下来。戴上之后，指头凉了一整天。","f":"死人的东西，最干净，也最脏。","cost":"你整夜没敢摘。","ef":{"equip":{"n":"遗蜕之戒","slot":"ornament","g":3,"hp":48,"spec":"lifespan"}},"min":10,"loc":["天"]},
+{"c":"器物","tier":"玄缘","t":"铸剑师最后一炉","d":"铸剑师说他这辈子只开三次炉，前两次的剑都死了主人。他把第三次的递给你，没说话。","f":"好剑是拿命换的。","cost":"你把能押的都押了上去。","ef":{"ss":-300,"equip":{"n":"末炉之剑","slot":"weapon","g":4,"atk":42}},"min":10,"loc":["市"]},
+{"c":"器物","tier":"玄缘","t":"石壁里长出的那把","d":"它不是插在石里，是从石里长出来的。你伸手的时候，它自己松了。","f":"等了很久的东西，不等人。","cost":"你带走了它，石壁上留下一个缺口。","ef":{"equip":{"n":"石生之剑","slot":"weapon","g":5,"atk":68}},"min":13,"loc":["天"]},
+{"c":"功法","tier":"凡缘","t":"庚金指","d":"一页残纸上画着一式指法，起手很别扭。你练了小半个月，指头才不抖。","f":"硬的东西，练起来也硬。","cost":"你的指关节肿了很久。","ef":{"art":{"n":"庚金指","el":"金","type":"攻伐","lv":0},"cultivate":18},"min":1,"max":7},
+{"c":"功法","tier":"灵缘","t":"青木长生诀","d":"口诀短得出奇，翻来覆去就那么几句。你照着练了一季，倒是睡得好了。","f":"活得久，也是本事。","cost":"它进境慢，你得等。","ef":{"art":{"n":"青木长生诀","el":"木","type":"养元","lv":0},"cultivate":22},"min":1,"max":8},
+{"c":"功法","tier":"灵缘","t":"玄水柔劲","d":"一个撑船的老头教你的卸力法子。他说水从来不硬碰硬，水赢了千年。","f":"软的东西活得长。","cost":"你替他撑了半个月的船。","ef":{"art":{"n":"玄水柔劲","el":"水","type":"守御","lv":0},"cultivate":20},"min":2,"max":9},
+{"c":"功法","tier":"灵缘","t":"离火燃血功","d":"练的时候血是热的，练完人是虚的。你躺在地上喘了半个时辰才起来。","f":"烧得快，灭得也快。","cost":"练一次，人要虚一天。","ef":{"art":{"n":"离火燃血功","el":"火","type":"攻伐","lv":0},"cultivate":30,"lifespan":-1},"min":2,"max":10},
+{"c":"功法","tier":"灵缘","t":"厚土镇岳式","d":"三个桩步，一个比一个矮。你扎到第三个的时候，腿肚子抖得站不住。","f":"站得住，才挡得住。","cost":"你扎到两腿发软。","ef":{"art":{"n":"厚土镇岳式","el":"土","type":"守御","lv":0},"cultivate":24},"min":2,"max":10},
+{"c":"功法","tier":"灵缘","t":"流云遁影","d":"一套身法，说是学云的。你练了两个月，跑起来确实轻了些。","f":"云不走直线。","cost":"你把力气都花在了腿上。","ef":{"art":{"n":"流云遁影","el":"无","type":"遁法","lv":0},"cultivate":26},"min":3,"max":11},
+{"c":"功法","tier":"灵缘","t":"铁骨锻体诀","d":"配着药水，一遍遍拍打自己。头几天浑身青紫，后来就不太怕疼了。","f":"身上的伤，长成了骨头。","cost":"你浑身青了大半个月。","ef":{"art":{"n":"铁骨锻体诀","el":"土","type":"炼体","lv":0},"cultivate":20,"herb":-1},"min":2,"max":12},
+{"c":"功法","tier":"宝缘","t":"听风辨位","d":"老猎户让你蒙上眼睛，在林子里待了三天。第三天你听见了风里有鹿。","f":"眼睛会骗人，耳朵不会。","cost":"你在林子里迷了两回。","ef":{"art":{"n":"听风辨位","el":"木","type":"遁法","lv":0},"cultivate":44},"min":4,"max":12,"loc":["野","秘"]},
+{"c":"功法","tier":"宝缘","t":"血煞噬心诀","d":"堂里的人把一卷东西推到你面前，说练了能打。你翻开第一页，纸上有一股腥气。","f":"要打得狠，先得舍得。","cost":"你练完咳了半宿的血。","ef":{"art":{"n":"血煞噬心诀","el":"火","type":"攻伐","lv":0},"cultivate":55,"lifespan":-3,"dao":-1},"min":5,"sect":"血煞门"},
+{"c":"功法","tier":"宝缘","t":"玄阴凝骨功","d":"要在最冷的时辰练，骨头里像有虫在爬。一个冬天下来，你不怕冷了。","f":"冷到极处，反而不冷。","cost":"你冻掉过一次知觉。","ef":{"art":{"n":"玄阴凝骨功","el":"水","type":"炼体","lv":0},"cultivate":50,"lifespan":-1},"min":6,"sect":"血煞门"},
+{"c":"功法","tier":"宝缘","t":"青云剑典·残卷","d":"藏经阁第三层最里头，一册剑典缺了下卷。你把上卷抄了下来，抄到手腕发麻。","f":"半部剑典，也是剑典。","cost":"你被执事记了一笔。","ef":{"art":{"n":"青云剑典","el":"金","type":"攻伐","lv":0},"cultivate":60,"contrib":-5},"min":5,"sect":"青云宗"},
+{"c":"功法","tier":"宝缘","t":"云笈养气经","d":"长老把一册薄薄的经给了你，说这本不教人打，只教人活。你翻了两页就懂了他的意思。","f":"活得下去，才谈得上别的。","cost":"你从此欠着一份人情。","ef":{"art":{"n":"云笈养气经","el":"无","type":"养元","lv":0},"cultivate":58,"lifespan":3},"min":6,"sect":"青云宗"},
+{"c":"功法","tier":"灵缘","t":"秤心术","d":"账房先生教你一套法子，说不是功夫，是算计——先算清楚自己值多少，再出手。","f":"心里有秤，手才不抖。","cost":"你替他盘了三天的账。","ef":{"art":{"n":"秤心术","el":"土","type":"守御","lv":0},"cultivate":32,"ss":20},"min":4,"sect":"黑石商盟"},
+{"c":"功法","tier":"灵缘","t":"市井藏锋诀","d":"一个在坊市混了半辈子的老头说，真正的本事是让人看不出你有本事。","f":"藏得住，才使得久。","cost":"你学会了低头。","ef":{"art":{"n":"市井藏锋诀","el":"无","type":"遁法","lv":0},"cultivate":30,"fame":-1},"min":4,"loc":["市","墟"]},
+{"c":"功法","tier":"灵缘","t":"无定游身法","d":"盟里的人教你这套身法时说，我们没山门可退，所以只能会跑。","f":"跑不是丢人，是留着命。","cost":"你得承认自己打不过。","ef":{"art":{"n":"无定游身法","el":"无","type":"遁法","lv":0},"cultivate":28},"min":3,"sect":"无定散修盟"},
+{"c":"功法","tier":"宝缘","t":"拾遗补阙录","d":"一本谁都能往上添两笔的册子。你添的那几行，是从三本残卷上凑出来的。","f":"捡来的东西，凑起来也有用。","cost":"你翻遍了盟里所有的破纸。","ef":{"art":{"n":"拾遗补阙录","el":"无","type":"养元","lv":0},"cultivate":62},"min":5,"sect":"无定散修盟"},
+{"c":"功法","tier":"宝缘","t":"青丘化形篇","d":"他们说这不是给人练的。你练到第七天，指甲掉了，长出来的是硬的。","f":"要变成别的，先得掉点自己的。","cost":"你掉了三层指甲，也掉了些别的。","ef":{"art":{"n":"青丘化形篇","el":"木","type":"炼体","lv":0},"cultivate":70,"dao":-1,"lifespan":-2},"min":7,"sect":"青丘妖族"},
+{"c":"功法","tier":"玄缘","t":"抱元守一","d":"什么也不练，只是坐着。坐到第三年，你才发现自己一直坐错了。","f":"守一，是守住那个一。","cost":"你坐掉了好几个年头。","ef":{"art":{"n":"抱元守一","el":"无","type":"养元","lv":0},"cultivate":150,"dao":1},"min":10},
+{"c":"功法","tier":"玄缘","t":"大衍五行诀","d":"五行的东西你都沾了一点，如今有人把它们串成了一条线。你顺着线走了一遍，浑身发麻。","f":"分开看是五个，合起来是一个。","cost":"你得先有五行的底子。","ef":{"art":{"n":"大衍五行诀","el":"无","type":"养元","lv":0},"cultivate":190},"min":12},
+{"c":"功法","tier":"灵缘","t":"把那招再走一遍","d":"你把学过的那招从头到尾又走了一遍。第三遍的时候，手上有点不一样了。","f":"熟，是走出来的。","cost":"你这一夜没干别的。","ef":{"artExp":{"v":8},"cultivate":10},"min":2},
+{"c":"战斗","tier":"凡缘","t":"跟了你半里地的狼","d":"它不远不近地跟了你半里地。你停下，它也停下。你捡起一块石头，它还没走。","f":"它不急，它在等你累。","cost":"你要么打，要么跑。","ef":{"battle":{"foe":"野狼","pw":[6,10],"loot":"凡缘","canFlee":true}},"min":0,"max":4,"loc":["野","镇"]},
+{"c":"战斗","tier":"凡缘","t":"山道上的劫修","d":"山口蹲着两个人，面前摆着一根扁担。其中一个说，留下一半，人过去。","f":"第一次拦路的，多半是新手。","cost":"不走这一趟，就得绕一天。","ef":{"battle":{"foe":"劫道的修士","pw":[12,20],"loot":"凡缘","canFlee":true}},"min":1,"max":6,"loc":["野","镇","墟"]},
+{"c":"战斗","tier":"灵缘","t":"林子里那头鹿","d":"那头鹿的角上缠着藤。它看见你，没有跑，而是低下了头。","f":"不跑的鹿，不是鹿了。","cost":"它比你以为的难缠。","ef":{"battle":{"foe":"妖鹿","pw":[28,40],"loot":"灵缘","canFlee":true}},"min":2,"max":7,"loc":["野"]},
+{"c":"战斗","tier":"灵缘","t":"抢了地盘的野猪王","d":"灌木炸开，冲出来一团黑的东西。你躲不及时，被拱进了沟里。","f":"山里的畜生，比人干脆。","cost":"躲不掉的。","ef":{"battle":{"foe":"野猪王","pw":[30,44],"loot":"灵缘","canFlee":true,"ambush":true}},"min":2,"max":8,"loc":["野"]},
+{"c":"战斗","tier":"灵缘","t":"坊市后巷的三个人","d":"后巷很窄。三个人堵在两头，中间那个说，你刚才看了不该看的东西。","f":"坊市的后巷，不讲价钱。","cost":"喊人也没用，这里没人管。","ef":{"battle":{"foe":"后巷的打手","pw":[25,38],"loot":"灵缘","canFlee":true}},"min":3,"max":9,"loc":["市","墟"]},
+{"c":"战斗","tier":"灵缘","t":"落单的二阶妖兽","d":"它独自在溪边饮水，抬头看了你一眼。你认出它身上的纹路——这不是寻常的兽。","f":"落单的妖，多半受了伤，也多半更凶。","cost":"它已经看见你了。","ef":{"battle":{"foe":"二阶妖兽","pw":[46,62],"loot":"宝缘","canFlee":true}},"min":4,"max":9,"loc":["野","秘"]},
+{"c":"战斗","tier":"宝缘","t":"洞口的守物兽","d":"洞最深处的暗处卧着一头似鹿非鹿的东西。它早就醒了，只是没动。","f":"拿了别人的，总要付点什么。","cost":"它在你和洞口之间。","ef":{"battle":{"foe":"守物兽","pw":[56,74],"loot":"宝缘","canFlee":true}},"min":6,"max":10,"loc":["秘"]},
+{"c":"战斗","tier":"宝缘","t":"石阶上的石人","d":"台阶尽头站着一尊石人。你踩上最后一级的时候，它转过头来看你。","f":"老东西守老地方。","cost":"退路在它身后。","ef":{"battle":{"foe":"石人","pw":[95,120],"loot":"宝缘","canFlee":true}},"min":8,"max":12,"loc":["秘","天"]},
+{"c":"战斗","tier":"宝缘","t":"泽里伸出来的那只手","d":"水面浮起一串泡，然后是一只手。它搭上船舷的时候，你才看清那手上有鳞。","f":"它只是在看你够不够吃。","cost":"船在水中央。","ef":{"battle":{"foe":"水妖","pw":[105,135],"loot":"宝缘","canFlee":true}},"min":8,"max":12,"loc":["泽"]},
+{"c":"战斗","tier":"灵缘","t":"仇家找上门","d":"你在路上被拦住了。对方说，还记得那年吗。你记得，你一直记得。","f":"结下的仇，总有来讨的一天。","cost":"躲不掉，这次是冲你来的。","ef":{"battle":{"foe":"旧仇","scale":1,"loot":"灵缘","canFlee":true,"ambush":true}},"min":3},
+{"c":"战斗","tier":"灵缘","t":"宗门差事 · 清剿妖巢","d":"执事把一面旗交给你，说山坳里那窝狼该清了。你去了，窝里比说的大。","f":"差事上的字，总比实情少。","cost":"这是差事，推不掉。","ef":{"battle":{"foe":"狼巢之主","scale":0.85,"loot":"灵缘","canFlee":false},"contrib":15},"min":4,"sect":"青云宗"},
+{"c":"战斗","tier":"宝缘","t":"血煞门的劫道者","d":"岭上的人不拦路，他们直接动手。你听见背后的风声时，已经晚了半步。","f":"魔道不谈条件。","cost":"他们看上了你身上所有能用的。","ef":{"battle":{"foe":"血煞劫道者","scale":1.05,"loot":"宝缘","canFlee":true,"ambush":true}},"min":6,"loc":["煞","野","墟"]},
+{"c":"战斗","tier":"宝缘","t":"青丘的巡山妖","d":"林子里走出一个披着皮的。它问你是谁家的。你说你没家，它笑了。","f":"在它的林子里，你才是异类。","cost":"它不打算放你过去。","ef":{"battle":{"foe":"巡山妖","scale":0.95,"loot":"宝缘","canFlee":true}},"min":7,"loc":["丘","野"]},
+{"c":"战斗","tier":"灵缘","t":"商盟的护队（认错了人）","d":"一队押货的把你围了，说你昨夜动过他们的货。你没有，可他们不信。","f":"认错人的时候，是最难讲理的时候。","cost":"解释要花时间，他们不给。","ef":{"battle":{"foe":"商盟护队","scale":0.8,"loot":"凡缘","canFlee":true}},"min":4,"loc":["市","墟"]},
+{"c":"战斗","tier":"宝缘","t":"夺宝的那个散修","d":"石室里还有一个人，也在盯着那卷东西。你们对视了一瞬，谁都没说话。","f":"先动手的，未必赢。","cost":"东西只有一份。","ef":{"battle":{"foe":"夺宝散修","scale":1,"loot":"宝缘","canFlee":true}},"min":6,"max":12,"loc":["秘","野"]},
+{"c":"战斗","tier":"玄缘","t":"古修遗蜕前的幻影","d":"你先拜了三拜，起身时面前多了一个人。他穿着和你一样的衣服。","f":"他不是鬼，是你自己留下的。","cost":"退不开，它挡在来路上。","ef":{"battle":{"foe":"遗蜕幻影","scale":1.15,"loot":"玄缘","canFlee":false}},"min":10,"loc":["天"]},
+{"c":"战斗","tier":"玄缘","t":"妖潮的前哨","d":"天边黑了一线。等你看清的时候，那不是云，是跑起来的东西。","f":"潮来了，先到的是最快的那批。","cost":"你身后是镇子。","ef":{"battle":{"foe":"妖潮前哨","scale":1.35,"loot":"玄缘","canFlee":true,"ambush":true}},"min":10,"loc":["野","泽","丘"]},
+{"c":"战斗","tier":"宝缘","t":"演武场上没能收住手","d":"你本只想赢。可他倒了之后还抓着你的袖子，你又补了一下。场上没人说话。","f":"台上收不住的手，台下收不住的命。","cost":"从此台上有了你的说法。","ef":{"battle":{"foe":"同门","scale":1,"loot":"凡缘","canFlee":false},"enemy":1,"dao":-1,"contrib":-10},"min":7,"sect":"青云宗"},
+{"c":"宗门","tier":"灵缘","t":"山门外的长队","d":"山门外排着长队，有人已经等了两年。你排在队尾，看着山上的云，忽然不确定自己在等什么。","f":"门里的人，看不见门外的队。","cost":"你等了整整一季。","ef":{"sect":true,"sectJoin":"青云宗","fame":1},"min":2,"max":9,"sect":"out"},
+{"c":"宗门","tier":"灵缘","t":"执事房的杂役","d":"你被分去执事房扫地、挑水、跑腿。一天下来，手上的茧比在山里时还厚。","f":"先学会干活，再学做事。","cost":"你一年没正经练过功。","ef":{"contrib":8,"ss":10,"herb":1},"min":2,"max":6,"sect":"青云宗"},
+{"c":"宗门","tier":"宝缘","t":"内门的腰牌","d":"执事把你的名字圈了出来，说下一批内门有你。腰牌是新的，字是旧的。","f":"圈出来的名字，也会划掉。","cost":"你为了这份差，把该走的关系都走了。","ef":{"contrib":25,"ss":30},"min":6,"sect":"青云宗"},
+{"c":"宗门","tier":"灵缘","t":"血煞岭的引路人","d":"岭下有人等着，见你上来，只问了一句：怕不怕。你说不怕。他笑了。","f":"进这道门的，都说自己不怕。","cost":"你从此回不了青云宗。","ef":{"sect":true,"sectJoin":"血煞门","dao":-1},"min":4,"max":11,"loc":["煞","野"],"sect":"join","entry":1},
+{"c":"宗门","tier":"灵缘","t":"献上的那碗血","d":"堂里递过来一只碗。你接的时候手很稳，喝下去的时候喉咙是烫的。","f":"入了这门，身子就不全是自己的。","cost":"你咳了三天。","ef":{"contrib":20,"lifespan":-2,"atk":3},"min":5,"sect":"血煞门"},
+{"c":"宗门","tier":"宝缘","t":"噬心堂的差事","d":"堂里给了你一桩差事，说对方也是修士。你问为什么，堂里说不用问。","f":"问得少的，活得久。","cost":"你做完之后，有人记住了你的脸。","ef":{"contrib":45,"ss":120,"lifespan":-3,"enemy":1},"min":7,"sect":"血煞门"},
+{"c":"宗门","tier":"灵缘","t":"商盟的记账先生","d":"柜台后面坐着个记账的，问你会不会认字。你说会一点。他推过来一本账。","f":"商盟不问出身，问你值多少。","cost":"你得押上半年的自由。","ef":{"sect":true,"sectJoin":"黑石商盟","ss":-40},"min":3,"max":10,"loc":["市","墟"],"sect":"join","entry":1},
+{"c":"宗门","tier":"灵缘","t":"押一趟货","d":"一队人，一辆车，走三个月。路上没人说话，只在换马的时候点头。","f":"货到了，人才算活。","cost":"路上什么都可能遇上。","ef":{"contrib":18,"ss":60,"lifespan":-1},"min":3,"sect":"黑石商盟"},
+{"c":"宗门","tier":"宝缘","t":"柜上的位置","d":"大掌柜把你叫到柜上，指了指他旁边那把椅子。坐下之后你才发现，那椅子比站着冷。","f":"坐上去的人，说话要过一遍脑子。","cost":"从此你说的每句话都算商盟的。","ef":{"contrib":60,"fame":4,"ss":150},"min":7,"sect":"黑石商盟"},
+{"c":"宗门","tier":"灵缘","t":"破庙里的那只碗","d":"破庙里一伙人在喝酒，见你进来，递过来一只碗。你接了，喝了一口，是凉的。","f":"散修的酒，喝的是抱团。","cost":"你听了一夜的牢骚。","ef":{"sect":true,"sectJoin":"无定散修盟","cultivate":20},"min":2,"max":12,"loc":["墟","野"],"sect":"join","entry":1},
+{"c":"宗门","tier":"灵缘","t":"替盟里跑一趟","d":"盟里缺人往南边送一封信。没人愿意去，你去了。信送到了，收信的人连门都没开。","f":"跑腿的活，总得有人干。","cost":"来回走了一个多月。","ef":{"contrib":15,"fame":2},"min":3,"sect":"无定散修盟"},
+{"c":"宗门","tier":"宝缘","t":"散修盟的公断","d":"两个散修争一头妖的皮，请你来断。你断完了，两个都不太满意，但都认了。","f":"没官没府的地方，话就得有人来说。","cost":"从此两边的事，都算在你头上。","ef":{"contrib":40,"fame":5,"dao":1},"min":6,"sect":"无定散修盟"},
+{"c":"宗门","tier":"宝缘","t":"青丘的引路人","d":"林子里走出一个披着皮的，说它奉命来接一个人。它看了你很久，说，就是你。","f":"妖不骗人，妖只是不解释。","cost":"人族的山门，从此对你关了。","ef":{"sect":true,"sectJoin":"青丘妖族","dao":-1,"lifespan":10},"min":7,"loc":["丘","泽"],"sect":"join","entry":1},
+{"c":"宗门","tier":"宝缘","t":"月下的妖宴","d":"他们围着一堆火坐下，吃的什么你没敢细看。有人递给你一杯，你喝了。","f":"吃了别人的饭，就是别人的人。","cost":"酒是腥的，你没吐。","ef":{"contrib":35,"lifespan":3,"dao":-1,"cultivate":60},"min":8,"sect":"青丘妖族"},
+{"c":"秘境","tier":"宝缘","t":"石门后的第二条甬道","d":"第一条甬道走到底是一堵墙。你在墙上摸到一道缝，缝后面还有一条。","f":"看得见的路，都不算路。","cost":"你在窄处挤了很久。","ef":{"cultivate":70,"material":3,"lifespan":-2},"min":6,"max":10,"loc":["秘"]},
+{"c":"秘境","tier":"宝缘","t":"泽底的水府偏殿","d":"正殿你不敢进，偏殿的门是开的。柱子上刻着的人脸，越看越像活的。","f":"偏殿里的东西，是给客人看的。","cost":"你出来的时候耳朵一直在响。","ef":{"ss":130,"material":5,"cultivate":80},"min":8,"max":12,"loc":["泽"]},
+{"c":"秘境","tier":"玄缘","t":"归墟的第二重","d":"第二重的台阶比第一重陡。你走到一半，回头看，第一重已经看不见了。","f":"越深的地方，越不讲道理。","cost":"你在里面待了不知多久。","ef":{"cultivate":200,"ss":220,"lifespan":-8},"min":11,"loc":["天"]},
+{"c":"秘境","tier":"宝缘","t":"血煞岭的地火窟","d":"窟底是红的，往上冒着热气。你靠近一步，眉毛就焦了一截。","f":"地里烧的火，比炉里的凶。","cost":"你出来时眉毛没了半边。","ef":{"cultivate":90,"material":4,"lifespan":-3},"min":6,"loc":["煞"]},
+{"c":"秘境","tier":"宝缘","t":"青丘的祠堂","d":"祠堂里没有牌位，只有一排挂着的皮。风一过，它们都动了一下。","f":"它们不是死了，是换了个样子。","cost":"你在那儿站到天亮。","ef":{"cultivate":110,"dao":1,"lifespan":-4},"min":9,"loc":["丘"]},
+{"c":"秘境","tier":"灵缘","t":"无定墟下的旧窖","d":"棚户底下有个窖，里面堆着不知多少年的破烂。你翻了半天，翻出几样还能使的。","f":"穷人的窖，富人的坟。","cost":"你在里面呛了一身灰。","ef":{"ss":45,"material":2,"herb":2},"min":4,"loc":["墟"]},
+{"c":"秘境","tier":"玄缘","t":"洞天里的药园","d":"药园荒了，可土还是黑的。你认出其中两三株，剩下的连名字都叫不出。","f":"没人管的地方，长的东西最野。","cost":"你在园里守了整整一季。","ef":{"herb":8,"cultivate":160,"lifespan":6},"min":12,"loc":["天"]},
+{"c":"秘境","tier":"玄缘","t":"归墟最深的那口井","d":"井不深，可你看不见底。你把石子丢下去，等了很久，没有回声。","f":"没有回声的地方，不要喊第二声。","cost":"你少了几年的寿。","ef":{"cultivate":300,"dao":2,"lifespan":-15},"min":14,"loc":["天"]},
+{"c":"疗伤","tier":"凡缘","t":"山里的止血草","d":"你认得那种草，嚼碎了敷在伤口上，辣得抽气。血倒是慢下来了。","f":"山里的草，认得伤。","cost":"你用掉了一味药。","ef":{"heal":{"pct":0.25},"herb":-1},"min":0},
+{"c":"疗伤","tier":"灵缘","t":"借了间屋子躺三天","d":"一户人家腾了半间屋给你。你躺了三天，什么也没想，什么也没练。","f":"躺得住的人，才好得快。","cost":"三天就这么过去了。","ef":{"heal":{"pct":0.45}},"min":1},
+{"c":"疗伤","tier":"灵缘","t":"药铺的一碗汤","d":"药铺掌柜给你熬了一碗黑的。你喝下去，从喉咙苦到胃里，然后身上松了。","f":"苦的东西，多半管用。","cost":"两味好药搭了进去。","ef":{"heal":{"pct":0.55},"herb":-2},"min":1,"max":9,"loc":["镇","市","墟"]},
+{"c":"疗伤","tier":"灵缘","t":"老道留下的一丸丹","d":"那丸药你一直没舍得吃。今天你抠出来，闻了闻，还是那个味道。","f":"留着的东西，总有要用的那天。","cost":"你吃掉了一颗丹，也添了一分毒。","ef":{"heal":{"pct":0.7},"pill":-1,"danPoison":2},"min":2},
+{"c":"疗伤","tier":"宝缘","t":"温泉里泡了半月","d":"山背阴处有一眼温泉。你泡了半个月，泡到皮肤发皱，骨头里的寒气才散。","f":"热水治不了大病，能治累。","cost":"半个月什么也没干。","ef":{"heal":{"pct":0.6},"cure":true,"lifespan":1},"min":5,"loc":["野","泽"]},
+{"c":"疗伤","tier":"宝缘","t":"同门替你推宫过血","d":"同门把手按在你背上，推了整整一夜。天亮时他脸色比你还差。","f":"肯给你推血的人，不多。","cost":"你欠了他一份大的。","ef":{"heal":{"pct":0.8},"cure":true,"debts":1},"min":5,"sect":"in"},
+{"c":"疗伤","tier":"宝缘","t":"自己在洞里舔伤口","d":"没人来，你只能自己来。你把伤口洗干净，咬着布条缠好，然后坐着等天亮。","f":"没人管的时候，人也得活。","cost":"好得慢，也留下了根。","ef":{"heal":{"pct":0.35},"hpMax":{"pct":-0.03},"dao":1},"min":4},
+{"c":"疗伤","tier":"玄缘","t":"洞天里的静水","d":"一潭静水，你下去坐着。水不冷不热，泡久了，身上那些旧伤像被人一点点抹平了。","f":"有的水，泡的不是身子。","cost":"你在水里坐到分不清昼夜。","ef":{"heal":{"pct":1},"cure":true,"hpMax":{"pct":0.05},"lifespan":-3},"min":10,"loc":["天"]},
+{"c":"危险","tier":"灵缘","t":"一场硬扛过去的大病","d":"你烧了半个月，烧到认不出人。等烧退了，你发现自己轻了很多，也空了很多。","f":"病这东西，不看你是谁。","cost":"你瘦了一圈，也少了几年。","ef":{"lifespan":-4,"hpMax":{"pct":-0.06},"cultivate":-10},"min":2},
+{"c":"危险","tier":"灵缘","t":"走火的那半个时辰","d":"一口气堵在膻中，上不去也下不来。你咬着牙把它压回去，压回去的时候眼前全黑了。","f":"急于求成的，总要还。","cost":"你退了半步，也折了些寿。","ef":{"progressPct":-0.15,"lifespan":-3,"dao":-1},"min":2,"max":9},
+{"c":"危险","tier":"宝缘","t":"强行冲了一次关","d":"你明知还差一点，还是冲了。那口气撞在关卡上，弹回来的时候，你听见自己骨头响了一声。","f":"差一点，就是差很多。","cost":"你冲了，也赔了。","ef":{"progressPct":-0.2,"lifespan":-6,"hpMax":{"pct":-0.08},"dao":-1},"min":4},
+{"c":"危险","tier":"宝缘","t":"丹毒发作的一夜","d":"你身上那股药味越来越重。这一夜它发作了，你在地上滚到天亮，指甲抓裂了席子。","f":"吃下去的，总要出来。","cost":"毒是出来了一些，人也空了一些。","ef":{"danPoison":-5,"lifespan":-3,"hpMax":{"pct":-0.05}},"min":4},
+{"c":"危险","tier":"宝缘","t":"被人下在酒里的东西","d":"那碗酒你喝了。半个时辰之后，你才发现自己握不住剑。","f":"敬酒的人，不一定是想敬你。","cost":"你现在知道是谁了，可你拿他没办法。","ef":{"lifespan":-5,"hpMax":{"pct":-0.07},"enemy":1,"dao":-1},"min":5,"loc":["市","墟","煞"]},
+{"c":"危险","tier":"玄缘","t":"心魔坐了一整夜","d":"夜里你看见一个人坐在床前，长得和你一模一样。他什么也没说，你也没动。天亮时他还在。","f":"看见自己，是件很累的事。","cost":"这一夜之后，你老了很多。","ef":{"lifespan":-7,"dao":-2,"cultivate":80},"min":8},
+{"c":"危险","tier":"玄缘","t":"逆行周天","d":"你把周天倒着走了一遍。气是走了，走的方向不对，走完之后你吐了血。","f":"有的路，倒着走也能走，只是要付钱。","cost":"血换来的，不会白给你。","ef":{"lifespan":-8,"hpMax":{"pct":-0.1},"atk":6,"cultivate":90},"min":9},
+{"c":"危险","tier":"灵缘","t":"在洞里睡过了头","d":"你本只想坐一夜。等你睁眼，洞口的光已经换过好几回了。你爬出去，山下的树粗了一圈。","f":"洞里的时间，是别人的时间。","cost":"你不知少了多少年。","ef":{"lifespan":-5,"cultivate":120},"min":5,"loc":["秘","天","煞"]},
+{"c":"危险","tier":"宝缘","t":"替人挡下来的那一击","d":"那一击是冲着他去的。你把他推开，自己挨了。挨完你躺在地上，想了很久自己为什么推。","f":"推开的那一瞬间，没想过值不值。","cost":"你替他挨了，他替你记着。","ef":{"lifespan":-6,"hp":{"pct":-0.5},"fame":3,"rel":{"n":"被你救下的人","v":3}},"min":5},
+{"c":"危险","tier":"玄缘","t":"油尽灯枯之前","d":"你最近常常忘了自己刚才要做什么。你摸了摸自己的脉，跳得比以前慢了很多。","f":"灯要灭的时候，会先亮一下。","cost":"要续这一口气，得拿东西换。","ef":{"lifespan":8,"dao":-1,"progressPct":-0.3},"min":10},
+
+/* ===== 卡池 C · FDR-007 四派系补充（xs / hs / wd / qq，各 1 入门 + 5 事务） ===== */
+{"c":"宗门","tier":"灵缘","t":"岭口的那道石槽","d":"岭口横着一道石槽，槽底的黑是旧的。引路人递来一把薄刀，说先放自己的。你割开了，血顺着槽走，走了很远才渗完。","f":"门里的规矩，是先收你的，再给你。","cost":"你少了些寿，也少了一点自己。","ef":{"sect":true,"sectJoin":"血煞门","lifespan":-3,"dao":-1},"min":6,"max":12,"sect":"join","loc":["煞"],"entry":1},
+{"c":"宗门","tier":"宝缘","t":"堂里的血祭","d":"堂中地上有一圈旧痕，痕里是干的。你站进去，念的词是从别人那儿听来的。念到一半，你觉出身上有东西被抽出去了。","f":"要得快，就得先把自己的摆上。","cost":"这一场，你折了寿。","ef":{"cultivate":65,"lifespan":-5,"dao":-1,"contrib":12},"min":6,"max":11,"sect":"xs"},
+{"c":"宗门","tier":"宝缘","t":"半道上截下的那颗丹","d":"山下有人要破境，丹托了人捎。堂里让你去截。你截到了。他跪在地上，没抬头——不是认输，是不敢记住你的脸。","f":"他要的东西，现在是你的了。","cost":"从此有人记得你。","ef":{"pill":1,"contrib":30,"ss":55,"dao":-1,"enemy":1},"min":7,"max":12,"sect":"xs"},
+{"c":"宗门","tier":"宝缘","t":"噬心堂的药池","d":"池子里泡着人，也泡着药。管池的让你下去，说泡到骨头响为止。你泡了。出来时皮是红的，那股味半个月没散。","f":"有的药，是用人养的。","cost":"你身上那股味，洗不掉了。","ef":{"cultivate":75,"contrib":15,"lifespan":-4,"dao":-1},"min":8,"max":12,"sect":"xs"},
+{"c":"宗门","tier":"灵缘","t":"这个月的献纳","d":"堂里按例收献。你把这个月能拿出来的都摊在案上。管事的扫了一眼，说不够。你又掏了一次，这次掏的是压箱底的。","f":"进门容易，按月交难。","cost":"你把留着冲关的那味药也折了进去。","ef":{"contrib":35,"ss":-60,"herb":-1,"lifespan":-1},"min":9,"max":12,"sect":"xs"},
+{"c":"宗门","tier":"玄缘","t":"空出来的那个位子","d":"上一个堂主没了。位子空着，谁也不坐——坐上去的人，得先去办一桩事。你报了名。","f":"坐上去的人，先被派去死。","cost":"你把退路自己断了。","ef":{"contrib":70,"ss":150,"atk":6,"lifespan":-4,"enemy":1},"min":11,"max":12,"sect":"xs"},
+{"c":"宗门","tier":"灵缘","t":"找保人","d":"商盟要一个保人。你沿街问了一整条，最后在一家棺材铺签的字。那掌柜说，他保过的人，多半用不上棺材。","f":"肯保你的，都先算过你会不会跑。","cost":"你欠了棺材铺一份人情。","ef":{"sect":true,"sectJoin":"黑石商盟","ss":-25,"debts":1},"min":3,"max":9,"sect":"join","loc":["市"],"entry":1},
+{"c":"宗门","tier":"灵缘","t":"路上折了价","d":"车在半道翻了，货撒了一地。你捡回来一半，另一半记在你头上。柜上没骂你，只是拿笔在账上添了一行。","f":"亏了的货，账上找得回来。","cost":"这一趟白跑，还倒贴。","ef":{"contrib":20,"ss":-35,"debts":1,"material":1},"min":3,"max":7,"sect":"hs"},
+{"c":"宗门","tier":"灵缘","t":"去收一笔旧账","d":"柜上让你去收一笔拖了很久的账。欠钱的是个熟脸，说再宽半月。你说不行。说的时候，你自己也不太信自己。","f":"催债的人，最先学会看脸色。","cost":"从此街上有人绕着你走。","ef":{"contrib":28,"ss":70,"enemy":1},"min":4,"max":9,"sect":"hs"},
+{"c":"宗门","tier":"灵缘","t":"给岭上送的那批货","d":"这批货是往血煞岭去的。押运的人问你做不做。你说岭上杀人不眨眼。他说那是岭上的事，货是我们的事。","f":"生意归生意。","cost":"回来之后，你身上有股洗不掉的味道。","ef":{"contrib":32,"ss":85,"rep":{"id":"xs","v":8},"dao":-1},"min":5,"max":9,"sect":"hs"},
+{"c":"宗门","tier":"宝缘","t":"人情折成账","d":"你欠甲一个人情，甲欠乙一笔钱。柜上教你把这三笔并成一笔。并完之后，你不欠甲了——你欠柜上。","f":"账算清了，人就没那么亲了。","cost":"从此甲见你，先低头。","ef":{"debts":-1,"contrib":30,"ss":55,"dao":-1},"min":6,"max":9,"sect":"hs"},
+{"c":"宗门","tier":"宝缘","t":"后半夜的市","d":"后半夜才开的市，货都盖着布。你看中一件，问来路。卖的人说不问。你买了，回去掀开，是件好东西。","f":"不问来路的东西，便宜得有道理。","cost":"你把账上能动的都动了。","ef":{"material":3,"contrib":45,"ss":-130,"dao":-1},"min":7,"max":9,"sect":"hs"},
+{"c":"宗门","tier":"灵缘","t":"棚子底下的空位","d":"无定墟的棚子是自己长出来的。有人挪了挪，给你腾出一块干地方，说坐吧。没人问你是谁，也没人问你会什么。","f":"这里不问来历，只问你肯不肯搭手。","cost":"从今夜起，别人的事也是你的事。","ef":{"sect":true,"sectJoin":"无定散修盟","debts":1,"fame":1},"min":4,"max":10,"sect":"join","loc":["墟"],"entry":1},
+{"c":"宗门","tier":"灵缘","t":"搭伙进山","d":"三四个人凑一趟南荒，说好见者有份。进去了才发现，各人心里那本账不一样。回来的路上，谁也没提分多少。","f":"搭伙容易，算账难。","cost":"这一趟，你什么也没落下。","ef":{"cultivate":35,"ss":40,"material":1,"debts":1},"min":4,"max":8,"sect":"wd"},
+{"c":"宗门","tier":"灵缘","t":"分赃那一夜","d":"一趟秘境下来，东西摊在地上，谁拿哪一件，谁都觉得吃亏。吵到天亮，最后是抽的签。抽完没人说话，各自走了。","f":"穷人的公道，是抽签抽出来的。","cost":"你分到的那一件，不是你想要的。","ef":{"contrib":20,"material":2,"ss":30,"debts":1},"min":5,"max":10,"sect":"wd"},
+{"c":"宗门","tier":"宝缘","t":"托给你的那个孩子","d":"一个熟脸要出去一趟，说回不来就把小子托给你。他没说去哪。他走了，孩子留下了，坐在门槛上等你安排。","f":"托孤的人，多半知道自己回不来。","cost":"你多了张嘴，也多了份牵挂。","ef":{"contrib":25,"ss":-30,"rel":{"n":"托孤的孩子","v":2},"debts":1},"min":6,"max":10,"sect":"wd"},
+{"c":"宗门","tier":"宝缘","t":"凑份子","d":"你要冲这一关，差一味药。盟里的人一家凑一点，凑到半夜，凑出来了。钱不多，可你数的时候手是抖的。","f":"一个人的难处，一群人摊就没那么难。","cost":"这份子，你得记一辈子。","ef":{"herb":2,"ss":40,"contrib":18,"debts":2},"min":7,"max":10,"sect":"wd"},
+{"c":"宗门","tier":"宝缘","t":"大家凑钱埋的那个人","d":"他死在野地里，是盟里的人抬回来的。没人知道他全名，只知道他姓什么。你把钱掏了，别人也掏了，凑够了棺材钱。","f":"散修没有宗门，死了总得有人埋。","cost":"你掏的是自己下个月的钱。","ef":{"contrib":20,"ss":-25,"fame":1,"dao":1},"min":8,"max":10,"sect":"wd"},
+{"c":"宗门","tier":"宝缘","t":"祠堂前的那道题","d":"祠堂前没有人，只有一块石。石上刻着一句话，是妖文，你认得一半。守祠的让你把另一半补上。你补了，它看了很久。","f":"妖不看你会不会，看你答得对不对。","cost":"你答完了，就不再只是人了。","ef":{"sect":true,"sectJoin":"青丘妖族","dao":-1,"lifespan":5},"min":9,"max":15,"sect":"join","loc":["丘"],"entry":1},
+{"c":"宗门","tier":"灵缘","t":"回礼回错了","d":"它送你一捧还带着毛的骨头。你按人的规矩道了谢，周围忽然静下来。后来有人告诉你，那东西不该谢，收下就走。","f":"它们的礼数，和人反着来。","cost":"你犯了忌，没人肯说是哪一条。","ef":{"contrib":12,"dao":-1,"cultivate":40},"min":9,"max":13,"sect":"qq"},
+{"c":"宗门","tier":"灵缘","t":"递过来的那一块","d":"火边递来一块，还热着。你闻出那是什么，也知道不吃就坐不到天亮。你吃了。吃完没人看你——这比看你更难受。","f":"它们不看你的脸，是给你留最后的体面。","cost":"你没吐，也忘不掉那个味道。","ef":{"contrib":20,"lifespan":3,"dao":-1,"cultivate":45},"min":10,"max":14,"sect":"qq"},
+{"c":"宗门","tier":"宝缘","t":"化形的那一夜","d":"按篇上的法子，你熬到后半夜。骨头在里头挪了位置，疼得说不出话。天亮时你站起来了，影子还是你的，轮廓不是了。","f":"人形是借来的，借久了，就忘了还。","cost":"你照水看了一眼，没敢看第二眼。","ef":{"cultivate":80,"dao":-1,"lifespan":-3,"def":8,"contrib":15},"min":11,"max":15,"sect":"qq"},
+{"c":"宗门","tier":"宝缘","t":"被它们看过一遍","d":"月巡的一圈人停在林子里，其中一个走过来，围着你看了三圈。它没说话，走回去也不知道说了什么。你从头到尾站着没动。","f":"它们不审你，它们只是看。","cost":"那一夜你没敢睡实。","ef":{"contrib":30,"fame":-1,"dao":-1,"rep":{"id":"qq","v":10}},"min":12,"max":15,"sect":"qq"},
+{"c":"宗门","tier":"玄缘","t":"祠堂前的誓","d":"守祠的让你跪下，说一遍就行。你跪了。说完之后，它把你扶起来，说从今天起，你死了要送回来。","f":"契不是签的，是说的。","cost":"你死后得回来，它们要收。","ef":{"contrib":55,"lifespan":8,"dao":-1,"cultivate":90},"min":13,"max":15,"sect":"qq"},
+
+/* ===== 卡池 D · FDR-007 工程侧补遗（四家通用事务，各 3 张） ===== */
+{"c":"宗门","tier":"灵缘","t":"替堂里守那夜的火","d":"火不能灭，你守了整整一夜。添柴的时候你看见堂里那口井，井沿上缺了一块，缺口是旧的。","f":"守着火的人，最先知道什么叫熬。","cost":"你一夜没合眼。","ef":{"contrib":14,"cultivate":40,"lifespan":-1},"min":6,"max":12,"sect":"xs"},
+{"c":"宗门","tier":"宝缘","t":"岭口收上来的供奉","d":"岭下几个村子按月送来东西。你收一处，记一笔。最后那一处的人跪着不肯起来，你也没扶。","f":"收别人的时候，手不能软。","cost":"你记住了那张脸。","ef":{"contrib":30,"ss":90,"dao":-1},"min":7,"max":12,"sect":"xs"},
+{"c":"宗门","tier":"宝缘","t":"血使的黑牌子","d":"牌子是冷的，上面没刻名字，只有一道槽。管事的说，认牌子不认人。你接过来掂了掂，比想的沉。","f":"能让人认的东西，都不轻。","cost":"从此他们只认这块牌子。","ef":{"contrib":50,"atk":5,"lifespan":-3,"enemy":1},"min":10,"max":12,"sect":"xs"},
+{"c":"宗门","tier":"灵缘","t":"柜上教你认秤","d":"账房的人把秤推给你，说先学认星。你认了一下午，往后称什么都忍不住多看两眼。","f":"心里那杆秤准了，手上这杆才有用。","cost":"你欠了账房一份指点。","ef":{"contrib":16,"ss":40,"debts":1},"min":3,"max":9,"sect":"hs"},
+{"c":"宗门","tier":"灵缘","t":"替柜上盘那一夜的账","d":"一整年的账堆在案上，你盘到后半夜。盘到快完的时候才发现，少的那一笔在最前头。","f":"账错了不会自己喊，得有人看到最后。","cost":"你知道了一件不该知道的事。","ef":{"contrib":24,"ss":35,"dao":-1},"min":5,"max":9,"sect":"hs"},
+{"c":"宗门","tier":"宝缘","t":"商路上的旧交情","d":"押货的队伍里有个旧相识。最难走的那段他替你顶了，说算还上次的。你没想起来上次是哪一次。","f":"路上的交情，还的时候才知道有多少。","cost":"这份人情，你还没还。","ef":{"contrib":40,"ss":60,"rel":{"n":"商路上的旧相识","v":1},"debts":1},"min":8,"max":9,"sect":"hs"},
+{"c":"宗门","tier":"灵缘","t":"替人垫的那笔药钱","d":"盟里有人断了药，你替他垫上。他说下个月还。下个月他人没来，药倒是抓回来了。","f":"散修之间的账，记的不是钱。","cost":"你自己那味药，拖了半年才配上。","ef":{"contrib":15,"ss":-20,"herb":1,"debts":1},"min":4,"max":10,"sect":"wd"},
+{"c":"宗门","tier":"灵缘","t":"棚子底下分的一碗汤","d":"有人熬了一锅汤，谁路过谁喝一口。你端着碗蹲在棚子底下听他们说话，热气糊了一脸。","f":"穷人的好处，是一碗汤能分很多人。","cost":"你那一碗是最后剩的。","ef":{"contrib":18,"heal":{"pct":0.3},"debts":1},"min":5,"max":10,"sect":"wd"},
+{"c":"宗门","tier":"宝缘","t":"盟里说出来的一句话","d":"你和另一伙人吵起来，吵到要动手。盟里最老的那个只说了一句话，两边都不吭声了。","f":"没规矩的地方，话的分量全在人身上。","cost":"从此你也得说这样的话。","ef":{"contrib":35,"fame":3,"dao":1},"min":7,"max":10,"sect":"wd"},
+{"c":"宗门","tier":"灵缘","t":"学着它们的样子坐","d":"它们坐着的时候不动，也不闭眼。你学着坐了半夜，起来时腿麻得像不是自己的。","f":"学别的东西容易，学它怎么待着难。","cost":"你站起来的时候摔了一跤。","ef":{"contrib":15,"cultivate":50,"dao":-1},"min":9,"max":14,"sect":"qq"},
+{"c":"宗门","tier":"宝缘","t":"林子深处的一夜","d":"它们带你往林子深处走了一夜。天亮的时候你回头看，来路看不见了。它们说，本来就没有。","f":"它们的路，走出一次就没有第二次。","cost":"你想不起自己是怎么进去的。","ef":{"contrib":28,"material":2,"lifespan":2,"dao":-1},"min":10,"max":15,"sect":"qq"},
+{"c":"宗门","tier":"宝缘","t":"月巡回来的那条路","d":"你跟着月巡走了一圈，回来时只剩自己。路过人族的村子，你站在村口没敢进去。","f":"走过那一圈之后，你自己闻着也不太像人了。","cost":"村里的孩子看见你就躲。","ef":{"contrib":38,"def":4,"fame":-1,"dao":-1},"min":11,"max":15,"sect":"qq"}
+
+];
+
+/* 旧 equip 语义迁移：equip:{n,p} → {n,slot,g}；旧 mainArt → 功法对象规格 */
+(function normalizeCards(){
+  CARDS.forEach(c=>{
+    const e = c.ef; if(!e) return;
+    if(e.equip && !e.equip.slot){
+      const m = OLD_EQUIP[e.equip.n];
+      const p = e.equip.p==null ? 3 : e.equip.p;
+      e.equip.slot = m ? m[0] : 'weapon';
+      e.equip.g    = m ? m[1] : (p<=5?0 : p<=8?1 : p<=12?2 : p<=18?3 : 4);
+      delete e.equip.p;
+    }
+  });
+})();
+const CATS = []; CARDS.forEach(c=>{ if(CATS.indexOf(c.c)<0) CATS.push(c.c); });
+
+/* ---------- 8. 工具 ---------- */
+const rnd  = (a,b)=>a+Math.random()*(b-a);
+const ri   = (a,b)=>Math.floor(rnd(a,b+1));
+const pick = a=>a[Math.floor(Math.random()*a.length)];
+const clamp= (v,a,b)=>v<a?a:(v>b?b:v);
+function wpick(w){                                   // 按权重取索引
+  let t=0; for(let i=0;i<w.length;i++) t+=w[i];
+  if(t<=0) return 0;
+  let r=Math.random()*t;
+  for(let i=0;i<w.length;i++){ r-=w[i]; if(r<=0) return i; }
+  return w.length-1;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function signed(v, unit){ return (v>0?'<span class="pos">+'+v+'</span>':'<span class="neg">'+v+'</span>')+(unit||''); }
+
+/* ---------- 9. 状态 ---------- */
+let S=null, cur=[], over=false, turnBox=null, needSeal=false;
+let CH = null;                                        // 待选 interactions（选项浮层）
+const $  = id=>document.getElementById(id);
+const logEl = $('log');
+
+function rollTalent(){
+  const rg = pick(ROOT_GRADES);
+  const bone = 30 + Math.floor(Math.random()*61);
+  const el0 = pick(WUXING);                     // P0-3：五行只抽一次，rollBox / newGame 共用同源
+  return { rootName: el0+' · '+rg[0], rootEl: el0, rootMul: rg[1], rootGrade: rg[0],
+           rootPtr: rg[2], bone: bone, boneMul: BONE_MUL(bone) };
+}
+
+function newGame(tal){
+  tal = tal || rollTalent();
+  S = {
+    turn:1, age:30, stage:0, progress:0,
+    rootName:tal.rootName, rootEl:tal.rootEl || tal.rootName.charAt(0),
+    rootMul:tal.rootMul, rootGrade:tal.rootGrade, rootPtr:tal.rootPtr||0,
+    bone:tal.bone, boneMul:tal.boneMul,
+    lifespan: LIFE_CAP[0], dao:2,
+    ss:20, herb:1, pill:0, mat:0, fame:0, danPoison:0,
+    hp:1, wound:0, woundTurns:0, atkBonus:0, defBonus:0,
+    arts:[], seenArt:{},
+    equip:{weapon:null,armor:null,treasure:null,escape:null,ornament:null}, bag:[],
+    rel:{}, debts:0, enemy:0,
+    loc:0, seen:[0], nextLoc:null, nudge:0, declined:false, noJoin:{}, hailCd:0,
+    sect:null, trade:null, contrib:0, rep:{}, guard:0, breakCd:0, breakTry:{}, swFrom:null,
+    memory:[], chg:[]
+  };
+  over=false; cur=[]; turnBox=null; needSeal=false; CH=null;
+  const st = stats(); S.hp = st.hpMax;
+  logEl.innerHTML='';
+  $('cgrid').innerHTML='';
+  $('quota').textContent='';
+  $('ov-ch').classList.add('in');
+  renderAll();
+}
+
+function curStep(){ return (S && S.stage < STEP.length) ? STEP[S.stage] : Infinity; }
+function stepText(){ const s=curStep(); return isFinite(s) ? String(s) : '圆满'; }
+function coef(){ return REALM_COEF[clamp(S.stage,0,REALM_COEF.length-1)]; }
+function poisonMul(){ return S.danPoison>=6 ? 0.85 : 1; }
+function lifeLeft(){ return S.lifespan - S.age; }
+
+/* ---------- 10. 三维属性 + 派生战力 ---------- */
+function durMul(it){ return it ? DUR_MUL[clamp(it.dur||0,0,2)] : 0; }
+function itemVal(it){                        // 用于比较取舍的粗估值
+  if(!it) return 0;
+  return (it.atk||0)+(it.def||0)+((it.hp||0)*0.35)+((it.esc||0)*0.8)+(it.g||0)*1.5;
+}
+function artMulOf(a){
+  const w = WX_ATTR[wxRel(S.rootEl, a.el)];
+  return a.main ? w : 1 + (w-1)*0.5;
+}
+function mainArt(){ for(let i=0;i<S.arts.length;i++) if(S.arts[i].main) return S.arts[i]; return null; }
+function secArts(){ return S.arts.filter(a=>!a.main); }
+
+function artBonus(detail){
+  let atk=0, def=0, hp=0;
+  const m0 = mainArt(), secs = secArts();
+  let mainAdj = 1;
+  if(m0 && secs.some(s=>wxRel(m0.el,s.el)==='ke')) mainAdj = 0.80;      // 气息相冲
+  let secAdj = {};
+  if(secs.length===2 && wxRel(secs[0].el,secs[1].el)==='ke'){          // 兼修互克
+    secAdj[secs[0].n]=0.85; secAdj[secs[1].n]=0.85;
+  }
+  S.arts.forEach(a=>{
+    const tbl = ART_TBL[a.type] || ART_TBL['养元'];
+    const row = tbl[clamp(a.lv,0,4)];
+    let m;
+    if(a.main) m = WX_ATTR[wxRel(S.rootEl,a.el)] * mainAdj;
+    else       m = (1 + (WX_ATTR[wxRel(S.rootEl,a.el)]-1)*0.5) * 0.60 * (secAdj[a.n]||1);
+    const A = row[0]*m, D = row[1]*m, H = row[2]*m;
+    atk+=A; def+=D; hp+=H;
+    if(detail) detail.push({n:a.n, lv:a.lv, type:a.type, el:a.el, mul:m, atk:A, def:D, hp:H});
+  });
+  return {atk:atk, def:def, hp:hp};
+}
+function rootBonus(){
+  const el = S.rootEl; let A=0,D=0,H=0;
+  if(el==='金'){A=0.10;}
+  else if(el==='木'){D=0.02;H=0.06;}
+  else if(el==='水'){D=0.06;H=0.04;}
+  else if(el==='火'){A=0.06;}
+  else if(el==='土'){D=0.10;H=0.08;}
+  if(S.rootGrade==='天灵根'){A+=0.08;D+=0.08;H+=0.08;}
+  return {A:A,D:D,H:H};
+}
+function equipSum(){
+  let atk=0,def=0,hp=0,esc=0;
+  SLOTS.forEach(s=>{
+    const it = S.equip[s[0]]; if(!it) return;
+    const m = durMul(it);
+    atk += (it.atk||0)*m; def += (it.def||0)*m; hp += (it.hp||0)*m; esc += (it.esc||0)*m;
+  });
+  const orn = S.equip.ornament;
+  let life=0, cult=1, healB=0;
+  if(orn && orn.spec){
+    if(orn.spec==='lifespan') life += Math.round(6*(orn.g+1)*0.5);
+    if(orn.spec==='fame')     healB += 0;
+    if(orn.spec==='heal')     healB += 0.10;
+    if(orn.spec==='cult')     cult += 0.05*(orn.g>=4?3:(orn.g>=2?1:0));
+  }
+  return {atk:atk, def:def, hp:hp, esc:esc, life:life, cult:cult, healB:healB};
+}
+function stats(detail){
+  const sb = clamp(S.stage,0,STAGES.length-1);
+  const eq = equipSum();
+  const artDetail = [];
+  const ab = artBonus(detail?artDetail:null);
+  const rb = rootBonus();
+  const boneHp  = (S.bone-50)/100*0.30 + 1;
+  const boneAtk = (S.bone-50)/100*6;
+  const boneDef = (S.bone-50)/100*4;
+
+  let hpMax = (HP_BASE[sb] + eq.hp + ab.hp + HP_BASE[sb]*rb.H) * boneHp * (1 - clamp(S.wound,0,0.50));
+  hpMax = Math.max(Math.round(HP_BASE[sb]*0.15), Math.round(hpMax));
+  const atk = Math.round(ATK_BASE[sb] + eq.atk + ab.atk + ATK_BASE[sb]*rb.A + boneAtk + S.atkBonus);
+  const def = Math.round(DEF_BASE[sb] + eq.def + ab.def + DEF_BASE[sb]*rb.D + boneDef + S.defBonus);
+  const maxLife = Math.max(LIFE_CAP[sb], Math.max(S.lifespan,0) + eq.life);
+  const power = Math.round(atk + def*0.5 + hpMax*0.1);
+  const o = {
+    hpMax:hpMax, atk:atk, def:def, power:power, esc:Math.round(eq.esc),
+    maxLife:maxLife, cult:eq.cult, healB:eq.healB,
+    baseA:ATK_BASE[sb], baseD:DEF_BASE[sb], baseH:HP_BASE[sb],
+    eqA:eq.atk, eqD:eq.def, eqH:eq.hp,
+    abA:ab.atk, abD:ab.def, abH:ab.hp,
+    rbA:ATK_BASE[sb]*rb.A, rbD:DEF_BASE[sb]*rb.D, rbH:HP_BASE[sb]*rb.H,
+    boneAtk:boneAtk, boneDef:boneDef, boneHp:boneHp, wound:clamp(S.wound,0,0.50),
+    arts:detail?artDetail:null
+  };
+  return o;
+}
+function recomputeBound(){                     // 属性变化后收口
+  const st = stats();
+  if(S.hp > st.hpMax) S.hp = st.hpMax;
+  if(S.hp < 1) S.hp = 1;
+  return st;
+}
+
+/* ---------- 11. HUD / 抽屉 ---------- */
+function renderAll(){ renderHUD(); renderDrawer(); }
+
+function renderHUD(){
+  const st = stats();
+  const step = curStep();
+  const pct = isFinite(step) ? Math.min(100, Math.round(S.progress/step*100)) : 100;
+  const hpp = Math.max(0, Math.min(100, Math.round(S.hp/st.hpMax*100)));
+  $('h-realm').textContent = STAGES[clamp(S.stage,0,STAGES.length-1)];
+  $('h-bar').style.width = pct+'%';
+  $('h-hp').style.width  = hpp+'%';
+  $('h-life').textContent = '时年 '+S.age+' 岁 · 余寿 '+lifeLeft()+' 载';
+  $('h-tags').innerHTML =
+      '<span class="chip loc">'+LOCS[S.loc].name+'</span>' +
+      (S.sect ? '<span class="chip sect">'+FACTIONS[S.sect.id].short+'</span>'
+              : '<span class="chip loose">无门无派</span>');
+  let n = '<span>寿元<b class="'+(lifeLeft()<=10?'red':'')+'">'+S.age+'/'+S.lifespan+'</b></span>'
+        + '<span>气血<b class="'+(hpp<=30?'red':'')+'">'+S.hp+'/'+st.hpMax+'</b></span>'
+        + '<span>战力<b>'+st.power+'</b></span>'
+        + '<span>攻<b>'+st.atk+' · </b>防<b>'+st.def+'</b></span>'
+        + '<span>修为<b class="gold">'+S.progress+'/'+stepText()+'</b></span>'
+        + '<span>灵石<b>'+S.ss+'</b></span>'
+        + '<span>药材<b>'+S.herb+'</b></span>'
+        + '<span>丹药<b>'+S.pill+'</b></span>'
+        + '<span>声望<b>'+S.fame+'</b></span>';
+  if(S.sect) n += '<span>'+esc(FACTIONS[S.sect.id].axis)+'<b class="gold">'+S.contrib+'</b></span>';
+  if(S.trade) n += '<span>商路<b class="gold">'+esc(FACTIONS.hs.short)+'</b></span>';
+  if(S.danPoison) n += '<span>丹毒<b class="red">'+S.danPoison+'</b></span>';
+  if(S.woundTurns>0) n += '<span>疗养<b class="red">'+S.woundTurns+'</b></span>';
+  $('h-nums').innerHTML = n;
+}
+
+function rankName(){
+  if(!S.sect) return '无门无派';
+  const F = FACTIONS[S.sect.id];
+  return F.n+' · '+F.ranks[clamp(S.sect.rank,0,F.ranks.length-1)];
+}
+function rankNext(){
+  if(!S.sect) return '';
+  const F = FACTIONS[S.sect.id];
+  if(S.sect.rank >= F.ranks.length-1) return '已至顶' ;
+  return '再 '+Math.max(0, F.need[S.sect.rank+1]-S.contrib);
+}
+
+function renderDrawer(){
+  const st = stats(true);
+  const rows = [];
+  const P = (a,b)=>'<div class="prow"><span>'+a+'</span><span>'+b+'</span></div>';
+
+  /* 禀赋 */
+  rows.push('<div class="sec"><div class="sec-h">禀 赋</div>'
+    + P('灵根', esc(S.rootName)+'<em>'+S.rootEl+' 属 · 修炼 ×'+S.rootMul.toFixed(2)+'</em>')
+    + P('根骨', S.bone+'<em>×'+S.boneMul.toFixed(2)+'</em>')
+    + P('道心', DAO[S.dao][0]+'<em>冲境 '+(DAO[S.dao][1]>=0?'+':'')+Math.round(DAO[S.dao][1]*100)+'%</em>')
+    + P('寿元', S.age+' / '+S.lifespan+'<em>余 '+lifeLeft()+' 载</em>')
+    + P('伤势累积', '气血上限 −'+Math.round(st.wound*100)+'%')
+    + '</div>');
+
+  /* 三维属性 */
+  rows.push('<div class="sec"><div class="sec-h">气 血 · 攻 防 · 战 力</div>'
+    + P('气血', S.hp+' / '+st.hpMax)
+    + P('攻击', st.atk+'<em>境界 '+st.baseA+' · 器 '+(Math.round(st.eqA*10)/10)+' · 功 '+(Math.round(st.abA*10)/10)+'</em>')
+    + P('防御', st.def+'<em>境界 '+st.baseD+' · 器 '+(Math.round(st.eqD*10)/10)+' · 功 '+(Math.round(st.abD*10)/10)+'</em>')
+    + P('气血上限', st.hpMax+'<em>境界 '+st.baseH+' · 器 '+(Math.round(st.eqH*10)/10)+' · 功 '+(Math.round(st.abH*10)/10)+'</em>')
+    + P('遁走', st.esc)
+    + P('战力（派生）', st.power+'<em>攻 加 防之半 加 血之一成</em>')
+    + '<div class="engine">bonus · 灵根 攻'+(Math.round(st.rbA*10)/10)+'/防'+(Math.round(st.rbD*10)/10)+'/血'+(Math.round(st.rbH*10)/10)
+      + ' · 根骨 攻'+ (Math.round(st.boneAtk*10)/10)+'/防'+(Math.round(st.boneDef*10)/10)+'/血×'+st.boneHp.toFixed(2)
+      + ' · 永久伤 ×'+(1-st.wound).toFixed(2)
+      + (S.atkBonus?' · 额外攻 '+S.atkBonus:'') + (S.defBonus?' · 额外防 '+S.defBonus:'') + '</div>'
+    + '</div>');
+
+  /* 功法 */
+  let ah = '';
+  if(S.arts.length){
+    S.arts.forEach(a=>{
+      const w = wxRel(S.rootEl, a.el);
+      ah += '<div class="prow"><span>'+esc(a.n)+'</span><span>'+ART_LV[a.lv]+'<em>'+esc(a.el)+'·'+esc(a.type)+' · '+WX_NAME[w]+'</em></span></div>';
+    });
+    const md = st.arts || [];
+    ah += '<div class="engine">'+ (md.length ? md.map(x=>esc(x.n)+' lv'+x.lv+' 攻'+(Math.round(x.atk*10)/10)+'/防'+(Math.round(x.def*10)/10)+'/血'+(Math.round(x.hp*10)/10)+' mul'+x.mul.toFixed(2)).join(' · ') : '—') +'</div>';
+  }else ah = '<div class="prow"><span>尚未入门</span><span></span></div>';
+  rows.push('<div class="sec"><div class="sec-h">功 法</div>'+ah+'</div>');
+
+  /* 装备 */
+  let eh = '';
+  SLOTS.forEach(sl=>{
+    const it = S.equip[sl[0]];
+    if(!it){ eh += '<div class="prow"><span>'+sl[1]+'</span><span style="color:var(--dim2)">空</span></div>'; return; }
+    const m = durMul(it);
+    const bits = [];
+    if(it.atk) bits.push('攻 '+Math.round(it.atk*m));
+    if(it.def) bits.push('防 '+Math.round(it.def*m));
+    if(it.hp)  bits.push('血 '+Math.round(it.hp*m));
+    if(it.esc) bits.push('遁 '+Math.round(it.esc*m));
+    eh += '<div class="prow"><span>'+esc(it.n)+'</span><span>'+(bits.join(' · ')||'—')
+        + '<em>'+GRADE_N[clamp(it.g,0,5)]+(it.dur?(' · '+DUR_N[clamp(it.dur,0,2)]):'')+'</em></span></div>';
+  });
+  const bh = S.bag.length
+    ? S.bag.map(it=>'<div class="prow"><span>'+esc(it.n)+'</span><span>'+GRADE_N[clamp(it.g,0,5)]+'<em>'+SLOT_N[it.slot]+'</em></span></div>').join('')
+    : '<div class="prow"><span>囊中空空</span><span></span></div>';
+  rows.push('<div class="sec"><div class="sec-h">器 物</div>'+eh
+    + '<div class="engine">行囊 '+S.bag.length+' / '+BAG_MAX+' · 槽位 '+SLOTS.filter(s=>S.equip[s[0]]).length+' / '+SLOTS.length+'</div>'+bh+'</div>');
+
+  /* 派系 */
+  let fh = '';
+  if(S.sect){
+    const F = FACTIONS[S.sect.id];
+    fh += P('门庭', F.n+' · '+F.ranks[clamp(S.sect.rank,0,F.ranks.length-1)]);
+    fh += P(F.axis, S.contrib+'<em>晋升 '+rankNext()+'</em>');
+    if(S.guard) fh += P('护法', S.guard+' 层');
+  }else fh = '<div class="prow"><span>无门无派</span><span><em>散修一路</em></span></div>';
+  if(S.trade) fh += P('生意', FACTIONS[S.trade].n);
+  let rh = '';
+  Object.keys(FACTIONS).forEach(k=>{
+    const v = factionRel(k);
+    rh += '<div class="prow"><span>'+FACTIONS[k].n+'</span><span>'+relWord(v)+'<em>'+(v>0?'+':'')+v+'</em></span></div>';
+  });
+  rows.push('<div class="sec"><div class="sec-h">门 庭 与 派 系</div>'+fh+rh+'</div>');
+
+  /* 人事 */
+  const rels = Object.keys(S.rel);
+  const relHtml = rels.length
+    ? rels.map(n=>'<div class="prow"><span>'+esc(n)+'</span><span>'+(S.rel[n]>=1?'友善':S.rel[n]<=-1?'嫌隙':'点头之交')+'</span></div>').join('')
+    : '<div class="prow"><span>尚无往来之人</span><span></span></div>';
+  rows.push('<div class="sec"><div class="sec-h">人 事</div>'+relHtml
+    + (S.debts?P('未了的人情', S.debts):'')
+    + (S.enemy?P('结下的仇怨', S.enemy):'')
+    + (S.fame?P('声望', S.fame):'')
+    + '</div>');
+
+  /* 地点 */
+  const L = LOCS[S.loc];
+  const locHtml = LOCS.map((X,i)=>
+    '<span class="lc '+(S.seen.indexOf(i)>=0?'on':'')+(S.loc===i?' here':'')+'">'+X.name+'</span>').join('');
+  rows.push('<div class="sec"><div class="sec-h">去 过 的 地 方</div>'
+    + '<div class="locs">'+locHtml+'</div>'
+    + '<div class="mini"><b>'+L.name+'</b> 常见威胁<br>'+L.foes+'</div>'
+    + '<div class="engine">qi='+L.qi+' · pw '+L.pw[0]+'–'+L.pw[1]+(L.own?(' · 地头 '+FACTIONS[L.own].n):'')+'</div>'
+    + '</div>');
+
+  $('dgrid').innerHTML = rows.join('');
+}
+
+/* ---------- 12. 叙事流（上一回合聚焦 · 手风琴） ---------- */
+function note(pri, txt){ S.chg.push({pri:pri, t:txt}); }
+
+function summaryText(){
+  const L = S.chg.slice().sort((a,b)=>a.pri-b.pri);
+  if(!L.length) return '无事发生';
+  return L.slice(0,3).map(x=>x.t).join(' · ');
+}
+function sealTurn(){
+  if(!turnBox) return;
+  const sm = turnBox.querySelector('summary');
+  if(!sm) return;
+  const head = turnBox._head || '';
+  sm.innerHTML = '<span class="ty">'+esc(head)+'</span>'
+    + (turnBox._card ? '<span class="tc">《'+esc(turnBox._card)+'》</span>' : '')
+    + '<span class="ts">'+summaryText()+'</span>';
+}
+function openTurn(label, sub, cardTitle){
+  const prev = document.querySelectorAll('.turn');
+  Array.prototype.forEach.call(prev, d=>{ d.open = false; });
+  if(turnBox) sealTurn();
+  const d = document.createElement('details');
+  d.className='turn'; d.open=true;
+  d._head = label+' · '+sub; d._card = cardTitle || '';
+  d.innerHTML = '<summary><span class="ty">'+esc(d._head)+'</span>'+(d._card?'<span class="tc">《'+esc(d._card)+'》</span>':'')+'</summary><div class="tbody"></div>';
+  logEl.appendChild(d);
+  turnBox = d;
+  S.chg = [];
+  logEl.scrollTop = logEl.scrollHeight;
+  return d.querySelector('.tbody');
+}
+function entry(cls, who, prose, engine){
+  if(!turnBox) return null;
+  const host = turnBox.querySelector('.tbody') || logEl;
+  const el = document.createElement('div');
+  el.className = 'entry' + (cls?' '+cls:'');
+  el.innerHTML = (who ? '<div class="who">'+who+'</div>' : '')
+               + (prose ? '<div class="prose serif">'+prose+'</div>' : '')
+               + (engine ? '<div class="engine">'+engine+'</div>' : '');
+  host.appendChild(el);
+  logEl.scrollTop = logEl.scrollHeight;
+  return el;
+}
+
+/* ---------- 13. 选项浮层 ---------- */
+function askChoice(title, desc, engHtml, opts, onPick){
+  CH = {opts:opts, onPick:onPick};
+  $('ch-title').textContent = title;
+  $('ch-desc').innerHTML    = desc || '';
+  $('ch-eng').innerHTML     = engHtml || '';
+  const box = $('ch-opts'); box.innerHTML='';
+  opts.forEach((o,i)=>{
+    const b = document.createElement('button');
+    b.innerHTML = esc(o.lb) + (o.d ? '<small>'+esc(o.d)+'</small>' : '');
+    if(o.dis){ b.className='dis'; b.disabled=true; }
+    else b.onclick = ()=>{ takeChoice(i); };
+    box.appendChild(b);
+  });
+  $('ov-ch').classList.remove('in');
+}
+function takeChoice(i){
+  if(!CH) return;
+  const cb = CH.onPick, opts = CH.opts;
+  if(!opts[i] || opts[i].dis) return;
+  CH = null;
+  $('ov-ch').classList.add('in');
+  cb(opts[i].k);
+}
+
+/* ---------- 14. 门控与抽卡 ---------- */
+function secName(){ return S.sect ? FACTIONS[S.sect.id].n : null; }
+function hasFac(id){ return (S.sect && S.sect.id===id) || S.trade===id; }
+
+/* 派系名 ⇄ id —— 两分支并存：既有卡写全名，FDR-007 新增卡写 id（P0-4） */
+function facIdOf(s){ return FID_BY_NAME[s] || (FACTIONS[s] ? s : null); }
+/* 入伙 / 改投卡的目标派系（由 ef.sectJoin 反查） */
+function joinTarget(c){
+  const e = (c && c.ef) || {};
+  if(e.sectJoin && typeof e.sectJoin==='string') return facIdOf(e.sectJoin);
+  if(e.sect===true) return 'qy';
+  return null;
+}
+/* 是否需要「改投确认」：返回被抛下的旧派系 id，无需确认则返回 null */
+function switchFrom(c){
+  const id = joinTarget(c);
+  if(!id || !S.sect) return null;      // 无门庭 → 正常入伙
+  if(S.sect.id===id)  return null;     // 已在此派
+  if(id==='hs')       return null;     // 商盟是生意不是门庭，可并存（D6）
+  return S.sect.id;
+}
+
+function eligible(c){
+  if(S.stage < (c.min||0)) return false;
+  if(c.max!=null && S.stage > c.max) return false;
+  if(c.loc && c.loc.indexOf(LOCS[S.loc].id) < 0) return false;
+  const s = c.sect;
+  if(s){
+    if(s==='in'){ if(!S.sect) return false; }
+    else if(s==='out'){ if(S.sect) return false; }
+    else if(s==='join'){                              // 入伙 / 改投：无门庭可入伙；已有别家门庭则走 askChoice 确认
+      const id = joinTarget(c);
+      if(!id || !FACTIONS[id]) return false;
+      if(S.sect && S.sect.id===id) return false;      // 已在此派，不再发入门卡
+      if(!S.sect && S.trade===id)  return false;      // 商盟已兼且尚未入门庭
+    }
+    else if(s.charAt(0)==='!'){ const id = facIdOf(s.slice(1)); if(id && hasFac(id)) return false; }
+    else { const id = facIdOf(s); if(!id || !hasFac(id)) return false; }
+  }
+  if(c.entry){
+    if(S.declined) return false;
+    if(S.noJoin && S.noJoin[c.t]) return false;       // 这张入门卡已被当面回绝过，不再反复劝
+  }
+  if(S.woundTurns>0 && (c.c==='战斗' || c.c==='危险')) return false;
+  return true;
+}
+
+function travelCard(i){
+  const L = LOCS[i];
+  return {id:-1, c:'地方', tier:'灵缘', t:'前往'+L.name, d:L.enter+'路不好走，你走了很久。',
+          f:'路是自己走出来的。', cost:'这一去，就是好几个月。', ef:{locate:L.id}, min:0, _travel:true};
+}
+function hostAmbushCard(){
+  const pool = CARDS.map((c,i)=>Object.assign({id:i},c))
+                    .filter(c=>c.c==='战斗' && eligible(c) && c.ef && c.ef.battle && c.ef.battle.ambush);
+  return pool.length ? pick(pool) : null;
+}
+
+function genCards(){
+  const recent = new Set();
+  S.memory.forEach(m=>m.ids.forEach(id=>recent.add(id)));
+  const all   = CARDS.map((c,i)=>Object.assign({id:i}, c)).filter(eligible);
+  const fresh = all.filter(c=>!recent.has(c.id));
+  const out=[], usedId=new Set(), usedCat=new Set();
+
+  if(S.nudge>0 && S.nextLoc!=null){
+    out.push(travelCard(S.nextLoc));
+    usedId.add(-1); usedCat.add('地方');
+    S.nudge--;
+  }
+
+  // 敌对地区的遭遇权重提升
+  const L = LOCS[S.loc];
+  let hostile = false;
+  if(L.own){ const v = factionRel(L.own); hostile = v <= -21; }
+  const drawFrom = pool=>{
+    const own0 = LOCS[S.loc].own;              // FDR-007：站在别家地盘上，这家人更愿意来搭话
+    const w = pool.map(c=>{
+      let v = TIER_W[c.tier] || 1;
+      if(hostile && c.c==='战斗') v *= (factionRel(L.own) <= -41 ? 3.0 : 1.8);
+      if(own0 && joinTarget(c)===own0) v *= 6; // 地盘所属派系的入门卡曝光提升
+      return v;
+    });
+    return pool[wpick(w)];
+  };
+
+  /* FDR-007：站在别家地盘上，这家人会主动来搭话 —— 与 travel 助推同构，冷却 HAIL_CD 回合 */
+  if(S.hailCd>0) S.hailCd--;
+  if(S.hailCd<=0 && L.own && out.length<3 && !usedCat.has('宗门')){
+    const hails = all.filter(c=>c.c==='宗门' && joinTarget(c)===L.own && !usedId.has(c.id));
+    if(hails.length){
+      const hit = drawFrom(hails);
+      usedId.add(hit.id); usedCat.add('宗门'); out.push(hit);
+      S.hailCd = HAIL_CD;
+    }
+  }
+
+  if(hostile){
+    const amb = hostAmbushCard();
+    if(amb && Math.random()<0.18){ usedId.add(amb.id); usedCat.add(amb.c); out.push(amb); }
+  }
+
+  const fill = src=>{
+    shuffle(CATS.slice()).forEach(cat=>{
+      if(out.length>=3 || usedCat.has(cat)) return;
+      const pool = src.filter(c=>c.c===cat && !usedId.has(c.id));
+      if(!pool.length) return;
+      const hit = drawFrom(pool);
+      usedId.add(hit.id); usedCat.add(cat); out.push(hit);
+    });
+  };
+  fill(fresh);
+  fill(all);
+  if(out.length<3){
+    const rest = fresh.concat(all);
+    rest.forEach(c=>{ if(out.length<3 && !usedId.has(c.id) && !usedCat.has(c.c)){ usedId.add(c.id); usedCat.add(c.c); out.push(c); } });
+    rest.forEach(c=>{ if(out.length<3 && !usedId.has(c.id)){ usedId.add(c.id); out.push(c); } });
+  }
+  return out.slice(0,3);
+}
+
+function engval(v){
+  if(v===true) return '是';
+  if(v===false) return '否';
+  if(typeof v==='number') return String(v);
+  if(typeof v==='string') return v;
+  return JSON.stringify(v);
+}
+function cardEng(c){
+  const e = c.ef||{};
+  const p = ['causeTag='+c.c, 'tier='+c.tier, 'realmCoef='+coef(),
+             'band='+(c.min||0)+'-'+(c.max==null?'∞':c.max),
+             'loc='+(c.loc?c.loc.join('/'):'任'), 'sectGate='+(c.sect||'任')];
+  if(e.cultivate) p.push('cultivateBase='+e.cultivate);
+  Object.keys(e).forEach(k=>{
+    if(k==='cultivate') return;
+    const v = e[k];
+    if(k==='equip' && v){
+      p.push('equip='+v.n+'[slot='+v.slot+',g='+v.g+',grade='+GRADE_N[clamp(v.g||0,0,5)]
+        +(v.atk!=null?',atk='+v.atk:'')+(v.def!=null?',def='+v.def:'')
+        +(v.hp!=null?',hp='+v.hp:'')+(v.esc!=null?',esc='+v.esc:'')+(v.spec?',spec='+v.spec:'')+']');
+      return;
+    }
+    if(k==='art' && v){ p.push('art='+v.n+'['+v.el+'/'+v.type+',lv='+(v.lv||0)+']'); return; }
+    if(k==='battle' && v){
+      p.push('battle='+v.foe+(v.pw?('[pw='+v.pw[0]+'–'+v.pw[1]+']'):('[scale=×'+v.scale+']'))
+        +'[loot='+v.loot+',flee='+(v.canFlee?'Y':'N')+(v.ambush?',ambush':'')+']');
+      return;
+    }
+    if(k==='heal' && v){ p.push('heal=+'+Math.round(v.pct*100)+'%hp'); return; }
+    if(k==='hpMax' && v){ p.push('hpMax='+(v.pct>0?'+':'')+Math.round(v.pct*100)+'%'); return; }
+    if(k==='hp' && v){ p.push('hp='+(v.pct>0?'+':'')+Math.round(v.pct*100)+'%'); return; }
+    if(k==='rel' && v){ p.push('rel='+v.n+(v.v>0?'+':'')+v.v); return; }
+    p.push(k+'='+engval(v));
+  });
+  return p.join(' · ');
+}
+
+function renderCards(){
+  const g = $('cgrid');
+  g.innerHTML='';
+  $('quota').textContent = '门控 · ' + STAGES[clamp(S.stage,0,STAGES.length-1)] + ' / ' + LOCS[S.loc].name
+    + ' / ' + (S.sect ? FACTIONS[S.sect.id].short : '无门无派');
+  cur.forEach(c=>{
+    const d = document.createElement('div');
+    d.className = 'card';
+    d.innerHTML =
+      '<div class="chead"><span class="cat">'+esc(c.c)+'</span><span class="tier t-'+c.tier+'">'+esc(c.tier)+'</span></div>'
+      + '<div class="ttitle serif">'+esc(c.t)+'</div>'
+      + '<div class="tdesc serif">'+esc(c.d)+'</div>'
+      + '<div class="textra"><div class="tflav serif">「'+esc(c.f||'')+'」</div><div class="tcost">'+esc(c.cost||'')+'</div></div>'
+      + '<div class="cfoot"><button class="more">细节</button><button class="pick">选 它</button></div>'
+      + '<div class="eng">'+esc(cardEng(c))+'</div>';
+    d.querySelector('.more').onclick = ()=>{ d.classList.toggle('ext'); };
+    d.querySelector('.pick').onclick = ()=>{ choose(c); };
+    g.appendChild(d);
+  });
+}
+
+/* ---------- 15. 器物 / 功法 发放 ---------- */
+function mkItem(spec){
+  const slot = spec.slot || 'weapon';
+  let g = spec.g==null ? 0 : clamp(spec.g,0,5);
+  const capG = (function(){ let mx=0; for(let i=0;i<GRADE_MIN.length;i++) if(S.stage>=GRADE_MIN[i]) mx=i; return mx; })();
+  if(g > capG) g = capG;
+  const G = G_TBL[g];
+  const r = ()=>rnd(0.85,1.15);
+  const it = {n:spec.n, slot:slot, g:g, atk:0, def:0, hp:0, esc:0, dur:0};
+  switch(slot){
+    case 'weapon':   it.atk = spec.atk!=null?spec.atk:Math.max(1,Math.round(G[0]*r())); break;
+    case 'armor':    it.def = spec.def!=null?spec.def:Math.max(1,Math.round(G[1]*r()));
+                     it.hp  = spec.hp !=null?spec.hp :Math.max(1,Math.round(G[2]*0.60*r())); break;
+    case 'treasure': it.atk = spec.atk!=null?spec.atk:Math.max(1,Math.round(G[0]*0.55*r()));
+                     it.def = spec.def!=null?spec.def:Math.max(1,Math.round(G[1]*0.35*r())); break;
+    case 'escape':   it.def = spec.def!=null?spec.def:Math.max(0,Math.round(G[1]*0.50*r()));
+                     it.esc = spec.esc!=null?spec.esc:Math.max(1,Math.round(G[3]*r())); break;
+    case 'ornament': it.hp  = spec.hp !=null?spec.hp :Math.max(1,Math.round(G[2]*0.80*r())); break;
+    default:         it.atk = spec.atk!=null?spec.atk:Math.max(1,Math.round(G[0]*r()));
+  }
+  if(spec.spec) it.spec = spec.spec;
+  return it;
+}
+function gradeDrop(tier){
+  const L = LOOT_TBL[tier] || LOOT_TBL['凡缘'];
+  const g = wpick(L.w);
+  const slots = ['weapon','armor','treasure','escape','ornament'];
+  const slot = pick(slots);
+  const mkName = ['铁口之物','旧锻之器','坊间法器','认主之器','古遗之宝','洞天之珍'][g];
+  return mkItem({n:mkName+'（'+SLOT_N[slot]+'）', slot:slot, g:g});
+}
+function itemLine(it){
+  const bits=[];
+  if(it.atk) bits.push('攻'+it.atk);
+  if(it.def) bits.push('防'+it.def);
+  if(it.hp)  bits.push('血'+it.hp);
+  if(it.esc) bits.push('遁'+it.esc);
+  return esc(it.n)+'［'+GRADE_N[clamp(it.g,0,5)]+' · '+SLOT_N[it.slot]+' · '+(bits.join(' ')||'无')+'］';
+}
+function bagRoom(){ return BAG_MAX - S.bag.length; }
+function sellItem(it){
+  const v = Math.round((GRADE_SELL[clamp(it.g,0,5)]||8) * DUR_MUL[clamp(it.dur||0,0,2)] * 0.4);
+  S.ss += v;
+  return v;
+}
+function destroyWeakest(){
+  if(!S.bag.length) return null;
+  let idx=0;
+  for(let i=1;i<S.bag.length;i++) if(itemVal(S.bag[i])<itemVal(S.bag[idx])) idx=i;
+  return S.bag.splice(idx,1)[0];
+}
+
+/* 获得器物：槽内为空即装上；已有则由玩家三选一取舍 */
+function giveEquip(spec, done){
+  const it = mkItem(spec);
+  const old = S.equip[it.slot];
+  const put = dest=>{
+    let soldOld=null, soldNew=null, melted=null;
+    if(old){
+      if(dest==='bag'){ if(bagRoom()>0) S.bag.push(old); else soldOld = sellItem(old); }
+      else if(dest==='sell') soldOld = sellItem(old);
+      else if(dest==='melt'){ S.mat += (old.g+1); melted = old; }
+    }
+    S.equip[it.slot] = it;
+    return {soldOld:soldOld, soldNew:soldNew, melted:melted};
+  };
+  if(!old){
+    S.equip[it.slot] = it; recomputeBound();
+    note(7, '得 '+esc(it.n)+'（'+GRADE_N[clamp(it.g,0,5)]+'）');
+    entry('', '', '你把'+esc(it.n)+'收在了身上。'+esc(SLOT_N[it.slot])+'有了正经的东西。',
+      'equip · '+itemLine(it)+' · slot='+it.slot);
+    return done ? done() : null;
+  }
+  // 三选一（不允许静默丢弃）
+  const opts = [
+    {k:'bag',  lb:'换上新的（旧件入囊）', d: bagRoom()>0 ? '旧的那件收进行囊，日后或许用得上。' : '行囊已满，这一项不可用。', dis: bagRoom()<=0},
+    {k:'sell', lb:'换上新的（旧件折价）', d:'把旧的那件折给坊市，换些灵石。'},
+    {k:'melt', lb:'换上新的（旧件熔炼）', d:'拆了旧的，取回几分灵材。'},
+    {k:'keep', lb:'不换（新件折价）',     d:'你使惯了手里那件，新的卖了换钱。'}
+  ];
+  askChoice('器 物 取 舍', '你手里已有'+esc(old.n)+'。'+esc(it.n)+'看着更好，可要换，旧的就得有个去处。',
+    '<div class="prow"><span>新得</span><span>'+esc(it.n)+'<em>'+GRADE_N[clamp(it.g,0,5)]+' · 估值 '+itemVal(it).toFixed(1)+'</em></span></div>'
+    + '<div class="prow"><span>原有</span><span>'+esc(old.n)+'<em>'+GRADE_N[clamp(old.g,0,5)]+' · 估值 '+itemVal(old).toFixed(1)+'</em></span></div>'
+    + '<div class="prow"><span>行囊</span><span>'+S.bag.length+' / '+BAG_MAX+'</span></div>',
+    opts,
+    k=>{
+      const L = [];
+      if(k==='keep'){
+        const v = sellItem(it);
+        L.push('灵石 <span class="pos">+'+v+'</span>');
+        note(6, '灵石 +'+v);
+        entry('', '', '你掂了掂'+esc(it.n)+'，最后还是把它折给了坊市。手里的旧物使惯了。',
+          'equip(skip) · '+itemLine(it)+' · 折价 +'+v+' 灵石');
+      }else{
+        const r0 = put(k);
+        L.push('换上 <span class="pos">'+esc(it.n)+'</span>');
+        if(r0.soldOld!=null) L.push('旧件折价 <span class="pos">+'+r0.soldOld+'</span>');
+        if(r0.melted)        L.push('熔炼旧件 <span class="pos">灵材 +'+(old.g+1)+'</span>');
+        note(7, '换 '+esc(it.n)+'（'+GRADE_N[clamp(it.g,0,5)]+'）');
+        entry('', '', '你把'+esc(it.n)+'换到了手上。旧的那一件，自有去处。',
+          'equip · '+itemLine(it)+' · 替换 '+esc(old.n)+(r0.soldOld!=null?(' · 折价 +'+r0.soldOld):'')+(r0.melted?(' · 灵材 +'+(old.g+1)):''));
+      }
+      recomputeBound();
+      if(L.length) entry('', '结算', '', L.join(' · '));
+      renderAll();
+      if(done) done();
+    });
+}
+
+function giveArt(spec, L){
+  const key = spec.n;
+  if(S.seenArt[key]){
+    const a = S.arts.filter(x=>x.n===key)[0];
+    if(a){ addArtExp(a, 10); L.push('重习 <span class="pos">'+esc(a.n)+'</span> 熟练 +10'); note(7,'习 '+esc(a.n)); return; }
+  }
+  let el = spec.el || '无', ty = spec.type || '养元';
+  if(!ART_TBL[ty]) ty = '养元';
+  const a = {n:key, el:el, type:ty, exp:0, lv:0, main:false};
+  const m0 = mainArt();
+  if(!m0) a.main = true;
+  else if(secArts().length >= 2){
+    const secs = secArts();
+    let wi=0; for(let i=1;i<secs.length;i++) if(secs[i].lv<secs[wi].lv) wi=i;
+    S.arts.splice(S.arts.indexOf(secs[wi]),1);
+    L.push('放下 <span class="neg">'+esc(secs[wi].n)+'</span>');
+  }
+  S.arts.push(a);
+  S.seenArt[key] = 1;
+  L.push('习得 <span class="pos">'+esc(a.n)+'</span>' + (a.main?'（主修）':'（兼修）'));
+  note(7, '得《'+esc(a.n)+'》');
+}
+function artLvOf(a){
+  let lv=0; for(let i=0;i<ART_EXP.length;i++) if(a.exp>=ART_EXP[i]) lv=i;
+  return lv;
+}
+function addArtExp(a, v){
+  if(!a) return 0;
+  const mul = WX_EXP[wxRel(S.rootEl, a.el)];
+  const before = a.lv;
+  a.exp += Math.max(1, Math.round(v*mul));
+  a.lv = artLvOf(a);
+  return a.lv - before;
+}
+
+/* ---------- 16. 战斗 ---------- */
+function foePw(b){
+  if(b.pw && b.pw.length===2) return Math.round(rnd(b.pw[0], b.pw[1]));
+  const sc = (typeof b.scale==='number') ? b.scale : 1.0;
+  return Math.max(4, Math.round(stats().power * sc));
+}
+function canAskHelp(){
+  if(S.sect) return true;
+  const ks = Object.keys(S.rel);
+  for(let i=0;i<ks.length;i++) if(S.rel[ks[i]]>=1) return true;
+  return false;
+}
+function beginBattle(card, done){
+  const b = card.ef.battle;
+  const pw = foePw(b);
+  const st = stats();
+  const foe = {n:b.foe, pw:pw, hp:Math.round(pw*1.80), atk:pw*0.62, def:pw*0.38};
+  const recovering = S.woundTurns>0;
+  entry('big','','洞口那头的'+esc(foe.n)+'站起来了。它比你想的难缠。', null);
+  const opts = [
+    {k:'fight', lb:'力战', d:'正面交手。打得赢就拿得全，也挨得实。'},
+    {k:'wit',   lb:'智取', d:'寻它的破绽，出手稍弱，受创亦轻。须得心境不乱。', dis: S.dao<2},
+    {k:'flee',  lb:'遁走', d:'不与它纠缠，抽身便走。走不成会被追着打。', dis: !b.canFlee},
+    {k:'help',  lb:'求援', d:'请人搭手。代价是欠下人情，或分去大半所得。', dis: !canAskHelp()},
+    {k:'sac',   lb:'祭器', d:'碎一件随身之物，换一阵锋芒。东西就没了。', dis: !(S.equip.weapon||S.equip.treasure)},
+    {k:'yield', lb:'示弱', d:'低头认输。丢人，丢钱，最重要的是——它还记着你。'}
+  ];
+  if(b.ambush) entry('sys','','这一回躲不过去。', 'ambush · '+cardEng(card));
+  askChoice('如 何 应 对', '面前是'+esc(foe.n)+'。你有片刻工夫可以想。',
+      '<div class="prow"><span>敌</span><span>'+esc(foe.n)+'</span></div>'
+    + '<div class="engine">敌 '+esc(foe.n)+' · ATK '+foe.atk.toFixed(1)+' / DEF '+foe.def.toFixed(1)+' / HP '+foe.hp+' · pw '+foe.pw+'</div>'
+    + '<div class="engine">你 ATK '+st.atk+' / DEF '+st.def+' / HP '+S.hp+'·'+st.hpMax+' / power '+st.power+'</div>'
+    + '<div class="engine">战力对照 '+st.power+' ↔ '+foe.pw+(recovering?(' · 伤势未愈 atk×0.70 def×0.70'):'')+'</div>',
+    opts, k=>{ runBattle(card, foe, k, recovering, done); });
+}
+
+function runBattle(card, foe, mode, recovering, done){
+  const b = card.ef.battle;
+  const L = [];
+  const lines = [];
+  let pk = 1.0, edmM = 1.0, pwScale = 1.0, extra = [];
+  const stFull = stats();            // 未碎器前的属性：祭器前两轮用这份
+
+  if(mode==='wit'){ pk = 0.75; edmM = 0.50; }
+  if(mode==='help'){
+    pwScale = 0.55;
+    if(S.sect && S.contrib>=20){ S.contrib -= 20; extra.push('派系 −20'); }
+    else if(S.sect){ S.contrib = Math.max(0, S.contrib-5); extra.push('人情 −1 · 贡献 −5'); }
+    else{
+      const ks = Object.keys(S.rel).filter(n=>S.rel[n]>=1);
+      if(ks.length){ S.rel[ks[0]] -= 1; extra.push('与'+ks[0]+' −1'); }
+    }
+  }
+  let brokeItem = null;
+  if(mode==='sac'){
+    const slot = S.equip.treasure ? 'treasure' : 'weapon';
+    brokeItem = S.equip[slot];
+    S.equip[slot] = null;
+  }
+  if(mode==='yield'){
+    const loss = Math.min(S.ss, Math.round(foe.pw*0.5));
+    S.ss -= loss;
+    S.fame = Math.max(0, S.fame-3);
+    S.dao = Math.max(0, S.dao-1);
+    S.enemy += 1;
+    entry('', '', '你把东西留下，低头走了。身后没有追来——它没有追的必要。',
+      '示弱 · 灵石 −'+loss+' · 声望 −3 · 道心 → '+DAO[S.dao][0]+' · 仇家 +1');
+    note(4, '示弱 · 灵石 −'+loss);
+    recomputeBound(); renderAll();
+    return done();
+  }
+  if(mode==='flee'){
+    const st0 = stats();
+    const p = clamp(0.35 + (st0.esc/(foe.pw*0.5))*0.30 + (function(){const m=mainArt(); return (m&&m.type==='遁法')?m.lv*0.06:0;})()
+              + (st0.def/Math.max(1,foe.atk))*0.15 - (b.ambush?0.20:0), 0.10, 0.85);
+    const roll = Math.random(), ok = roll < p;
+    entry('', '你选了：遁走', ok ? '你抽身往后退。它没有追上来——也许是不想，也许是没能。'
+                                : '你转身就跑，可它比你以为的快。',
+      'P_flee = '+Math.round(p*100)+'% · 骰 '+Math.round(roll*100)+' · '+(ok?'<span class="pos">脱身</span>':'<span class="neg">追击</span>'));
+    if(ok){
+      S.fame = Math.max(0, S.fame-1);
+      if(Math.random()<0.20) S.dao = Math.max(0, S.dao-1);
+      L.push('声望 <span class="neg">−1</span>');
+      note(4, '遁走 · 安然脱身');
+      entry('', '结算', '', L.join(' · '));
+      renderAll();
+      return done();
+    }
+    const dmg = Math.max(1, Math.round(foe.atk*rnd(0.85,1.15) - st0.def*0.5));
+    S.hp -= dmg;
+    const ssLoss = Math.min(S.ss, Math.round(foe.pw*0.5));
+    S.ss -= ssLoss; S.fame = Math.max(0, S.fame-2);
+    let daoLine = '';
+    if(Math.random()<0.30){ S.dao = Math.max(0, S.dao-1); daoLine = ' · 道心 → '+DAO[S.dao][0]; }
+    entry('', '', '背心上挨了一下，你还手不得，只能跑。',
+      '追击 · 气血 <span class="neg">−'+dmg+'</span> · 灵石 <span class="neg">−'+ssLoss+'</span> · 声望 <span class="neg">−2</span>'+daoLine);
+    note(3, '遁走失败 · 气血 −'+dmg);
+    recomputeBound();
+    if(S.hp<=0){ S.hp=0; note(4, '遁走不成 · 毙于'+esc(foe.n)); renderAll(); return endGame('battle'); }
+    renderAll();
+    if(S.lifespan<=S.age){ note(2, '寿元耗尽'); return endGame('dead'); }
+    return done();
+  }
+
+  // 正常交手
+  const st0 = stats();
+  let pAtk0 = st0.atk, pDef0 = st0.def;
+  if(recovering){ pAtk0 *= 0.7; pDef0 *= 0.7; }
+  // 祭器：前两轮沿用碎器前的攻击，之后按新的（更低的）攻击结算
+  let atkFull = stFull.atk; if(recovering) atkFull *= 0.7;
+  let eAtkE = foe.atk*pwScale, eDefE = foe.def*edmM, eHpE = Math.round(foe.hp*pwScale);
+  let round = 0, critR = 0.10, missR = 0.08;
+  const m0 = mainArt();
+  if(S.rootEl==='火') critR += 0.03;
+  if(m0 && m0.type==='攻伐' && m0.lv>=2) critR += 0.02;
+  if(m0 && m0.type==='遁法') missR = Math.max(0, missR - m0.lv*0.015);
+
+  if(brokeItem){
+    entry('', '', '你把'+esc(brokeItem.n)+'捏在手里，然后用力一握。它断了——那一瞬间你身上腾起一股劲。',
+      '祭器 · '+esc(brokeItem.n)+' 碎裂 · 前 2 轮 ATK ×1.60');
+  }
+  const modeText = {fight:'力战', wit:'智取', help:'求援', sac:'祭器'}[mode] || mode;
+  entry('', '你选了：'+modeText, '两下就撞在了一处。',
+    'K_p='+pk+' · 敌 DEF ×'+edmM+' · 敌 pw ×'+pwScale+(extra.length?' · '+extra.join(' · '):''));
+
+  while(round < R_MAX){
+    round++;
+    const kp = (mode==='sac' && round<=2) ? pk*1.60 : pk;
+    let curAtk = (mode==='sac' && round<=2) ? atkFull : pAtk0;
+    let crit=false, miss=false;
+    let r1 = Math.random();
+    if(r1 < critR) crit = true; else if(r1 > 1-missR) miss = true;
+    let dp = Math.max(1, curAtk*kp*rnd(0.85,1.15) - eDefE*0.5);
+    if(crit) dp *= 1.60;
+    if(miss) dp *= 0.20;
+    dp = Math.max(1, Math.round(dp));
+    eHpE -= dp;
+
+    let cen = '';
+    if(crit) cen='暴击 ×1.60 → ';
+    if(miss) cen='失手 ×0.20 → ';
+    if(eHpE<=0){
+      lines.push('轮'+round+' 你 −'+dp+' → 敌倒 '+cen);
+      break;                                     // 胜负已分，过程统一在下方输出
+    }
+    let de = Math.max(1, Math.round(eAtkE*rnd(0.85,1.15) - pDef0*0.5));
+    S.hp -= de;
+    lines.push('轮'+round+' 你 −'+dp+' → 敌 '+Math.max(0,eHpE)+' ｜ 敌 −'+de+' → 你 '+Math.max(0,S.hp)+' '+cen);
+    if(S.hp<=0){ S.hp=0; break; }
+  }
+
+  const resolved = eHpE<=0 ? 'win' : (S.hp<=0 ? 'lose' : 'stall');
+  const ratio = clamp(S.hp/Math.max(1,st0.hpMax), 0, 1);
+  entry('', '交手经过', '', '<div class="engine">'+lines.join('<br>')+'</div>');
+  return afterBat(ratio, foe, card, done, [], resolved, mode);
+}
+
+function afterBat(ratio, foe, card, done, tags, resolved, mode){
+  const b = card.ef.battle || {};
+  const L = [];
+  const outcome = resolved || 'stall';            // 'win' | 'lose' | 'stall'
+  const win = (outcome==='win');
+
+  if(S.hp<=0 || outcome==='lose'){
+    S.hp = 0;
+    note(4, '战死于'+esc(foe.n));
+    entry('big','','你倒下了。最后看见的是它低下来的脸。', '<span class="neg">hp ≤ 0 · 终局 T1 战死</span>');
+    renderAll();
+    return endGame('battle');
+  }
+
+  let lootMul = 1.0;
+  if(mode==='wit') lootMul = 0.6;
+  if(mode==='help') lootMul = 0.4;
+  if(outcome==='stall') lootMul = Math.min(lootMul, 0.3);
+
+  // 后果分档
+  const st0 = stats();
+  let tier5 = ratio>=0.80 ? 0 : ratio>=0.45 ? 1 : ratio>=0.15 ? 2 : 3;
+  if(outcome==='stall' && tier5<2) tier5 = 1;
+  const words = ['无伤','轻伤','重伤','濒死'];
+  const prose = [
+    '你抖了抖袖子，什么也没缺。',
+    '身上添了几道口子，走得动，也就算了。',
+    '你赢了，可你站不住了。血顺着裤管往下淌，一步比一步沉。',
+    '你最后是自己爬出来的。那一路上，你数不清自己歇了多少回。'
+  ];
+  const tIcon = ['','','',''];
+  if(tier5>=2){
+    if(tier5===2){ S.wound = clamp(S.wound+0.08,0,0.50); S.woundTurns = Math.max(S.woundTurns, ri(1,3)); }
+    else         { S.wound = clamp(S.wound+0.15,0,0.50); S.woundTurns = Math.max(S.woundTurns, ri(2,4));
+                   if(Math.random()<0.50) S.dao = Math.max(0, S.dao-1); }
+    const ll = tier5===2 ? ri(1,3) : ri(4,8);
+    S.lifespan -= ll;
+    L.push('寿元 <span class="neg">−'+ll+' 载</span>');
+    L.push('气血上限 <span class="neg">−'+(tier5===2?8:15)+'%</span>');
+    L.push('疗养 <span class="neg">'+S.woundTurns+' 回合</span>');
+    note(3, words[tier5]+' · 寿元 −'+ll+' 载');
+    // 装备受损
+    const worn = [];
+    SLOTS.forEach(sl=>{ if(S.equip[sl[0]]) worn.push(sl[0]); });
+    if(worn.length){
+      const sk = pick(worn); const it = S.equip[sk];
+      const before = it.dur||0;
+      if(before>=2){ S.equip[sk]=null; L.push(esc(it.n)+' <span class="neg">碎裂</span>'); note(7, esc(it.n)+'碎裂'); }
+      else { it.dur = before+1; L.push(esc(it.n)+' <span class="neg">'+DUR_N[it.dur]+'</span>'); }
+    }
+  }else{
+    note(3, words[tier5]);
+  }
+  entry('big','', win
+      ? (tier5<=1 ? '它倒了。你站在原地喘了一会儿，然后才敢走过去。' : prose[tier5])
+      : '谁也没赢。这样耗下去，先撑不住的一定是你——你先松了手。',
+    words[tier5]+' · hp '+S.hp+'/'+st0.hpMax+' = '+Math.round(ratio*100)+'% · '+(win?'<span class="pos">胜</span>':'<span class="neg">僵持</span>')
+    + (tier5>=2?(' · 伤势累积 '+Math.round(S.wound*100)+'%'):''));
+
+  // 功法熟练（战斗来源）
+  if(win){
+    const mv = mainArt();
+    if(mv){
+      const diff = clamp((foe.pw/Math.max(1,st0.power)-1), 0, 2);
+      const base  = diff>0.8?12 : diff>0.4?8 : diff>0?5 : 3;
+      const up = addArtExp(mv, base);
+      L.push('主修熟练 <span class="pos">+'+Math.round(base*WX_EXP[wxRel(S.rootEl,mv.el)])+'</span>'+(up>0?(' 晋 '+ART_LV[mv.lv]):''));
+      if(up>0) note(7, '《'+esc(mv.n)+'》→'+ART_LV[mv.lv]);
+    }
+  }
+
+  // 战利品
+  const LT = LOOT_TBL[b.loot] || LOOT_TBL['凡缘'];
+  let got = [];
+  if(win || outcome==='stall'){
+    const sl = Math.round(ri(LT.ss[0], LT.ss[1]) * lootMul);
+    if(sl>0){ S.ss += sl; got.push('灵石 +'+sl); }
+    const hb = Math.round(ri(LT.herb[0], LT.herb[1]) * lootMul);
+    if(hb>0){ S.herb += hb; got.push('药材 +'+hb); }
+    const ma = Math.round(ri(LT.mat[0], LT.mat[1]) * lootMul);
+    if(ma>0){ S.mat += ma; got.push('灵材 +'+ma); }
+    const fa = Math.round(LT.fame * lootMul);
+    if(fa>0){ S.fame += fa; got.push('声望 +'+fa); }
+    if(Math.random() < LT.drop*lootMul){
+      const it = gradeDrop(b.loot);
+      if(bagRoom()>0){ S.bag.push(it); got.push('得 '+esc(it.n)+'（'+GRADE_N[it.g]+'）'); note(7,'战利 '+esc(it.n)); }
+      else{
+        const w = destroyWeakest();
+        const v = sellItem(w||it);
+        if(w){ S.bag.push(it); got.push('囊满，折去'+esc(w.n)+' 得 '+v+' 灵石'); }
+        else got.push('囊满，'+esc(it.n)+'折价 '+v+' 灵石');
+        S.ss += v;
+      }
+    }
+    if(win && Math.random() < (LOOT_ART[b.loot]||0)){
+      const REST = CARDS.filter(c=>c.c==='功法' && eligible(c) && c.ef && c.ef.art);
+      if(REST.length){
+        const c2 = pick(REST);
+        const sub = [];
+        giveArt(c2.ef.art, sub);
+        got.push('功法残篇 · '+sub.join(' '));
+      }
+    }
+  }
+  if(got.length){
+    note(6, got.slice(0,2).join(' · '));
+    entry('', '', '你把它翻了个遍。', '<span class="pos">'+got.join(' · ')+'</span>'+(lootMul<1?(' · 战利品 ×'+lootMul):''));
+  }
+  if(L.length) entry('', '结算', '', L.join(' · '));
+
+  recomputeBound();
+  if(S.lifespan <= S.age){ renderAll(); return endGame('dead'); }
+  renderAll();
+  return done();
+}
+
+/* ---------- 17. 大境界突破 ---------- */
+function brkTerms(force){
+  const st = S.stage;
+  const base_ = st===9?0.42 : st===12?0.32 : 0.24;
+  const daoM  = DAO[S.dao][1];
+  const boneM = (S.bone-50)/100*0.20;
+  const rootM = (typeof S.rootPtr==='number') ? S.rootPtr : (P_ROOTSTEP[S.rootGrade]||0);
+  const m0 = mainArt();
+  const artM = m0 ? [0,0.02,0.05,0.08,0.12][clamp(m0.lv,0,4)] : -0.05;
+  const hasDan = S.pill>0;
+  const danM = hasDan ? 0.10 : -0.10;
+  let guardM = -0.10, guardTxt = '无人护法';
+  if(S.sect){
+    if(S.sect.rank>=3){ guardM = 0.08; guardTxt = '长老护法'; }
+    else { guardM = 0.04; guardTxt = '同门护法'; }
+  }
+  if(S.guard>0){ guardM = Math.min(0.08, guardM + 0.06*S.guard); guardTxt += '＋阵法'; }
+  const qi = LOCS[S.loc].qi;
+  const qiM = qi>=60 ? 0.05 : qi<30 ? -0.05 : 0;
+  const left2 = lifeLeft();
+  const ageM = left2<=10 ? -0.10 : left2>=60 ? 0.05 : 0;
+  const tries = S.breakTry[st]||0;
+  const tryM  = tries>=2 ? 0.05*(tries-1) : 0;            // 第 3 次起 +5%/次（D3 推荐值）
+  let sum = base_+daoM+boneM+rootM+artM+danM+guardM+qiM+ageM+tryM;
+  if(force) sum *= 0.5;
+  const p = clamp(sum, 0.05, 0.85);
+  return {st:st, base_:base_, daoM:daoM, boneM:boneM, rootM:rootM, artM:artM, hasDan:hasDan, danM:danM,
+          guardM:guardM, guardTxt:guardTxt, qi:qi, qiM:qiM, left2:left2, ageM:ageM, tries:tries, tryM:tryM,
+          p:p, m0:m0};
+}
+function brkWords(p){ return p>=0.65 ? '根基扎实' : p>=0.25 ? '看运气' : '凶险'; }
+function brkEngine(t){
+  return '<div class="prow"><span>把握</span><span>'+brkWords(t.p)+'</span></div>'
+    + '<div class="engine">P = base '+Math.round(t.base_*100)+'% + 道心 '+Math.round(t.daoM*100)+'% + 根骨 '+Math.round(t.boneM*100)
+    + '% + 灵根 '+Math.round(t.rootM*100)+'% + 功法 '+Math.round(t.artM*100)+'% + 丹药 '+Math.round(t.danM*100)
+    + '% + 护法 '+Math.round(t.guardM*100)+'% + 地脉 '+Math.round(t.qiM*100)+'% + 寿元 '+Math.round(t.ageM*100)
+    + '% + 屡败 '+Math.round(t.tryM*100)+'% → <b>'+Math.round(t.p*100)+'%</b></div>';
+}
+function promptBreakthrough(done){
+  const t = brkTerms(false);
+  const toStage = STAGES[clamp(S.stage+1,0,STAGES.length-1)];
+  entry('big','', BIG[S.stage]+' 的关口横在你面前。你闭了关。', null);
+  const opts = [
+    {k:'go',    lb:'冲 关',   d: t.hasDan ? '服一颗丹，把那口气顶上去。' : '手上没有破境丹，这一冲要硬来。', dis: S.breakCd>0},
+    {k:'force', lb:'强 行 冲 关', d:'不管那道伤，也不管时候对不对。把握减半，代价加倍。'},
+    {k:'wait',  lb:'按 捺 不 动', d:'再攒一攒。关口不会跑，寿元会。'}
+  ];
+  askChoice('冲 境 · '+toStage, '你的把握——'+brkWords(t.p)+'。这一步迈出去，就收不回来了。',
+    brkEngine(t)
+    + '<div class="engine">冷却 '+(S.breakCd>0?(S.breakCd+' 年'):'无')+' · 余寿 '+lifeLeft()+' 载 · 主修 '
+      + (t.m0?(esc(t.m0.n)+' · '+ART_LV[t.m0.lv]):'无（根基不齐）')+' · 已冲 '+(S.breakTry[S.stage]||0)+' 次</div>',
+    opts, k=>{
+      if(k==='wait'){
+        entry('', '', '你把那口气又压了回去。来日方长——如果还有来日。',
+          '放弃冲境 · 修为 '+S.progress+'/'+stepText()+' 封顶保存');
+        note(1, '按捺不动');
+        renderAll();
+        return done();
+      }
+      doBreakthrough(k==='force', done);
+    });
+}
+function doBreakthrough(force, done){
+  const st = S.stage;
+  const t = brkTerms(force);
+  const roll = Math.random(), ok = roll < t.p;
+  const F = BRK_FAIL[st] || BRK_FAIL[9];
+  let consumed = false;
+  if(t.hasDan){ S.pill--; consumed = true; }
+  let eng = brkEngine(t) + '<div class="engine">骰 '+Math.round(roll*100)+' → <b>'+(ok?'成功':'失败')+'</b>'
+          + (consumed?' · 服丹 ×1':'') + (force?' · 强行 ×0.50':'') + '</div>';
+
+  S.breakTry[st] = (S.breakTry[st]||0) + 1;
+
+  if(ok){
+    const oldCap = S.lifespan;
+    S.progress = Math.max(0, S.progress - (isFinite(curStep())?curStep():0));
+    S.stage = Math.min(STAGES.length-1, st+1);
+    S.lifespan = Math.max(S.lifespan, LIFE_CAP[S.stage]);
+    S.wound = clamp(S.wound - 0.05, 0, 0.50);
+    S.breakCd = 0;
+    let guardLife = '';
+    if(S.lifespan <= S.age){ S.lifespan = S.age+5; guardLife = '吊住一口气 · '; }
+    recomputeBound();
+    entry('big','', '通了。丹田里那口气忽然落了地，落进了一片你从没到过的地方。', eng);
+    entry('sys','','境界提升 → '+STAGES[S.stage]+' ｜ 寿元上限 '+oldCap+' → '+S.lifespan+' 载'
+      + (guardLife?'（'+guardLife+'）':''), '旧伤痊愈 −5% · 永久伤累计 '+Math.round(S.wound*100)+'%');
+    note(1, '冲境成功 → '+STAGES[S.stage]);
+    checkLoc(); renderAll();
+    return done();
+  }
+
+  // 失败
+  const stepv = isFinite(curStep()) ? curStep() : 0;
+  S.progress = Math.round(stepv * F.back);
+  S.lifespan += F.life;
+  S.wound = clamp(S.wound + Math.abs(F.hp), 0, 0.50);
+  S.dao = Math.max(0, S.dao-1);
+  S.breakCd = F.cd;
+  let extra = [];
+  if(!t.hasDan){ S.lifespan -= 3; extra.push('无丹强冲 −3 载'); }
+  if(t.left2 <= 5){ S.lifespan -= 3; extra.push('寿元不足仍冲 −3 载'); }
+  if(force){ S.lifespan -= 8; S.wound = clamp(S.wound+0.10,0,0.50); extra.push('强行 −8 载 −10% 气血上限'); }
+  if(Math.random() < F.fire){
+    S.progress = Math.max(0, Math.round(S.progress*0.90));
+    extra.push('走火入魔 修为 −10%');
+  }
+  if(F.dur){
+    const worn = SLOTS.map(s=>s[0]).filter(k=>S.equip[k]);
+    if(worn.length){
+      const sk = pick(worn), it = S.equip[sk];
+      if((it.dur||0)>=2){ S.equip[sk]=null; extra.push(esc(it.n)+'碎裂'); }
+      else { it.dur=(it.dur||0)+1; extra.push(esc(it.n)+DUR_N[it.dur]); }
+    }
+  }
+  if(!mainArt()){ S.progress = Math.max(0, Math.round(S.progress*0.90)); extra.push('无根之木 修为 −10%'); }
+  const after = stats();
+  if(S.hp > after.hpMax) S.hp = after.hpMax;
+  entry('big','', '没通。那口气冲上去，又折了回来，撞得你五脏发颤。你还停在'+STAGES[st]+'。', eng);
+  entry('sys','','修为回退至 '+Math.round(F.back*100)+'% ｜ 寿元 '+F.life+' 载 ｜ 气血上限 −'+Math.round(Math.abs(F.hp)*100)
+    + '% ｜ 道心 → '+DAO[S.dao][0]+' ｜ 冷却 '+F.cd+' 年',
+    (extra.length?('额外 · '+extra.join(' · ')+' · '):'')+'D3 屡败补偿 · 已冲 '+(S.breakTry[st]||0)+' 次');
+  note(1, '冲境失败 · 寿元 '+F.life+' 载');
+  renderAll();
+  if(S.lifespan <= S.age){ return endGame('gate'); }
+  return done();
+}
+
+/* ---------- 18. 结算一张卡 ---------- */
+function applyCard(c){
+  const e = c.ef || {};
+  const L = [];
+  const st0 = stats();
+
+  if(e.cultivate){
+    let base = e.cultivate;
+    if(S.woundTurns>0) base *= 0.5;
+    if(base>0){
+      const gain = Math.max(1, Math.round(base * coef() * S.rootMul * S.boneMul * st0.cult * poisonMul() * rnd(0.9,1.1)));
+      S.progress += gain;
+      L.push('修为 <span class="pos">+'+gain+'</span>');
+      note(5, '修为 +'+gain);
+    }else{
+      S.progress = Math.max(0, S.progress + Math.round(base*coef()));
+      L.push('修为 <span class="neg">'+Math.round(base*coef())+'</span>');
+    }
+  }
+  if(e.progressPct){
+    const loss = Math.round((isFinite(curStep())?curStep():200)*Math.abs(e.progressPct));
+    S.progress = Math.max(0, S.progress-loss);
+    L.push('修为 <span class="neg">−'+loss+'</span>');
+  }
+  if(e.ss){ S.ss = Math.max(0, S.ss+e.ss); L.push('灵石 '+signed(e.ss)); note(6,'灵石 '+(e.ss>0?'+':'')+e.ss); }
+  if(e.herb){ S.herb = Math.max(0, S.herb+e.herb); L.push('药材 '+signed(e.herb)); }
+  if(e.material){ S.mat = Math.max(0, S.mat+e.material); L.push('灵材 '+signed(e.material)); note(6,'灵材 +'+e.material); }
+  if(e.pill){ S.pill = Math.max(0, S.pill+e.pill); L.push('丹药 '+signed(e.pill)); }
+  if(e.fame){ S.fame = Math.max(0, S.fame+e.fame); L.push('声望 '+signed(e.fame)); }
+  if(e.contrib){
+    S.contrib = Math.max(0, S.contrib+e.contrib);
+    L.push(esc(FACTIONS[S.sect?S.sect.id:'qy'].axis)+' '+signed(e.contrib));
+    checkRank(L);
+    note(8, '贡献 '+(e.contrib>0?'+':'')+e.contrib);
+  }
+  if(e.danPoison){ S.danPoison = Math.max(0, S.danPoison+e.danPoison); L.push('丹毒 '+signed(e.danPoison)); }
+  if(e.debts){ S.debts += e.debts; L.push('添了一桩 <span class="neg">未了的人情</span>'); }
+  if(e.enemy){ S.enemy += e.enemy; L.push('多了一个 <span class="neg">仇家</span>'); }
+  if(e.rel){
+    const n = e.rel.n; S.rel[n] = (S.rel[n]||0) + e.rel.v;
+    L.push('与 <span class="pos">'+esc(n)+'</span> 的关系 '+signed(e.rel.v));
+  }
+  if(e.atk){ S.atkBonus += e.atk; L.push('攻击 <span class="pos">+'+e.atk+'</span>'); }
+  if(e.def){ S.defBonus += e.def; L.push('防御 <span class="pos">+'+e.def+'</span>'); }
+  if(e.guard){ S.guard += e.guard; L.push('护法 <span class="pos">+'+e.guard+'</span>'); }
+  if(e.rep && e.rep.id){ S.rep[e.rep.id] = (S.rep[e.rep.id]||0) + (e.rep.v||0); L.push('派系声望 '+signed(e.rep.v)); }
+  if(e.lifespan){
+    S.lifespan += e.lifespan;
+    L.push('寿元 <span class="'+(e.lifespan>0?'pos':'neg')+'">'+(e.lifespan>0?'+':'')+e.lifespan+' 载</span>');
+    note(2, '寿元 '+(e.lifespan>0?'+':'')+e.lifespan+' 载');
+  }
+  if(e.dao){
+    const b0 = S.dao;
+    S.dao = clamp(S.dao+e.dao, 0, DAO.length-1);
+    if(S.dao!==b0) L.push('道心 <span class="'+(e.dao>0?'pos':'neg')+'">'+DAO[b0][0]+' → '+DAO[S.dao][0]+'</span>');
+    note(8, '道心 → '+DAO[S.dao][0]);
+  }
+  if(e.art){ giveArt(e.art, L); }
+  if(e.artExp){
+    const mv = mainArt() || S.arts[0];
+    const v0 = (typeof e.artExp==='number') ? e.artExp : (e.artExp.v||8);
+    if(mv){
+      const up = addArtExp(mv, v0);
+      L.push('《'+esc(mv.n)+'》熟练 <span class="pos">+'+Math.round(v0*WX_EXP[wxRel(S.rootEl,mv.el)])+'</span>'+(up>0?(' 晋 '+ART_LV[mv.lv]):''));
+      if(up>0 && mv.type==='养元'){
+        if(mv.lv===3){ S.lifespan += 8; L.push('养元圆满 <span class="pos">寿元 +8 载</span>'); note(2,'寿元 +8 载'); }
+        if(mv.lv===4){ S.lifespan += 12; L.push('养元化境 <span class="pos">寿元 +12 载</span>'); note(2,'寿元 +12 载'); }
+      }
+      note(7, '《'+esc(mv.n)+'》熟练 +'+v0);
+    }else L.push('无门径可归，白白磨了一场');
+  }
+  if(e.arts){                                     // 旧字段：术法式数 → 主修熟练
+    const mv = mainArt() || S.arts[0];
+    const v0 = e.arts*12;
+    if(mv){
+      const up = addArtExp(mv, v0);
+      L.push('术法精进 <span class="pos">+'+Math.round(v0*WX_EXP[wxRel(S.rootEl,mv.el)])+'</span>'+(up>0?(' 晋 '+ART_LV[mv.lv]):''));
+      note(7, '术法精进');
+    }else L.push('习得零散术法，尚无门径可归');
+  }
+  if(e.mainArt){                                  // 旧字段
+    const mul = OLD_ART[e.mainArt] || ['无','养元'];
+    giveArt({n:e.mainArt, el:mul[0], type:mul[1]}, L);
+  }
+  if(e.hp && e.hp.pct){
+    const st = stats();
+    const d = Math.round(st.hpMax*e.hp.pct);
+    S.hp = Math.max(1, Math.min(st.hpMax, S.hp + d));
+    L.push('气血 <span class="'+(d>0?'pos':'neg')+'">'+(d>0?'+':'')+d+'</span>');
+  }
+  if(e.hpMax && e.hpMax.pct){
+    const d0 = e.hpMax.pct;
+    if(d0<0){ S.wound = clamp(S.wound + Math.abs(d0), 0, 0.50); }
+    else    { S.wound = clamp(S.wound - Math.abs(d0), 0, 0.50); }
+    L.push('气血上限 <span class="'+(d0>0?'pos':'neg')+'">'+(d0>0?'+':'')+Math.round(d0*100)+'%</span>');
+    note(3, '气血上限 '+(d0>0?'+':'')+Math.round(d0*100)+'%');
+  }
+  if(e.heal && e.heal.pct){
+    const st = stats();
+    const mul = 1 + (S.rootEl==='水'?0.15:0) + st.healB;
+    const g = Math.round(st.hpMax*e.heal.pct*mul);
+    S.hp = Math.min(st.hpMax, S.hp + g);
+    L.push('气血 <span class="pos">+'+g+'</span>');
+    note(3, '疗伤 +'+g);
+  }
+  if(e.cure){
+    S.woundTurns = 0;
+    L.push('伤势稳住了（疗养清零）');
+  }
+  if(e.wound){
+    const w = {light:1, heavy:2, mortal:3}[e.wound];
+    if(w){
+      if(w===2){ S.wound=clamp(S.wound+0.08,0,0.50); S.woundTurns=Math.max(S.woundTurns,ri(1,3)); }
+      if(w===3){ S.wound=clamp(S.wound+0.15,0,0.50); S.woundTurns=Math.max(S.woundTurns,ri(2,4)); }
+      L.push('伤势 · '+['','轻伤','重伤','濒死'][w]);
+      note(3, ['','轻伤','重伤','濒死'][w]);
+    }
+  }
+  if(e.sect===true || e.sectJoin){
+    const nm = (e.sectJoin && typeof e.sectJoin==='string') ? e.sectJoin : '青云宗';
+    joinFaction(facIdOf(nm) || 'qy', L, !!S.swFrom);
+    S.swFrom = null;                                // 一次性凭证：仅本次结算视为「改投」
+  }
+  if(e.locate!=null){
+    const i = LOC_INDEX[e.locate];
+    if(i!=null && i!==S.loc){
+      S.loc = i;
+      if(S.seen.indexOf(i)<0) S.seen.push(i);
+      if(S.nextLoc===i){ S.nextLoc=null; S.nudge=0; }
+      L.push('身在 <span class="pos">'+LOCS[i].name+'</span>');
+    }
+  }
+  if(c.c==='抉择' && c.t==='散修的路') S.declined = true;
+  return L;
+}
+
+function checkRank(L){
+  if(!S.sect) return;
+  const F = FACTIONS[S.sect.id];
+  while(S.sect.rank < F.ranks.length-1 && S.contrib >= F.need[S.sect.rank+1]){
+    S.sect.rank++;
+    L.push('门庭晋升 · <span class="pos">'+F.ranks[S.sect.rank]+'</span>');
+    note(8, FACTIONS[S.sect.id].n+' → '+F.ranks[S.sect.rank]);
+  }
+}
+/* 改投的代价：原派系贡献清零 + 声望受损 + 与原派系敌对上升。
+   只在 askChoice 确认后调用 —— 不得静默发生（FDR-007 P0-2） */
+function switchCost(from, L){
+  const F = FACTIONS[from];
+  const dF = Math.min(SWITCH_COST.fame, S.fame);
+  S.fame = Math.max(0, S.fame - SWITCH_COST.fame);
+  S.rep[from] = (S.rep[from]||0) + SWITCH_COST.rep;      // 负值 → 与原派系敌对上升
+  L.push('<span class="neg">改投代价</span> · 声望 −'+dF+' · '+esc(F.n)+'敌对上升');
+  note(8, '改投代价 · 离 '+F.n);
+}
+
+/* id 派系；isSwitch=true 表示这是跨门庭的改投（已确认），须付代价 */
+function joinFaction(id, L, isSwitch){
+  if(!FACTIONS[id]) return;
+  const F = FACTIONS[id];
+  const from = S.sect ? S.sect.id : null;
+
+  /* D6：商盟是生意不是门庭，可与另一派系并存 —— 本派贡献不该被清零 */
+  if(id==='hs' && from && from!=='hs'){
+    S.trade = 'hs';
+    L.push('兼了 <span class="pos">'+F.n+'</span> 的生意 · '+F.ranks[0]+'<em>'+esc(FACTIONS[from].n)+' 未退</em>');
+    note(8, '兼 '+F.n);
+    return;
+  }
+  const hadCon  = S.contrib;                                   // 记录要在改动 S.sect 之前取
+  const hadRank = from ? clamp(S.sect.rank, 0, FACTIONS[from].ranks.length-1) : 0;
+  if(from==='hs' && id!=='hs'){ S.trade='hs'; S.sect=null; }   // 本门原是商盟 → 转投别家，商路仍然留着
+
+  if(isSwitch && from) switchCost(from, L);
+
+  S.sect = {id:id, rank:0};
+  S.contrib = 0;                                          // 换了门庭，贡献从头算起
+  L.push('入了 <span class="pos">'+F.n+'</span> · '+F.ranks[0]);
+  if(isSwitch && from){
+    L.push('原门庭 <span class="neg">'+esc(FACTIONS[from].n)+' · '+FACTIONS[from].ranks[hadRank]+' 的'
+           +esc(FACTIONS[from].axis)+'清零</span>（原文 '+hadCon+'）');
+  }
+  note(8, (isSwitch && from ? '改投 ' : '入 ')+F.n);
+}
+
+/* ---------- 19. 回合循环 ---------- */
+function choose(c){
+  if(over || CH) return;
+  const from = switchFrom(c);            // FDR-007：已有门庭者遇到别家入伙卡 → 先确认，不得静默改投
+  if(from) return askSwitch(c, from);
+  doChoose(c);
+}
+
+/* 改投确认浮层（卡面/描述零阿拉伯数字，数值一律走下方引擎行） */
+function askSwitch(c, from){
+  const id = joinTarget(c);
+  const nf = FACTIONS[from], nt = FACTIONS[id];
+  if(!nf || !nt) return doChoose(c);
+  const oldRank = nf.ranks[clamp(S.sect.rank, 0, nf.ranks.length-1)];
+  askChoice('改 投 门 庭',
+    '你如今是'+esc(nf.n)+'的'+esc(oldRank)+'，攒下的'+esc(nf.axis)+'都在那本册子上。这一脚跨过去，那边就没有你的名字了。',
+    '<div class="prow"><span>现门庭</span><span>'+esc(nf.n)+'<em>'+esc(oldRank)+' · '+esc(nf.axis)+' '+S.contrib+'</em></span></div>'
+    + '<div class="prow"><span>投向</span><span>'+esc(nt.n)+'<em>'+esc(nt.axis)+' 从零起算</em></span></div>'
+    + '<div class="prow"><span>代价</span><span>贡献清零<em>声望 −'+SWITCH_COST.fame+' · '+esc(nf.n)+'声望 '+SWITCH_COST.rep+'</em></span></div>',
+    [ {k:1, lb:'改投'+nt.n, d:esc(nf.axis)+'清零 · 声望受损 · 与'+nf.n+'交恶'},
+      {k:0, lb:'不去',      d:'这一趟白跑，往后别的事还得有人管。'} ],
+    function(k){
+      if(k===1){ S.swFrom = from; doChoose(c); return; }
+      S.noJoin[c.t] = true;                       // 当面回绝过的入伙卡，不再反复来劝
+      const i = (cur.indexOf(c) >= 0) ? cur.indexOf(c)
+              : cur.findIndex(x => x.id != null && x.id === c.id);   // 防御：cur 里存的是副本
+      const rep = (i >= 0) ? replaceCard(i, c) : null;
+      if(i >= 0 && rep) cur[i] = rep;              // 顶替上去，手牌仍是 3 张、类目互异
+      entry('', '你把话压了下去', '他们没再劝第二遍。第二天照旧起身，像什么也没发生过。',
+        'switch(declined) · '+esc(nt.n)+' 入门卡已屏蔽');
+      renderCards();
+      if(!rep) afterCard();                       // 防御：换不出别的卡时不容回合空转
+    });
+}
+
+/* 换掉一张被回绝的卡（保持手牌 3 张、类目互异，且不再抽别的入门卡） */
+function replaceCard(idx, old){
+  const usedId = {}, usedCat = {};
+  cur.forEach((x,i)=>{ if(i!==idx){ if(x.id>=0) usedId[x.id]=1; usedCat[x.c]=1; } });
+  const pool = CARDS.map((c,i)=>Object.assign({id:i}, c))
+                    .filter(c=>eligible(c) && !usedId[c.id] && !usedCat[c.c] && !joinTarget(c));
+  if(!pool.length) return null;
+  return pool[wpick(pool.map(c=>TIER_W[c.tier]||1))];
+}
+
+function doChoose(c){
+  const L = applyCard(c);
+  if(turnBox) turnBox._card = c.t;               // 供折叠摘要显示卡名
+  entry('choice', '第 '+S.turn+' 年 · 你选了', '《'+esc(c.t)+'》'+esc(c.d), null);
+  if(L.length) entry('', '结算', '', L.join(' · '));
+  recomputeBound();
+
+  // T2：某些卡直接把寿元压到年岁之下，立即终局（规格 §10.1 lifespan 字段语义）
+  if(!over && S.lifespan <= S.age){
+    entry('big','','一口气没续上。你坐下去，就没再起来。','<span class="neg">lifespan ≤ age · 终局 T2 寿元耗尽</span>');
+    renderAll();
+    return endGame('dead');
+  }
+
+  S.memory.push({turn:S.turn, ids:cur.map(x=>x.id).filter(id=>id>=0)});
+  if(S.memory.length>4) S.memory.shift();
+  renderAll();
+
+  if(c.ef && c.ef.battle && typeof c.ef.battle==='object'){
+    return beginBattle(c, ()=>{ if(!over) afterCard(); });
+  }
+  if(c.ef && c.ef.equip){
+    const spec = c.ef.equip;
+    return giveEquip(spec, ()=>{ if(!over) afterCard(); });
+  }
+  return afterCard();
+}
+function afterCard(){
+  if(over) return;
+  advance();
+}
+
+function checkLoc(){
+  LOCS.forEach((L,i)=>{
+    if(i>0 && S.stage>=L.min && S.seen.indexOf(i)<0){
+      S.seen.push(i); S.nextLoc=i; S.nudge=2;
+      entry('sys','','你听说南边有个去处 · <b>'+L.name+'</b>', null);
+    }
+  });
+}
+
+function zaihuo(){
+  const m0 = mainArt();
+  if(!m0) return 0;
+  const secs = secArts();
+  const conflictsRoot = wxRel(S.rootEl, m0.el)==='ke';
+  const conflictArt   = secs.some(s=>wxRel(m0.el,s.el)==='ke');
+  let p = 0;
+  if(conflictsRoot) p = conflictArt ? 0.12 : 0.05;
+  else if(conflictArt) p = 0.06;
+  if(p>0 && Math.random()<p){
+    S.progress = Math.max(0, Math.round(S.progress*0.90));
+    S.wound = clamp(S.wound+0.01, 0, 0.50);
+    S.lifespan -= 1;
+    S.dao = Math.max(0, S.dao-1);
+    note(3, '走火 · 寿元 −1 载');
+    entry('sys','','夜里气息忽然岔了。你按了半宿才把它压回去，人却虚了。',
+      '走火 · 修为 −10% · 气血上限 −1% · 寿元 −1 载 · 道心 → '+DAO[S.dao][0]+' · P='+Math.round(p*100)+'%');
+    return 1;
+  }
+  return 0;
+}
+
+function promoteLoop(){
+  let guard = 0;
+  while(S.stage < STAGES.length-1 && guard++ < 40){
+    const stepv = curStep();
+    if(!isFinite(stepv) || S.progress < stepv) break;
+    if(BIG[S.stage]) break;                      // 大境界交给突破判定
+    S.progress -= stepv;
+    S.stage++;
+    const cap = LIFE_CAP[S.stage];
+    const old = S.lifespan;
+    S.lifespan = Math.max(S.lifespan, cap);
+    recomputeBound();
+    entry('sys','','境界提升 → '+STAGES[S.stage], null);
+    if(S.lifespan>old){ entry('sys','','寿元上限提升 '+old+' → '+S.lifespan+' 载', null); note(1,'境界 → '+STAGES[S.stage]); }
+    else note(1,'境界 → '+STAGES[S.stage]);
+    checkLoc();
+  }
+}
+
+function advance(){
+  // ① 基础吐纳
+  S.progress += TUNE;
+  // ② 主修功法自然推进 +1；五行适配已在 addArtExp 内
+  const mv = mainArt();
+  if(mv){
+    const beforeLv = mv.lv;
+    addArtExp(mv, 1);
+    if(mv.lv>beforeLv) entry('sys','','你的《'+esc(mv.n)+'》又深了一层。', '熟练 → '+ART_LV[mv.lv]+' · '+WX_NAME[wxRel(S.rootEl,mv.el)]);
+  }
+  // ③ 走火判定
+  zaihuo();
+  // ④ 服丹 + 丹毒代谢
+  const st1 = stats();
+  let need = 0;
+  if(S.hp < st1.hpMax*0.60) need = 1;
+  else if(S.progress >= (isFinite(curStep())?curStep():Infinity)*0.80) need = 2;
+  if(need>0 && S.pill>0){
+    S.pill--;
+    S.progress += Math.round(8*coef());
+    S.danPoison += 2;
+    entry('sys','','你抠出一粒丹咽了下去。','服丹 · 修为 +'+Math.round(8*coef())+' · 丹毒 +2');
+  }
+  if(S.danPoison>0) S.danPoison = Math.max(0, S.danPoison-1);
+  if(S.danPoison>=10){ S.lifespan -= 1; note(2,'丹毒反噬 −1 载'); entry('sys','','你身上的药味越来越重了。','丹毒 ≥10 · 寿元 −1 载'); }
+  // ⑤ 派系俸禄
+  if(S.sect){
+    const inc = FACTIONS[S.sect.id].pay(S.sect.rank);
+    S.ss += inc;
+  }
+  if(S.trade){
+    const inc = Math.round(FACTIONS[S.trade].pay(0)*0.5);
+    S.ss += inc;
+  }
+  // ⑥ 阶段推进（大境界处停下）
+  promoteLoop();
+  recomputeBound();
+  renderAll();
+
+  // ⑦ 大境界：交给玩家决断
+  if(BIG[S.stage] && isFinite(curStep()) && S.progress >= curStep()){
+    if(S.breakCd>0){
+      entry('sys','','关口的伤还没养回来。你只能再等。','冷却 '+S.breakCd+' 年 · 可强行冲关');
+    }
+    return promptBreakthrough(()=>{ if(!over) finishTurn(); });
+  }
+  return finishTurn();
+}
+
+function finishTurn(){
+  if(over) return;
+  // 年末恢复
+  const st = stats();
+  let heal = Math.round(st.hpMax*0.08);
+  if(S.woundTurns>0){
+    heal = Math.round(heal * (S.wound>=0.15?0.20:0.40));
+    S.woundTurns--;
+    if(S.woundTurns===0) entry('sys','','伤好得差不多了，能动了。','疗养结束');
+  }
+  if(S.hp < st.hpMax) S.hp = Math.min(st.hpMax, S.hp + heal);
+  if(S.breakCd>0) S.breakCd--;
+
+  S.age++; S.turn++;
+  recomputeBound();
+
+  // 终局判定
+  if(S.hp <= 0){ S.hp=0; note(3, '气血耗尽'); return endGame('battle'); }
+  if(S.lifespan <= S.age){ note(2, '寿元耗尽'); return endGame('dead'); }
+  if(S.turn > MAX_TURN){ note(1, '安全上限'); return endGame('cap'); }
+
+  renderAll();
+  const stg = STAGES[clamp(S.stage,0,STAGES.length-1)];
+  openTurn('第 '+S.turn+' 年', stg+' · '+LOCS[S.loc].name+' · '+(S.sect?FACTIONS[S.sect.id].short+FACTIONS[S.sect.id].ranks[clamp(S.sect.rank,0,4)]:'无门无派'), '');
+  entry('sys','','时年 '+S.age+' 岁，余寿 '+lifeLeft()+' 载。',
+    '吐纳 +'+TUNE+' · 修为 '+S.progress+'/'+stepText()+' · 气血 '+S.hp+'/'+stats().hpMax
+    + (S.sect?' · 俸禄 +'+FACTIONS[S.sect.id].pay(S.sect.rank):'')
+    + (S.woundTurns>0?' · 疗养中 ×'+(S.wound>=0.15?0.20:0.40):''));
+  entry('sys','','三件机缘摆在面前。', null);
+  cur = genCards();
+  renderCards();
+}
+
+/* ---------- 20. 终局 ---------- */
+function endGame(reason){
+  if(over) return;
+  over = true;
+  sealTurn();
+  const boxes = document.querySelectorAll('.turn');
+  Array.prototype.forEach.call(boxes, d=>{ d.open=false; });
+  if(boxes.length) boxes[boxes.length-1].open = true;
+  $('cards').style.display='none';
+  const st = stats();
+  let title, desc;
+  if(reason==='battle'){
+    title='身 死 道 消';
+    desc='你没能等到那一步。最后一次交手，你先撑不住了。';
+  }else if(reason==='gate'){
+    title='殒 于 关 前';
+    desc='那一步终究没能迈过去。冲到最后，寿元先尽了。';
+  }else if(reason==='cap'){
+    title='此 局 终 结';
+    desc='这一世长得连记事的人都换了几茬。就到这里吧。';
+  }else{
+    title='寿 元 耗 尽';
+    desc='你停在'+STAGES[clamp(S.stage,0,STAGES.length-1)]+'。回头再看青石镇，已经小得看不清了。';
+  }
+  $('end-title').textContent = title;
+  $('end-desc').textContent  = desc;
+  const arts = S.arts.length ? S.arts.map(a=>esc(a.n)+'·'+ART_LV[a.lv]).join('、') : '无';
+  const eqn  = SLOTS.map(s=>S.equip[s[0]]).filter(Boolean).length;
+  $('end-stat').innerHTML =
+      '<div class="prow"><span>最终境界</span><span>'+STAGES[clamp(S.stage,0,STAGES.length-1)]+'<em>修为 '+S.progress+' / '+stepText()+'</em></span></div>'
+    + '<div class="prow"><span>享年</span><span>'+S.age+' 岁<em>寿元上限 '+S.lifespan+'</em></span></div>'
+    + '<div class="prow"><span>死因</span><span>'+({battle:'战死',dead:'老死',gate:'冲境殒身',cap:'安全上限'}[reason]||'—')+'</span></div>'
+    + '<div class="prow"><span>气血 / 攻击 / 防御</span><span>'+S.hp+' / '+st.atk+' / '+st.def+'</span></div>'
+    + '<div class="prow"><span>战力（派生）</span><span>'+st.power+'</span></div>'
+    + '<div class="prow"><span>灵根 / 根骨</span><span>'+esc(S.rootName)+' · '+S.bone+'</span></div>'
+    + '<div class="prow"><span>门庭</span><span>'+(S.sect?(FACTIONS[S.sect.id].n+' · '+FACTIONS[S.sect.id].ranks[clamp(S.sect.rank,0,4)]):'终身散修')+(S.trade?'（兼 '+FACTIONS[S.trade].n+'）':'')+'</span></div>'
+    + '<div class="prow"><span>功法</span><span>'+arts+'</span></div>'
+    + '<div class="prow"><span>器物</span><span>身上一 '+eqn+' 件 · 行囊 '+S.bag.length+' 件</span></div>'
+    + '<div class="prow"><span>走过的年头</span><span>'+S.turn+' 年</span></div>'
+    + '<div class="prow"><span>声望 / 恩怨</span><span>'+S.fame+' · 仇怨 '+S.enemy+'</span></div>';
+  renderAll();
+  $('ov-end').classList.remove('in');
+}
+
+/* ---------- 21. 开局 ---------- */
+let PENDING = null;
+
+function rollBox(tal){
+  const st0 = stats();
+  return '<div class="prow"><span>灵根</span><span>'+esc(tal.rootName)+'<em>'+tal.rootEl+' 属 · 修炼 ×'+tal.rootMul.toFixed(2)+'</em></span></div>'
+    + '<div class="prow"><span>根骨</span><span>'+tal.bone+'<em>×'+tal.boneMul.toFixed(2)+'</em></span></div>'
+    + '<div class="prow"><span>道心</span><span>'+DAO[2][0]+'<em>冲境 +0%</em></span></div>'
+    + '<div class="prow"><span>寿元</span><span>30 / '+LIFE_CAP[0]+'<em>余 '+(LIFE_CAP[0]-30)+' 载</em></span></div>'
+    + '<div class="prow"><span>身家</span><span>气血 '+st0.hpMax+' · 攻 '+st0.atk+' · 防 '+st0.def+'</span></div>';
+}
+
+function showOpening(){
+  PENDING = rollTalent();
+  newGame(PENDING);
+  $('roll-box').innerHTML = rollBox(PENDING);
+  $('ov-open').classList.remove('in');
+  $('ov-end').classList.add('in');
+  $('ov-ch').classList.add('in');
+  $('cards').style.display='none';
+}
+function start(){
+  newGame(PENDING);
+  $('ov-open').classList.add('in');
+  $('ov-ch').classList.add('in');
+  $('cards').style.display='';
+  renderAll();
+  openTurn('第 1 年', STAGES[0]+' · '+LOCS[0].name+' · 无门无派', '');
+  entry('', '开篇', '你是青石镇外一个佃户的儿子。三十岁那年，山道上那个浑身是血的道人留下半页口诀，你抄了三遍，烧了原纸。第二天，你放下了锄头。', null);
+  entry('sys','','灵根 '+esc(S.rootName)+'（'+S.rootEl+' 属 · ×'+S.rootMul.toFixed(2)+'）· 根骨 '+S.bone+'（×'+S.boneMul.toFixed(2)+'）· 时年 '+S.age+' 岁 · 寿元 '+S.lifespan+' 载', null);
+  entry('sys','','气血 '+S.hp+'/'+stats().hpMax+' · 攻 '+stats().atk+' · 防 '+stats().def+' · 战力 '+stats().power, null);
+  entry('sys','','三件机缘摆在面前。', null);
+  cur = genCards();
+  renderCards();
+}
+
+/* ---------- 22. 绑定 ---------- */
+$('btn-start').onclick = start;
+$('btn-again').onclick = showOpening;
+$('btn-drawer').onclick = e=>{ $('drawer').classList.toggle('open'); e.target.classList.toggle('on'); };
+$('btn-eng').onclick = e=>{ document.body.classList.toggle('show-eng'); e.target.classList.toggle('on'); };
+document.addEventListener('click', e=>{
+  const dr = $('drawer');
+  if(!dr.classList.contains('open')) return;
+  if(dr.contains(e.target)) return;
+  if(e.target.closest && e.target.closest('#btn-drawer')) return;
+  dr.classList.remove('open');
+  $('btn-drawer').classList.remove('on');
+});
+$('btn-fold').onclick = ()=>{
+  sealTurn();
+  const ds = document.querySelectorAll('.turn');
+  Array.prototype.forEach.call(ds, d=>{ d.open=false; });
+  if(ds.length) ds[ds.length-1].open = true;
+  logEl.scrollTop = logEl.scrollHeight;
+};
+$('btn-all').onclick = ()=>{
+  sealTurn();
+  Array.prototype.forEach.call(document.querySelectorAll('.turn'), d=>{ d.open=true; });
+};
+$('btn-re').onclick = ()=>{ if(confirm('重新开始？本局进度将清空。')) location.reload(); };
+
+newGame();
+$('cards').style.display='none';
+showOpening();
+</script>
+</body>
+</html>
