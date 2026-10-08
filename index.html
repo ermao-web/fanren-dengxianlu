@@ -3,13 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>道心无垢· v3</title>
+<title>道心无垢</title>
 <style>
 :root{
   --bg:#121317; --panel:#1a1b20; --panel2:#15161a;
   --line:rgba(255,255,255,.10); --line2:rgba(255,255,255,.055);
   --txt:#e8e6e3; --dim:#8f8b86; --dim2:#6d6a66;
   --red:#c2493c; --gold:#c9a227; --jade:#5f9e7f;
+  /* FDR-013 批4 · R1 §1.2 五行色卡（由现有色板派生） */
+  --el-jin:#d9c58a; --el-mu:#5fae7a; --el-shui:#5f8fc9; --el-huo:#c2493c; --el-tu:#b58a55;
+  --ease-out:cubic-bezier(.2,.8,.3,1); --ease-in:cubic-bezier(.6,0,.8,.2); --bounce:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -48,7 +51,7 @@ body{
 /* ---------------- 抽屉 ---------------- */
 .drawer{
   position:absolute;top:100%;left:0;right:0;background:var(--panel);
-  border-bottom:1px solid var(--line);max-height:66vh;overflow-y:auto;
+  border-bottom:1px solid var(--line);max-height:56vh;overflow-y:auto;
   opacity:0;pointer-events:none;transform:translateY(-8px);transition:.2s;
   box-shadow:0 14px 30px rgba(0,0,0,.55);
 }
@@ -95,7 +98,7 @@ body{
 .bwrap .engine{margin-top:3px}
 
 /* ---------------- 卡牌 ---------------- */
-#cards{flex:0 0 auto;border-top:1px solid var(--line);background:var(--panel2);padding:6px 11px 8px;max-height:54vh;overflow-y:auto}
+#cards{flex:0 0 auto;border-top:1px solid var(--line);background:var(--panel2);padding:6px 11px 8px;max-height:58vh;overflow-y:auto}
 .cards-h{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:10px;letter-spacing:2px;color:var(--dim2)}
 .cards-h .q{margin-left:auto;letter-spacing:0;font-size:10px}
 .cgrid{display:flex;flex-direction:column;gap:6px}
@@ -107,6 +110,8 @@ body{
 .tier.t-灵缘{color:#7fa8c9;border-color:rgba(127,168,201,.35)}
 .tier.t-宝缘{color:var(--gold);border-color:rgba(201,162,39,.4)}
 .tier.t-玄缘{color:#b98ad1;border-color:rgba(185,138,209,.4)}
+.tier.t-仙缘{color:#e8d9a0;border-color:rgba(232,217,160,.45);text-shadow:0 0 6px rgba(232,217,160,.35)}
+.tier.t-道缘{color:#f0f4ff;border-color:rgba(240,244,255,.5);text-shadow:0 0 8px rgba(240,244,255,.45)}
 .ttitle{font-size:14.5px;color:var(--txt);letter-spacing:.5px;margin-bottom:3px}
 .tdesc{font-size:12.5px;line-height:1.7;color:#b8b4af;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card.ext .tdesc{-webkit-line-clamp:unset;display:block}
@@ -124,6 +129,43 @@ body{
 .card.no .pick{border-color:rgba(255,255,255,.12);color:var(--dim2);cursor:not-allowed}
 .eng{display:none;margin-top:8px;padding-top:7px;border-top:1px dashed var(--line);font-family:ui-monospace,Consolas,monospace;font-size:10px;color:var(--dim);line-height:1.6}
 body.show-eng .eng{display:block}
+
+/* ---------------- FDR-011 批2 · 换装 / spec（≤1.5 KB · 由现有色板派生） ---------------- */
+.mini-btn{padding:1px 7px;font-size:10.5px;line-height:1.4;border-radius:2px;background:transparent;font-family:inherit;cursor:pointer;flex:0 0 auto}
+.mini-btn.swap{border:1px solid rgba(201,162,39,.45);color:var(--gold)}
+.mini-btn.off{border:1px solid var(--line2);color:var(--dim2)}
+.mini-btn.fix{border:1px solid rgba(95,158,127,.5);color:var(--jade)}
+.mini-btn.off[disabled]{opacity:.4;cursor:not-allowed}
+.bag-row,.equip-row{display:flex;align-items:center;min-height:22px;gap:6px}
+.bag-row>span:first-child,.equip-row>span:first-child{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim)}
+.bag-row>span:nth-child(2),.equip-row>span:nth-child(2){color:var(--txt);text-align:right;flex:0 1 auto}
+.spec-note{padding-left:8px}
+.spec-note em{color:var(--dim2);font-size:10.5px;margin-left:0}
+.spec-chip{font-style:normal;color:var(--gold);font-size:10px;border:1px solid rgba(201,162,39,.4);border-radius:2px;padding:0 4px;margin-left:6px}
+.spec-hud{color:var(--gold);border:1px solid rgba(201,162,39,.4);border-radius:2px;padding:0 4px;cursor:pointer;font-size:9.5px}
+.warn{font-style:normal;color:var(--gold);font-size:9.5px;margin-left:5px;opacity:.88}
+.learn-chip{font-size:9.5px;color:var(--gold);border:1px solid rgba(201,162,39,.45);border-radius:2px;padding:0 5px;letter-spacing:.5px;white-space:nowrap}
+.tspec{font-size:11.5px;color:var(--gold);margin-top:5px;opacity:.92}
+.tset{font-size:11.5px;color:#9fb6c9;margin-top:3px;opacity:.92}
+.tretake{font-size:11.5px;color:var(--dim);margin-top:3px}
+.entry.retake{border-left:2px solid var(--red);padding-left:10px}
+.entry.retake .prose{color:var(--gold)}
+.lvbar{display:inline-block;width:44px;height:4px;background:rgba(255,255,255,.10);border-radius:1px;margin:0 6px;vertical-align:middle;overflow:hidden}
+.lvbar b{display:block;height:100%;background:var(--gold)}
+.cpdots{font-style:normal;color:var(--gold);letter-spacing:1px;margin:0 6px;font-size:9.5px}
+/* FDR-014 · 功法不限量：行内「主修」徽标 + 「遗忘」按钮 */
+.art-row{align-items:center}
+.art-row>span:first-child{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.art-row>span:nth-child(2){color:var(--txt);flex:0 1 auto}
+.art-tag{font-style:normal;font-size:9.5px;border-radius:2px;padding:0 4px;margin-right:6px;border:1px solid var(--line2);color:var(--dim2)}
+.art-tag.main{color:var(--gold);border-color:rgba(201,162,39,.45)}
+.mini-btn.forget{border:1px solid rgba(194,73,60,.5);color:var(--red);margin-left:6px}
+.mini-btn.forget.arm{border-color:var(--red);background:rgba(194,73,60,.18);color:#e5726a}
+.bag-list{max-height:264px;overflow-y:auto}
+#toast{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:11.5px;color:var(--gold);
+  background:rgba(26,27,32,.92);border:1px solid var(--line2);border-radius:2px;padding:3px 12px;
+  opacity:0;transition:opacity .2s;pointer-events:none;z-index:5;white-space:nowrap}
+#toast.in{opacity:1}
 
 /* ---------------- 浮层 ---------------- */
 .ov{position:fixed;inset:0;background:rgba(8,9,11,.95);z-index:60;display:flex;align-items:center;justify-content:center;padding:18px}
@@ -144,6 +186,123 @@ body.show-eng .eng{display:block}
 .opts button small{display:block;color:var(--dim2);font-size:11.5px;margin-top:3px;line-height:1.6}
 .opts button.dis{opacity:.38;cursor:not-allowed}
 .opts button.dis:hover{border-color:var(--line);background:transparent}
+
+/* ---------------- FDR-012 批3 · R3 套装 / R5 天命 ---------------- */
+.set-chip{font-style:normal;color:#9fb6c9;font-size:10px;border:1px solid rgba(159,182,201,.32);border-radius:2px;padding:0 4px;margin-left:6px}
+.set-note{padding-left:8px}
+.set-note em{color:var(--dim2);font-size:10.5px;margin-left:0}
+.set-note em b{color:#9fb6c9;font-weight:500}
+.set-hud{color:#9fb6c9;border:1px solid rgba(159,182,201,.35);border-radius:2px;padding:0 4px;cursor:pointer;font-size:9.5px}
+.fate-chip{color:var(--gold);border:1px solid rgba(201,162,39,.4);border-radius:2px;padding:0 4px;cursor:pointer;font-size:9.5px}
+.fate-risk{font-size:9.5px;color:#b98ad1;border:1px solid rgba(185,138,209,.4);border-radius:2px;padding:0 5px;letter-spacing:.5px;white-space:nowrap}
+/* 天命判定浮层（A8 基础版） */
+#ov-fate{z-index:70}
+.fate-box{text-align:center}
+.fate-title{font-size:20px;letter-spacing:8px;color:var(--gold);margin-bottom:14px}
+.fate-wheel{position:relative;width:198px;height:198px;margin:0 auto 16px;border-radius:50%;
+  background:conic-gradient(#8a6a1e 0deg 30deg,#2c3a2e 30deg 60deg,#1d3a44 60deg 90deg,#4a2620 90deg 120deg,#3a3320 120deg 150deg,
+    #8a6a1e 150deg 180deg,#2c3a2e 180deg 210deg,#1d3a44 210deg 240deg,#4a2620 240deg 270deg,#3a3320 270deg 300deg,
+    #8a6a1e 300deg 330deg,#2c3a2e 330deg 360deg);
+  box-shadow:0 0 26px rgba(201,162,39,.18), inset 0 0 22px rgba(0,0,0,.6)}
+.fate-wheel::after{content:"";position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(255,255,255,.10)}
+.fate-hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;line-height:44px;
+  border-radius:50%;background:var(--panel);border:1px solid rgba(201,162,39,.5);color:var(--gold);font-size:18px;z-index:2}
+.fate-needle{position:absolute;left:50%;top:50%;width:3px;height:88px;margin-left:-1.5px;margin-top:-88px;transform-origin:50% 100%;
+  background:linear-gradient(180deg,var(--gold),rgba(201,162,39,.15));border-radius:2px;z-index:3}
+.fate-needle::before{content:"";position:absolute;top:-6px;left:50%;margin-left:-5px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:8px solid var(--gold)}
+#ov-fate.spinning .fate-needle{filter:drop-shadow(0 0 6px rgba(201,162,39,.7))}
+.fate-tier{font-size:34px;letter-spacing:10px;margin-top:6px;opacity:0;transform:scale(.6);
+  transition:opacity .28s ease, transform .28s cubic-bezier(.2,1.4,.4,1)}
+.fate-tier.in{opacity:1;transform:none}
+.fate-tier.good{color:var(--gold);text-shadow:0 0 16px rgba(201,162,39,.6)}
+.fate-tier.bad{color:var(--red);text-shadow:0 0 16px rgba(194,73,60,.6)}
+.fate-tier.flat{color:var(--dim)}
+.fate-note{font-size:12px;color:var(--dim2);margin-top:6px;min-height:18px}
+
+/* =========================================================
+   FDR-013 批4 · R1 表现层（动画 / 特效 / 组合揭示 / 见闻录 / 开关）
+   预算 ≤ 8 KB · 只用 transform/opacity · 氛围层 pointer-events:none
+   ========================================================= */
+/* —— 动画清单 §1.1 —— */
+@keyframes dealIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pickSeal{0%{box-shadow:0 0 0 0 rgba(201,162,39,.0)}45%{box-shadow:0 0 0 2px rgba(201,162,39,.85),0 0 14px rgba(201,162,39,.5)}100%{box-shadow:0 0 0 1px rgba(201,162,39,.35)}}
+@keyframes countTick{from{opacity:.35;transform:translateY(3px)}to{opacity:1;transform:none}}
+@keyframes realmUp{0%{opacity:0;transform:scale(.6)}55%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+@keyframes finaleTitle{from{opacity:0;transform:translateY(10px);letter-spacing:.5em}to{opacity:1;transform:none;letter-spacing:.14em}}
+@keyframes goldSweep{from{transform:translateX(-140%)}to{transform:translateX(140%)}}
+@keyframes curtainIn{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+@keyframes curtainOut{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+@keyframes diceRoll{from{transform:rotate(0)}to{transform:rotate(2160deg)}}
+@keyframes diceSettle{0%{transform:scale(1.5)}60%{transform:scale(.92)}100%{transform:scale(1)}}
+@keyframes boltFlash{0%{opacity:0}18%{opacity:.9}36%{opacity:.15}60%{opacity:.7}100%{opacity:0}}
+@keyframes comboConverge{from{opacity:0;transform:scale(1.4)}to{opacity:1;transform:none}}
+@keyframes comboBurst{0%{opacity:0;transform:scale(.5);filter:blur(6px)}55%{opacity:1;transform:scale(1.08);filter:blur(0)}100%{opacity:1;transform:scale(1)}}
+@keyframes haloSpin{to{transform:rotate(360deg)}}
+@keyframes harmFlash{0%{opacity:0;transform:translateX(0)}25%{opacity:.9;transform:translateX(-3px)}60%{transform:translateX(3px)}100%{opacity:0;transform:none}}
+@keyframes qiPulse{0%{opacity:0}40%{opacity:.85}100%{opacity:0}}
+@keyframes rainFall{from{opacity:0;transform:translateY(-12px)}20%{opacity:1}to{opacity:0;transform:translateY(60px)}}
+/* —— 发牌 A1 / 选卡 A2 —— */
+.card.deal{animation:dealIn 180ms var(--ease-out) both}
+.card.pick-seal{animation:pickSeal 220ms var(--ease-out) both}
+.card.fading{opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s}
+/* —— 引擎行结算数字 A3 —— */
+.num-pop{animation:countTick 400ms linear both}
+/* —— 境界提升 A6 —— */
+.realm-pop{animation:realmUp 1200ms var(--bounce) both}
+/* —— 终局 A7 —— */
+.box.finale .end-t{animation:finaleTitle 1500ms var(--ease-in) both}
+/* —— 视觉叠加层（A4/A6/A9 共用；pointer-events:none ⇒ 永不阻塞交互） —— */
+#fx{position:fixed;inset:0;z-index:55;pointer-events:none;overflow:hidden}
+.fx-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .25s}
+.fx-layer.on{opacity:1}
+.fx-sweep{position:absolute;top:0;bottom:0;width:42%;background:linear-gradient(100deg,transparent,rgba(217,197,138,.5),transparent);animation:goldSweep .9s var(--ease-out) both}
+.fx-gate{position:absolute;left:0;right:0;top:0;height:100%;background:linear-gradient(180deg,rgba(6,7,9,.97),rgba(6,7,9,.92));animation:curtainIn .6s var(--ease-out) both}
+.fx-gate.out{animation:curtainOut .5s var(--ease-in) both}
+.fx-bolt{position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 30%,rgba(219,230,255,.55),transparent 70%);animation:boltFlash .5s linear both}
+.fx-dice{width:74px;height:74px;border-radius:8px;background:var(--panel);border:1px solid rgba(201,162,39,.55);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-size:26px;font-family:ui-monospace,Consolas,monospace;box-shadow:0 0 24px rgba(201,162,39,.25)}
+.fx-dice.rolling{animation:diceRoll 900ms var(--ease-out) both}
+.fx-dice.settle{animation:diceSettle 260ms var(--bounce) both}
+.fx-big{font-size:30px;letter-spacing:10px;color:var(--gold);text-shadow:0 0 20px rgba(201,162,39,.5);animation:realmUp 1200ms var(--bounce) both}
+.fx-verdict{font-size:40px;letter-spacing:14px;font-weight:400}
+.fx-verdict.win{color:#e6d79a;text-shadow:0 0 22px rgba(217,197,138,.6)}
+.fx-verdict.lose{color:var(--red);text-shadow:0 0 22px rgba(194,73,60,.6)}
+/* —— 组合揭示 A9 —— */
+.fx-combo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0}
+.fx-combo.on{opacity:1}
+.fx-bands{display:flex;gap:12px}
+.fx-band{width:12px;height:74px;border-radius:3px;opacity:0;animation:comboConverge 700ms var(--ease-out) both}
+.fx-combo.on .fx-band{animation-name:comboBurst}
+.fx-halo{position:absolute;width:230px;height:230px;border-radius:50%;border:1px solid rgba(201,162,39,.35);
+  box-shadow:0 0 40px rgba(201,162,39,.28) inset,0 0 30px rgba(201,162,39,.22);animation:haloSpin 3s linear infinite;opacity:0;transition:opacity .3s}
+.fx-combo.on .fx-halo{opacity:1}
+.fx-cname{font-size:24px;letter-spacing:8px;color:var(--gold);text-shadow:0 0 18px rgba(201,162,39,.55);animation:comboBurst 900ms var(--ease-out) both}
+.fx-ctag{font-size:11.5px;letter-spacing:3px;color:var(--dim);animation:comboBurst 1s var(--ease-out) both}
+/* —— 血煞红雾 / 走火反馈（L1–L3） —— */
+.fx-mist{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 55%,rgba(140,20,20,.28),transparent 72%);animation:harmFlash .3s var(--ease-out) both}
+.fx-qi{position:absolute;inset:0;box-shadow:inset 0 0 60px rgba(194,73,60,.55);animation:qiPulse .6s var(--ease-in) both}
+.fx-rain{position:absolute;top:0;width:2px;height:16px;background:linear-gradient(180deg,rgba(217,197,138,0),rgba(217,197,138,.85));animation:rainFall 1.8s linear infinite;border-radius:2px}
+/* —— 见闻录 §6.3 —— */
+.codex-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:8px;margin-top:8px}
+.codex-item{border:1px solid var(--line);border-radius:3px;padding:8px 10px;background:var(--panel2)}
+.codex-item .cn{font-size:14px;color:var(--gold);letter-spacing:2px;margin-bottom:3px}
+.codex-item .cm{font-size:11.5px;color:var(--dim);line-height:1.7}
+.codex-item .cfx{font-size:11px;color:var(--jade);margin-top:4px}
+.codex-locked{opacity:.5}
+.codex-locked .cn{color:var(--dim2)}
+.codex-hint{font-size:11px;color:var(--dim2);margin:2px 0 10px}
+.combo-chip{font-style:normal;color:var(--gold);font-size:9.5px;border:1px solid rgba(201,162,39,.45);border-radius:2px;padding:0 5px;letter-spacing:.5px;white-space:nowrap}
+/* —— 抽屉内开关（不撑高 HUD） —— */
+.setrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.setrow .hbtn{font-size:11px;padding:3px 10px}
+.setrow .hbtn.on{color:var(--gold);border-color:rgba(201,162,39,.5)}
+/* —— 降级：prefers-reduced-motion 与手动「减少动效」 —— */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition-duration:.12s!important}
+  .card.deal,.num-pop,.realm-pop,.fx-big{animation:none!important;opacity:1!important;transform:none!important}
+}
+body.reduce-motion *{animation:none!important;transition-duration:.12s!important}
+body.reduce-motion .card.deal,body.reduce-motion .num-pop,body.reduce-motion .realm-pop,body.reduce-motion .fx-big{opacity:1!important;transform:none!important}
 
 @media(min-width:1000px){
   .cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -170,7 +329,7 @@ body.show-eng .eng{display:block}
       <div class="bar hp"><i id="h-hp" style="width:100%"></i></div>
       <div class="nums" id="h-nums"></div>
     </div>
-    <div class="drawer" id="drawer"><div class="dgrid" id="dgrid"></div></div>
+    <div class="drawer" id="drawer"><div class="dgrid" id="dgrid"></div><div id="toast"></div></div>
   </div>
 
   <div class="logtools">
@@ -190,7 +349,7 @@ body.show-eng .eng{display:block}
 
 <div class="ov" id="ov-open">
   <div class="box">
-    <h1>道  心  无  垢</h1>
+    <h1>道 心 无 垢</h1>
     <div class="sub">寿 元 有 尽 · 此 生 何 归</div>
     <div class="p">你是青石镇外一个佃户的儿子。三十岁那年，你在山道上遇见一个浑身是血的道人。</div>
     <div class="p">他看了你一眼，说了一句——「你的根骨，不该埋在土里。」——就断了气。只留下半页沾血的口诀。</div>
@@ -222,9 +381,38 @@ body.show-eng .eng{display:block}
   </div>
 </div>
 
+<!-- FDR-012 批3 · R5 天命判定呈现（A8 基础版；批4 接完整动画） -->
+<div class="ov in" id="ov-fate">
+  <div class="box fate-box">
+    <div class="fate-title serif">天 命 一 卦</div>
+    <div class="fate-wheel" id="fate-wheel">
+      <div class="fate-hub serif">卦</div>
+      <div class="fate-needle" id="fate-needle"></div>
+    </div>
+    <div class="fate-tier" id="fate-tier"></div>
+    <div class="fate-note" id="fate-note"></div>
+    <div class="roll" id="fate-eng"></div>
+    <button class="go" id="fate-go" style="display:none">继 续</button>
+  </div>
+</div>
+
+<!-- FDR-013 批4 · R6 §6.3 见闻录（极简浮层；纯中文零阿拉伯数字） -->
+<div class="ov in" id="ov-codex">
+  <div class="box">
+    <div class="end-t serif">见 闻 录</div>
+    <div class="sub">机 缘 相 合 · 有 所 不 知</div>
+    <div class="codex-hint" id="codex-hint"></div>
+    <div class="codex-grid" id="codex-grid"></div>
+    <button class="go" id="codex-go">收 起</button>
+  </div>
+</div>
+
+<!-- FDR-013 批4 · R1 表现层视觉叠加层（pointer-events:none，永不阻塞交互） -->
+<div id="fx"></div>
+
 <script>
 /* =========================================================
-   《道心无垢》v3 —— 离线单文件 · 无 LLM · 确定性
+   《道心无垢》—— 离线单文件 · 无 LLM · 确定性
    ---------------------------------------------------------
    四层架构：底层状态 → 引擎配额（境界/地点/派系/混元三重门控）
             → 卡牌（纯叙事） → 玩家 3 选 1 → 引擎结算 → 写回
@@ -234,30 +422,242 @@ body.show-eng .eng{display:block}
    ========================================================= */
 
 /* ---------- 0. 平衡表（19 档 · 首版锚点） ---------- */
-const STAGES = ['凡人','炼气一层','炼气二层','炼气三层','炼气四层','炼气五层',
-                '炼气六层','炼气七层','炼气八层','炼气九层',
-                '筑基初期','筑基中期','筑基后期',
-                '金丹初期','金丹中期','金丹后期',
-                '元婴初期','元婴中期','元婴后期'];
-const BIG = {9:'炼气 → 筑基', 12:'筑基 → 金丹', 15:'金丹 → 元婴'};
-const STEP       = [12,14,20,28,38,50,64,80,100, 320,420,560, 900,1100,1400, 2000,2400,3000];
-const REALM_COEF = [0.5, 0.9,0.9,0.9, 1.1,1.1,1.1, 1.4,1.4,1.4, 1.8,1.9,2.0, 2.4,2.6,2.8, 3.2,3.5,3.8];
-const HP_BASE    = [30,45,55,66,78,91,105,120,136,154, 230,275,330, 560,650,750, 1260,1440,1640];
-const ATK_BASE   = [5,10,14,18,23,28,34,40,47,55, 72,86,103, 160,188,220, 360,415,475];
-const DEF_BASE   = [3,6,8,11,14,17,21,25,29,34, 44,53,64, 100,118,138, 225,260,298];
-const LIFE_CAP   = [60,68,74,80,86,92,98,104,110,118, 150,160,170, 195,206,217, 250,263,276];
+/* FDR-010 批1 · 19 档 → 35 档（增补 §B.3.2 逐格对照 · 首版锚点）
+   硬约束：STAGES.length = 35（idx 0–34）；STEP.length = 34（idx 0–33）。
+   二者差 1 是设计意图 —— idx 34「飞升」是终止态、curStep() 返回 Infinity。
+   ※ 切勿给 STEP 补第 35 项，否则 promoteLoop() 会越过飞升继续升级（v3 越界 bug 变体）。 */
+const STAGES = ['凡人','炼气一层','炼气二层','炼气三层','炼气四层','炼气五层','炼气六层','炼气七层','炼气八层','炼气九层','筑基初期','筑基中期','筑基后期','金丹初期','金丹中期','金丹后期','元婴初期','元婴中期','元婴后期','化神初期','化神中期','化神后期','炼虚初期','炼虚中期','炼虚后期','合体初期','合体中期','合体后期','大乘初期','大乘中期','大乘后期','渡劫初期','渡劫中期','渡劫后期','飞升'];
+const BIG = {9:'炼气 → 筑基', 12:'筑基 → 金丹', 15:'金丹 → 元婴', 18:'元婴 → 化神', 21:'化神 → 炼虚', 24:'炼虚 → 合体', 27:'合体 → 大乘', 30:'大乘 → 渡劫', 33:'渡劫 → 飞升'};
+const STEP = [12,14,20,28,38,50,64,80,100,320, 250,340,540,660,840,1200,1440,1800, 6000,2500,2750,12000,6000,6500,30000,15000,16000,75000,37500,40000,190000,95000,100000,250000];
+const REALM_COEF = [0.5, 0.9,0.9,0.9, 1.1,1.1,1.1, 1.4,1.4,1.4, 1.8,1.9,2.0, 2.4,2.6,2.8, 3.2,3.5,3.8, 4.4,4.8,5.2, 6.0,6.4,6.8, 7.6,8.0,8.4, 9.2,9.6,10.0, 10.8,11.2,11.6, 12.5];
+const HP_BASE    = [30,45,55,66,78,91,105,120,136,154, 230,275,330, 560,650,750, 1260,1440,1640, 2790,3180,3630, 6170,7030,8010, 13620,15530,17700, 30100,34300,39100, 66470,75770,86380, 172760];
+const ATK_BASE   = [5,10,14,18,23,28,34,40,47,55, 72,86,103, 160,188,220, 360,415,475, 830,960,1120, 1960,2270,2630, 4600,5330,6180, 10820,12550,14560, 25480,29560,34290, 68580];
+const DEF_BASE   = [3,6,8,11,14,17,21,25,29,34, 44,53,64, 100,118,138, 225,260,298, 520,600,690, 1210,1390,1600, 2800,3220,3700, 6470,7440,8560, 14980,17230,19810, 39620];
+const LIFE_CAP   = [60,68,74,80,86,92,98,104,110,118, 150,160,170, 195,206,217, 250,263,276, 300,305,310, 336,341,346, 372,377,382, 408,413,418, 444,449,454, 520];
 
 const MAX_TURN = 300;                 // 安全上限（防死循环护栏，非设计目标）
 const TUNE     = 2;                   // 基础吐纳 / 年
 const R_MAX    = 5;                   // 交手轮上限
-const BAG_MAX  = 8;
+const BAG_MAX  = 12;                  // FDR-010：8 → 12（R10 手动换装需要周转空间）
+
+/* FDR-010 批1 · 时间吞噬治理（增补 §B.4）—— 护栏三重：单卡 / 频率 / 全程 */
+const YEAR_BUDGET   = 40;             // 全程 Σ years ≤ 40
+const YEARS_CD_MAX  = 4;              // 一张 years 卡结算后冷却（最多每 5 回合一次）
+const YEARS_CD_INIT = 6;             // 开局前 6 回合不出现 years 卡
+function yearCap(){                   // 单卡上限按境界档：凡人–炼气 2 / 筑基–金丹 3 / 元婴–化神 4 / 炼虚以上 5
+  const s = clamp(S ? S.stage : 0, 0, 34);
+  return s<=9 ? 2 : s<=15 ? 3 : s<=21 ? 4 : 5;
+}
+const WAR_REL_GATE  = -41;            // FDR-010 批1：对阵类战争卡关系门控阈值（逻辑批2启用，先埋常量）
+
+/* FDR-011 批2 · R2 同名功法精进：重复获得同名功法卡按品阶给推进量（v4 §2.2，首版锚点）
+   玄缘以上（仙缘/道缘）为外推档（v4 表列到玄缘，此处按 60→90 的斜率续推） */
+const ART_RETAKE = {'凡缘':15, '灵缘':30, '宝缘':60, '玄缘':90, '仙缘':120, '道缘':150};
+const CP_CAP     = 5;                  // 参悟值上限（v4 §2.2 规则3：×1.04/点，封顶 ×1.20）
+const CP_STEP    = 0.04;
+
+/* FDR-011 批2 · R3 spec 语义表（v4 §3.3，12 种，首版锚点）。承载槽：佩饰(主) + 法器(副)，最多同时生效 2 条 */
+const SPEC_TBL = {
+  heal:     {n:'回春', desc:'疗伤回血更速', stack:false},
+  lifespan: {n:'延寿', desc:'佩之添寿',     stack:false},
+  fame:     {n:'声望', desc:'名望日隆',     stack:false},
+  cult:     {n:'悟道', desc:'吐纳事半功倍', stack:false},
+  ward:     {n:'护体', desc:'受创稍减',     stack:false},
+  escape:   {n:'疾风', desc:'抽身更易',     stack:true },
+  fortune:  {n:'拾遗', desc:'所得更丰',     stack:false},
+  thorns:   {n:'反噬', desc:'伤人者自伤',   stack:true },
+  insight:  {n:'慧根', desc:'功法进境更速', stack:false},
+  karma:    {n:'因果', desc:'命数稍转',     stack:true },
+  vigor:    {n:'固元', desc:'气血更厚',     stack:false},
+  purity:   {n:'净心', desc:'药毒不侵',     stack:false}
+};
+/* spec 数值公式（g = 品阶 0–5）—— 引擎量，非展示串（v4 §3.3，首版锚点） */
+const SPEC_VAL = {
+  heal:     g=>0.05*(g+1),
+  lifespan: g=>4*(g+1),
+  fame:     g=>1 + 0.10*(g+1),      // 倍率
+  cult:     g=>0.04*(g+1),
+  ward:     g=>0.03*(g+1),
+  escape:   g=>2*(g+1),
+  fortune:  g=>0.08*(g+1),
+  thorns:   g=>0.05*(g+1),
+  insight:  g=>1 + 0.06*(g+1),      // 倍率
+  karma:    g=>0.04*(g+1),
+  vigor:    g=>0.03*(g+1),
+  purity:   g=>0.70
+};
+
+/* =========================================================
+   FDR-012 批3 · R3 装备扩容 + R5 天命系（v4 §3 / §5 · 首版锚点）
+   ========================================================= */
+/* R3 §3.2 · 装备境界缩放上限（g0..g5）：低品阶在高境界自动贬值；同件随主人增强 */
+const GEAR_CAP = [8, 12, 20, 34, 60, 100];
+
+/* R3 §8.3 · 新装备表（60 件 · 5 槽 × 6 品阶 × 2）。属性由 mkItem()+gearScale() 按 G_TBL 生成，此处只列标识 */
+const EQ_TBL = [
+{n:'松纹柴斧',slot:'weapon',g:0},
+{n:'铁脊猎矛',slot:'weapon',g:0},
+{n:'百炼直刀',slot:'weapon',g:1,set:'wdloose'},
+{n:'青竹短枪',slot:'weapon',g:1},
+{n:'灵纹长剑',slot:'weapon',g:2},
+{n:'玄铁重锤',slot:'weapon',g:2},
+{n:'寒星剑',slot:'weapon',g:3},
+{n:'蛟脊枪',slot:'weapon',g:3,set:'xsblood'},
+{n:'雷纹古剑',slot:'weapon',g:4},
+{n:'断岳刀',slot:'weapon',g:4},
+{n:'星陨剑',slot:'weapon',g:5},
+{n:'一炁长枪',slot:'weapon',g:5},
+{n:'硬麻短褂',slot:'armor',g:0,set:'smith0'},
+{n:'山牛皮甲',slot:'armor',g:0},
+{n:'百炼锁甲',slot:'armor',g:1},
+{n:'青藤护衣',slot:'armor',g:1,set:'qydisc'},
+{n:'灵犀软甲',slot:'armor',g:2},
+{n:'玄龟背甲',slot:'armor',g:2},
+{n:'玄鳞宝铠',slot:'armor',g:3,set:'xsblood'},
+{n:'云纹法袍',slot:'armor',g:3},
+{n:'罡风战甲',slot:'armor',g:4},
+{n:'绛紫仙衣',slot:'armor',g:4},
+{n:'九曜天甲',slot:'armor',g:5},
+{n:'太虚玄袍',slot:'armor',g:5},
+{n:'铜铃引魂',slot:'treasure',g:0},
+{n:'木鱼镇心',slot:'treasure',g:0},
+{n:'青铜法印',slot:'treasure',g:1,set:'qydisc'},
+{n:'玉髓算盘',slot:'treasure',g:1,set:'hsrun'},
+{n:'玄水宝珠',slot:'treasure',g:2,spec:'heal'},
+{n:'离火小鼎',slot:'treasure',g:2},
+{n:'五雷法剑',slot:'treasure',g:3},
+{n:'阴阳双鱼镜',slot:'treasure',g:3,spec:'ward'},
+{n:'星盘测天',slot:'treasure',g:4,set:'guirelic'},
+{n:'镇岳玄印',slot:'treasure',g:4,spec:'vigor'},
+{n:'混元一气珠',slot:'treasure',g:5,spec:'cult'},
+{n:'太清炼魔鼎',slot:'treasure',g:5,spec:'cult'},
+{n:'芒鞋',slot:'escape',g:0,set:'smith0'},
+{n:'竹排',slot:'escape',g:0},
+{n:'影踪披风',slot:'escape',g:1,spec:'escape',set:'wdloose'},
+{n:'滑索腰带',slot:'escape',g:1,set:'hsrun'},
+{n:'缩地符靴',slot:'escape',g:2,spec:'escape'},
+{n:'御风羽衣',slot:'escape',g:2},
+{n:'踏虚履',slot:'escape',g:3,spec:'escape'},
+{n:'云蛟遁裳',slot:'escape',g:3},
+{n:'逐日天靴',slot:'escape',g:4,spec:'escape'},
+{n:'星移斗篷',slot:'escape',g:4},
+{n:'虚空遁玉',slot:'escape',g:5,spec:'escape'},
+{n:'大挪移令符',slot:'escape',g:5,spec:'escape'},
+{n:'铜钱串',slot:'ornament',g:0,spec:'fortune'},
+{n:'平安结',slot:'ornament',g:0,spec:'ward',set:'wdloose'},
+{n:'静心玉扣',slot:'ornament',g:1,spec:'purity',set:'qydisc'},
+{n:'聚气铜环',slot:'ornament',g:1,spec:'cult',set:'hsrun'},
+{n:'养元玉坠',slot:'ornament',g:2,spec:'vigor'},
+{n:'辟毒香囊',slot:'ornament',g:2,spec:'purity'},
+{n:'凝神玉冠',slot:'ornament',g:3,spec:'insight'},
+{n:'血玉扳指',slot:'ornament',g:3,spec:'thorns',set:'xsblood'},
+{n:'五蕴玉璧',slot:'ornament',g:4,spec:'heal'},
+{n:'因果念珠',slot:'ornament',g:4,spec:'karma'},
+{n:'天机玉符',slot:'ornament',g:5,spec:'insight'},
+{n:'混元道印',slot:'ornament',g:5,spec:'karma'}
+];
+/* 按品阶索引（gradeDrop 用）—— 不用 clamp（此刻 clamp 尚未定义） */
+const EQ_BY_G = [[],[],[],[],[],[]];
+EQ_TBL.forEach(e=>{ const g=(e.g>=0&&e.g<=5)?e.g:0; EQ_BY_G[g].push(e); });
+
+/* R3 §3.5 · 套装表：同套 2 件 / 3 件触发额外效果（含反制的负效果套装） */
+const SET_TBL = {
+  smith0:  {n:'铁匠铺·起手', parts:['松纹柴斧','硬麻短褂','芒鞋'],      p2:{atk:3,def:2},           p3:{atk:5,def:4,esc:3}},
+  hsrun:   {n:'商盟·走货',   parts:['玉髓算盘','滑索腰带','聚气铜环'],  p2:{ssGain:0.12},           p3:{sell:0.25,pay:1}},
+  qydisc:  {n:'青云·弟子',   parts:['青藤护衣','青铜法印','静心玉扣'],  p2:{contribGain:0.10},      p3:{breakP:0.03,artGain:0.10}},
+  wdloose: {n:'无定·散修',   parts:['影踪披风','百炼直刀','平安结'],    p2:{esc:5},                 p3:{fleeP:0.06,bag:2}},
+  xsblood: {n:'血煞·凶器',   parts:['血玉扳指','蛟脊枪','玄鳞宝铠'],    p2:{atk:6},                 p3:{atk:10,lifeMax:-5}},
+  guirelic:{n:'归墟·古物',   parts:['归墟古剑','遗蜕之戒','星盘测天'],  p2:{xuanDrop:0.15},         p3:{fateShift:0.08,xuanWeight:1.3}}
+};
+
+/* R5 §5.3/§5.4 · 天命常数表（roll 分布 / 五档奖惩 / 天命值偏移） */
+const FATE_CD_INIT = 6;      // 开局前 6 回合不出现（§5.5）
+const FATE_CD_MAX  = 4;      // 结算一张天命卡后冷却（最多每 5 回合一次）
+const FATE_TIERS   = ['大吉','吉','平','无咎','大凶'];
+const FATE_TBL = {
+  base: {'大吉':0.08, '吉':0.22, '平':0.40, '无咎':0.20, '大凶':0.10},
+  risk: {
+    low:  {'大吉':0.05, '吉':0.25, '平':0.46, '无咎':0.20, '大凶':0.04},
+    std:  {'大吉':0.08, '吉':0.22, '平':0.40, '无咎':0.20, '大凶':0.10},
+    high: {'大吉':0.15, '吉':0.20, '平':0.23, '无咎':0.20, '大凶':0.22}
+  },
+  /* base 为炼气期基准；量 = base × REALM_COEF[stage]（§5.3.2） */
+  tierEffect: {
+    '大吉': {cultivate:150, ss:200, lifespan:8,  dao:1, dropHigh:true},
+    '吉':   {cultivate:80,  ss:100, fame:3},
+    '平':   {cultivate:40},
+    '无咎': {ss:-40, cultivate:-20},
+    '大凶': {lifespan:-12, hpMaxPct:-0.08, wound:'heavy', enemy:1, dao:-1}
+  },
+  /* shift 作用：shift=(S.fate−50)/50 + Σ spec.karma，上限 +0.35（§5.4） */
+  shift: {cap:0.35, apply:{'大吉':0.06, '吉':0.05, '无咎':-0.05, '大凶':-0.06}}
+};
+
+/* =========================================================
+   FDR-013 批4 · R6 隐藏组合卡（v4 §6 / §8.4 · 首版锚点 · 24 组）
+   双轨触发：history = S.seenCard（已选过的卡，永久）；
+             hold    = 同时持有（装备槽 / 行囊 / 功法 S.seenArt）
+   理由：贴合「三选一」种因玩法 + 让「搭配」本身成立；不碰抽卡池、不越门控。
+   红线：n / mem / ef（展示串）零阿拉伯数字；数值只在 fx（引擎）与结算行。
+   ========================================================= */
+const COMBO_TBL = [
+ {id:'C-01', n:'归墟之匙', track:'history', mem:['归墟的星辰砂','遗蜕手上的戒指','洞天里的道音'], ef:'得《归墟之门》· 玄缘更厚',
+  fx:{unlockCard:'归墟之门', xuanDrop:1.5}, cond:()=> hist('归墟的星辰砂')&&hist('遗蜕手上的戒指')&&hist('洞天里的道音')},
+ {id:'C-02', n:'青石镇的根', track:'history', mem:['同村的阿石','借米的邻居','路边的钱袋'], ef:'声望与天命俱长 · 开一段乡邻旧情',
+  fx:{fame:10, fate:8, unlockEnding:'乡邻送行'}, cond:()=> hist('同村的阿石')&&hist('借米的邻居')&&hist('路边的钱袋')},
+ {id:'C-03', n:'血债', track:'history', mem:['受伤的陌生人','替人挡下来的那一击','旧友的旧账'], ef:'攻击大增 · 道心有损 · 结一仇家',
+  fx:{atk:12, dao:-1, enemy:1}, cond:()=> hist('受伤的陌生人')&&hist('替人挡下来的那一击')&&hist('旧友的旧账')},
+ {id:'C-04', n:'剑冢双绝', track:'hold', mem:['青云剑典·主修','兼修之攻伐'], ef:'主修攻伐愈利（随参悟加深）',
+  fx:{mainAtkBonusPerCp:0.05}, cond:()=>{ const m=mainArt(); return !!(m&&m.n==='青云剑典'&&(m.cp||0)>=2&&secArts().some(a=>a.type==='攻伐')); }},
+ {id:'C-05', n:'五行归元', track:'hold', mem:['五行五属之功'], ef:'全功法属性提升 · 得《大衍》',
+  fx:{artMul:1.15, unlockCard:'大衍'}, cond:()=>{ const els={}; S.arts.forEach(a=>{ if(a.el&&a.el!=='无') els[a.el]=1; }); return Object.keys(els).length>=5; }},
+ {id:'C-06', n:'铁匠铺的起手', track:'hold', mem:['松纹柴斧','硬麻短褂','芒鞋'], ef:'与同装之势同源（不叠）',
+  fx:{setDup:'smith0'}, cond:()=> setHas('smith0')},
+ {id:'C-07', n:'商道', track:'hold', mem:['玉髓算盘','滑索腰带','聚气铜环'], ef:'与同装之势同源（不叠）',
+  fx:{setDup:'hsrun'}, cond:()=> setHas('hsrun')},
+ {id:'C-08', n:'青云弟子服', track:'hold', mem:['青藤护衣','青铜法印','静心玉扣'], ef:'与同装之势同源（不叠）',
+  fx:{setDup:'qydisc'}, cond:()=> setHas('qydisc')},
+ {id:'C-09', n:'血煞凶器', track:'hold', mem:['血玉扳指','蛟脊枪','玄鳞宝铠'], ef:'与同装之势同源（不叠）',
+  fx:{setDup:'xsblood'}, cond:()=> setHas('xsblood')},
+ {id:'C-10', n:'归墟古物', track:'hold', mem:['归墟古剑','遗蜕之戒','星盘测天'], ef:'与同装之势同源（不叠）',
+  fx:{setDup:'guirelic'}, cond:()=> setHas('guirelic')},
+ {id:'C-11', n:'丹道', track:'history', mem:['丹房帮工','药铺的掌柜','药铺的一碗汤'], ef:'丹药见效更速 · 丹毒更浅',
+  fx:{pillMul:1.5, danPoisonMul:0.7}, cond:()=> hist('丹房帮工')&&hist('药铺的掌柜')&&hist('药铺的一碗汤')},
+ {id:'C-12', n:'兽语', track:'history', mem:['山道上的雨','老猎户的听风诀','林子里那头鹿'], ef:'遁走更稳 · 遇兽可安抚',
+  fx:{fleeP:0.10, unlockOption:'安抚'}, cond:()=> hist('山道上的雨')&&hist('老猎户的听风诀')&&hist('林子里那头鹿')},
+ {id:'C-13', n:'渡口三别', track:'history', mem:['渡口的先生','渡口的船家','泽边船家的求助'], ef:'声望与天命俱长 · 水行更顺',
+  fx:{fame:8, fate:6, waterCultMul:1.2}, cond:()=> hist('渡口的先生')&&hist('渡口的船家')&&hist('泽边船家的求助')},
+ {id:'C-14', n:'妄念', track:'history', mem:['墙外的传功','玉简里的残念','心魔'], ef:'攻击大增 · 道心大损（走火入魔）',
+  fx:{dao:-2, atk:15}, cond:()=> hist('墙外的传功')&&hist('玉简里的残念')&&hist('心魔')},
+ {id:'C-15', n:'无量心', track:'history', mem:['屋后的月亮','夜里的静','洞天里的枯坐'], ef:'道心愈明 · 冲境更稳',
+  fx:{dao:1, breakP:0.05}, cond:()=> hist('屋后的月亮')&&hist('夜里的静')&&hist('洞天里的枯坐')},
+ {id:'C-16', n:'天命所归', track:'hold', mem:['因果念珠','天机玉符','天命臻至'], ef:'吉签更易 · 凶签渐远（永改命数分布）',
+  fx:{luckyP:0.10, badP:-0.08}, cond:()=> held('因果念珠')&&held('天机玉符')&&(S.fate||0)>=75},
+ {id:'C-17', n:'逆命者', track:'history', mem:['逆天改命','与天对赌','赌命'], ef:'天命凶签可重掷（每局有尽）',
+  fx:{fateReroll:3}, cond:()=> hist('逆天改命')&&hist('与天对赌')&&hist('赌命')},
+ {id:'C-18', n:'同门之义', track:'history', mem:['同门的照应','同门的倾轧','同门替你推宫过血'], ef:'贡献获取更丰 · 护法层数增',
+  fx:{contribGain:1.3, guard:1}, cond:()=> hist('同门的照应')&&hist('同门的倾轧')&&hist('同门替你推宫过血')},
+ {id:'C-19', n:'斩因果', track:'history', mem:['断因果','遗蜕的威压','心魔坐了一整夜'], ef:'仇怨尽消 · 天命更长 · 寿元有折',
+  fx:{enemyClear:true, fate:10, lifespan:-10}, cond:()=> hist('断因果')&&hist('遗蜕的威压')&&hist('心魔坐了一整夜')},
+ {id:'C-20', n:'药王遗泽', track:'history', mem:['药王的旧圃','坊市药摊的边角料','药铺的一碗汤'], ef:'疗伤更速 · 得药更丰',
+  fx:{healMul:1.4, herb:5}, cond:()=> hist('药王的旧圃')&&hist('坊市药摊的边角料')&&hist('药铺的一碗汤')},
+ {id:'C-21', n:'无定之义', track:'hold', mem:['无定散修盟','散修的酒局','凑份子'], ef:'遁走更易 · 人情更稠',
+  fx:{esc:8, relGainMul:1.3}, cond:()=> !!(S.sect&&S.sect.id==='wd')&&hist('散修的酒局')&&hist('凑份子')},
+ {id:'C-22', n:'炼体三重', track:'hold', mem:['铁骨锻体诀','玄阴凝骨功','青丘化形篇'], ef:'炼体功法更劲 · 气血更厚',
+  fx:{bodyArtMul:1.3, hpMaxPct:0.12}, cond:()=> held('铁骨锻体诀')&&held('玄阴凝骨功')&&held('青丘化形篇')},
+ {id:'C-23', n:'一炁化三清', track:'hold', mem:['主修参悟圆满','道心无垢'], ef:'主修全属性提升 · 开三清之局',
+  fx:{mainMul:1.25, unlockEnding:'三清'}, cond:()=>{ const m=mainArt(); return !!(m&&(m.cp||0)>=CP_CAP&&S.dao>=DAO.length-1); }},
+ {id:'C-24', n:'飞升同路人', track:'history', mem:['中州来的旧相识','接引前的一缕霞光','与天对赌'], ef:'渡劫飞升之把握更稳',
+  fx:{ascendP:0.10}, cond:()=> hist('中州来的旧相识')&&hist('接引前的一缕霞光')&&hist('与天对赌')}
+];
+const COMBO_BY_ID = {}; COMBO_TBL.forEach(cm=>{ COMBO_BY_ID[cm.id]=cm; });
 
 const ROOT_GRADES = [['伪灵根',0.80,-0.08],['下品',0.90,-0.03],['中品',1.00,0],
                      ['上品',1.15, 0.05],['变异',1.25, 0.03],['天灵根',1.40,0.08]];
 const WUXING = ['金','木','水','火','土'];
 const BONE_MUL = b => b<=30?0.9 : b<=50?0.95 : b<=70?1.0 : b<=85?1.05 : b<=95?1.1 : 1.2;
 const DAO = [['破碎',-0.30],['不稳',-0.10],['平稳',0],['通明',0.15],['无垢',0.30]];
-const TIER_W = {'凡缘':6, '灵缘':3, '宝缘':1, '玄缘':0.4};
+const TIER_W = {'凡缘':6, '灵缘':3, '宝缘':1, '玄缘':0.4, '仙缘':0.15, '道缘':0.05};  // FDR-010 批1：追加两档（仙缘/道缘）
 
 /* ---------- 1. 五行 ---------- */
 const GEN_W  = {'木':'火','火':'土','土':'金','金':'水','水':'木'};
@@ -347,23 +747,42 @@ const LOCS = [
   {id:'煞', name:'血煞岭',   min:6,  qi:45, own:'xs', enter:'岭上的土是红的，走近了才看清是旧血。', foes:'血徒 · 噬心堂众', pw:[70,130]},
   {id:'泽', name:'云梦泽',   min:8,  qi:40, own:null, enter:'你到了云梦泽畔。',           foes:'水妖 · 魔修',        pw:[120,150]},
   {id:'丘', name:'青丘',     min:9,  qi:60, own:'qq', enter:'林子里没有路，可你走的方向一直没错。', foes:'巡山妖 · 化形妖', pw:[140,220]},
-  {id:'天', name:'归墟洞天', min:10, qi:85, own:null, enter:'你踏入归墟洞天。',           foes:'化形妖 · 古修遗蜕',  pw:[220,300]}
+  {id:'天', name:'归墟洞天', min:10, qi:85, own:null, enter:'你踏入归墟洞天。',           foes:'化形妖 · 古修遗蜕',  pw:[220,300]},
+  /* FDR-010 批1 · 化神以上离开南荒（v4 §4.5 · LOCS 9→13）。pw 与南荒地界量级断层，不越级则遇不到 */
+  {id:'州', name:'中州边陲', min:19, qi:90,  own:null, enter:'你顺着地脉往北，走到了南荒之外。天宽了，人少了，气也清了。', foes:'化神散修 · 中州执事', pw:[2000,4000]},
+  {id:'虚', name:'虚空渡口', min:22, qi:110, own:null, enter:'渡口没有岸，也没有船。只有一阵一阵能载人的潮。',           foes:'虚空罡兽 · 迷航修士', pw:[6000,12000]},
+  {id:'墟2',name:'天南古战场',min:28,qi:130, own:null, enter:'方圆百里还是碎的。断刃插了一地，风都绕着走。',             foes:'残魂 · 无主战傀',     pw:[30000,60000]},
+  {id:'雷', name:'雷泽',     min:31, qi:150, own:null, enter:'雷泽的地是软的，踩下去会陷。天上的雷一直悬着，不落。',     foes:'劫中妖 · 雷精',       pw:[70000,140000]}
 ];
 const LOC_INDEX = {}; LOCS.forEach((L,i)=>{LOC_INDEX[L.id]=i;});
+/* FDR-010 批1 · 地盘初始快照（增补 §C.1.3 可逆性）：newGame() 时还原 LOCS[].own */
+const LOCS_OWN0 = LOCS.map(L=>L.own);
 
 /* ---------- 6. 战斗 / 突破 常量 ---------- */
 const LOOT_TBL = {
-  '凡缘':{ss:[8,20],   herb:[0,1], mat:[0,0], fame:1, drop:0.20, w:[8,2,0,0],    exp:[8,14,30,45][0]},
-  '灵缘':{ss:[25,60],  herb:[1,2], mat:[0,1], fame:2, drop:0.35, w:[5,5,2,0],    exp:14},
-  '宝缘':{ss:[80,180], herb:[2,3], mat:[1,2], fame:4, drop:0.50, w:[1,4,4,2],    exp:30},
-  '玄缘':{ss:[250,500],herb:[3,5], mat:[2,4], fame:8, drop:0.70, w:[0,1,4,4],    exp:45}
+  '凡缘':{ss:[8,20],   herb:[0,1], mat:[0,0], fame:1, drop:0.20, w:[8,2,0,0,0,0],    exp:[8,14,30,45][0]},
+  '灵缘':{ss:[25,60],  herb:[1,2], mat:[0,1], fame:2, drop:0.35, w:[5,5,2,0,0,0],    exp:14},
+  '宝缘':{ss:[80,180], herb:[2,3], mat:[1,2], fame:4, drop:0.50, w:[1,4,4,2,0,0],    exp:30},
+  '玄缘':{ss:[250,500],herb:[3,5], mat:[2,4], fame:8, drop:0.70, w:[0,1,4,4,2,1],    exp:45},
+  /* FDR-010 批1 · 新品阶（增补 §A.1.3）。🔴 w 必须 6 位，否则 gradeDrop() 永远 g≤3、掉不出宝器/道器 */
+  '仙缘':{ss:[600,1200], herb:[5,8],  mat:[4,6],  fame:12, drop:0.85, w:[0,0,1,2,3,2],  exp:60},
+  '道缘':{ss:[1500,3000],herb:[8,12], mat:[6,10], fame:20, drop:0.95, w:[0,0,0,1,3,4],  exp:80}
 };
-const LOOT_ART = {'凡缘':0,'灵缘':0.10,'宝缘':0.25,'玄缘':0.50};
+const LOOT_ART = {'凡缘':0,'灵缘':0.10,'宝缘':0.25,'玄缘':0.50,'仙缘':0.65,'道缘':0.80};  // FDR-010 批1
+/* FDR-010 批1 · 九个关口（增补 §B.3.5）；字段名沿用主文件现有的 back/life/hp/cd/fire/dur，仅 cd 列 ×0.5、其余沿用 v4 §4.3 */
 const BRK_FAIL = {
-  9 :{back:0.65, life:-6,  hp:-0.08, cd:3,  fire:0.30, dur:0},
-  12:{back:0.55, life:-12, hp:-0.14, cd:6,  fire:0.40, dur:1},
-  15:{back:0.45, life:-20, hp:-0.20, cd:10, fire:0.50, dur:0}
+  9 :{back:0.65, life:-6,  hp:-0.08, cd:2,  fire:0.30, dur:0},
+  12:{back:0.55, life:-12, hp:-0.14, cd:3,  fire:0.40, dur:1},
+  15:{back:0.45, life:-20, hp:-0.20, cd:5,  fire:0.50, dur:0},
+  18:{back:0.40, life:-28, hp:-0.24, cd:6,  fire:0.52, dur:1},
+  21:{back:0.36, life:-38, hp:-0.27, cd:8,  fire:0.56, dur:1},
+  24:{back:0.32, life:-50, hp:-0.30, cd:9,  fire:0.60, dur:1},
+  27:{back:0.30, life:-62, hp:-0.32, cd:11, fire:0.64, dur:1},
+  30:{back:0.28, life:-78, hp:-0.34, cd:12, fire:0.68, dur:1},
+  33:{back:0.22, life:-110,hp:-0.40, cd:15, fire:0.75, dur:2}
 };
+/* FDR-010 批1 · 冲境成功率基数（v4 §4.3 · 替换 brkTerms() 的三元表达式）—— 越往上越难 */
+const BASE_BRK = { 9:0.42, 12:0.32, 15:0.24, 18:0.20, 21:0.17, 24:0.15, 27:0.13, 30:0.11, 33:0.09 };
 const P_ROOTSTEP = {'天灵根':0.08,'上品':0.05,'中品':0,'下品':-0.03,'伪灵根':-0.08,'变异':0.03};
 
 /* FDR-007 · 改投门庭的代价（由 askChoice 确认后才结算，不得静默发生） */
@@ -711,6 +1130,278 @@ K('宗门','玄缘','丹房首座','丹房的钥匙交到了你手上。炉里�
 
 ];
 
+/* ===== 卡池 E · FDR-010 增补（R7 §A.4 一百零六张 + R9 §C.2 二十六张 = 一百三十二张 · 文案由脚本从增补原文逐字抽取，未手工转写） ===== */
+const CARDS_ADD = [
+{"c":"天材地宝","tier":"仙缘","t":"化神洞天的灵脉金芯","d":"洞天最深处，一线金光从岩缝里透出来。你凿了三日，才把那截金芯整根取出。","f":"地有脉，脉有芯。","cost":"你凿得两手都是泡。","ef":{"cultivate":4000,"material":8},"min":19},
+{"c":"机缘奇遇","tier":"仙缘","t":"中州来的旧相识","d":"那人一身中州样式，站在山门外认出了你。你一时想不起他是谁。","f":"走远路的人，总会在别处碰见。","cost":"他说的地名，你一个也没听过。","ef":{"cultivate":3000,"rel":{"n":"中州故人","v":2},"fame":5},"min":19},
+{"c":"秘境","tier":"仙缘","t":"化神洞天","d":"洞天的门没有门扇，只有一道横着的台阶。你走上去，回头看不见来路。","f":"往上走的地方，最不讲回头。","cost":"你在里面待了一季。","ef":{"cultivate":4500,"ss":3000},"min":19},
+{"c":"心境","tier":"仙缘","t":"一念化神","d":"你在蒲团上坐了很久。某个瞬间，脑子里那口井忽然见了底。","f":"想通一件事，只在一念之间。","cost":"你这一念，耗了好些年。","ef":{"cultivate":2600,"dao":1},"min":19},
+{"c":"功法","tier":"仙缘","t":"元神真解","d":"一册讲「神」的旧书，字不多，句句要停下来想。你想了三个月。","f":"神这东西，看不见，可它管着你看得见的东西。","cost":"你三个月只读了一页。","ef":{"art":{"n":"化神诀","el":"无","type":"养元","lv":0},"cultivate":2500},"min":19},
+{"c":"器物","tier":"仙缘","t":"台上的星陨剑","d":"剑身有细密的坑，像是被什么砸过。你握住时，掌心一阵发烫。","f":"从天上掉下来的铁，脾气大。","cost":"你差点握不住它。","ef":{"equip":{"n":"星陨剑","slot":"weapon","g":5}},"min":19},
+{"c":"危险","tier":"仙缘","t":"神念反噬","d":"你把神识往外放得太远。收回来的时候，有一半不是你的了。","f":"放出去容易，收回来难。","cost":"你头痛了很久，看东西都是双的。","ef":{"cultivate":4000,"hpMax":{"pct":-0.08},"dao":-1},"min":19},
+{"c":"地方","tier":"仙缘","t":"登临中州","d":"你顺着地脉往北走了大半年。越走天越宽，人越少，气越清。","f":"走远了，才知道南荒有多小。","cost":"你把南荒的东西都留在了山外。","ef":{"locate":"州"},"min":19,"loc":["野","秘","天"]},
+{"c":"战斗","tier":"仙缘","t":"中州的执法者","d":"一个执令的人拦住你，说你身上的东西来路不明。","f":"管得宽的地方，规矩也多。","cost":"他没给你解释的机会。","ef":{"battle":{"foe":"中州执法者","scale":1.05,"loot":"仙缘","canFlee":true}},"min":19},
+{"c":"人际","tier":"仙缘","t":"地脉上的引路人","d":"一个瞎眼的老修士说，他能听见地脉往哪儿走。你信了一半。","f":"看不见的人，听的比谁都清。","cost":"你扶了他一路，也听了一路。","ef":{"cultivate":1200,"rel":{"n":"引路老人","v":2},"fame":2},"min":19},
+{"c":"宗门","tier":"仙缘","t":"宗门的试探","d":"堂上坐着的人问你，愿不愿意把手里那件东西交出来。","f":"问你愿不愿意，其实已经定了。","cost":"你交了，也记住这张脸。","ef":{"cultivate":2000,"contrib":40,"dao":-1},"min":19,"sect":"in"},
+{"c":"宗门","tier":"仙缘","t":"长老的托付","d":"长老把你叫到静室，交了你一样东西，没说是什么。","f":"不说是什么，才是正经事。","cost":"你接过来，肩上多了一座山。","ef":{"cultivate":2000,"contrib":55,"debts":1},"min":19,"sect":"in"},
+{"c":"疗伤","tier":"仙缘","t":"洞天静养","d":"你在洞天里躺了不知多久。等醒来，身上的旧伤像是被人抹平了。","f":"有的地方，躺着也是修行。","cost":"你躺掉了好些个年头。","ef":{"heal":{"pct":0.85},"cure":true,"hpMax":{"pct":0.04},"years":3},"min":19,"loc":["天"]},
+{"c":"天材地宝","tier":"仙缘","t":"炼虚深处的九幽玄莲","d":"虚空夹缝里悬着一朵玄莲，瓣上凝着黑水。你伸手去摘，指尖先凉到了骨头。","f":"开在没人到过的地方。","cost":"你回来时手心还发青。","ef":{"cultivate":7500,"herb":10,"lifespan":6},"min":22},
+{"c":"机缘奇遇","tier":"仙缘","t":"虚空里的一阵潮汐","d":"没有风，可你身上的衣服全飘了起来。潮汐过去时，你觉得自己轻了一截。","f":"空的里头，也有东西在动。","cost":"潮汐卷走了你几样随身的东西。","ef":{"cultivate":6000,"dao":1,"years":2},"min":22},
+{"c":"秘境","tier":"仙缘","t":"虚空裂口","d":"地面上裂开一道口子，里面没有黑，也没有光。你把绳子系在腰上，进去了。","f":"没有底的地方，别系活扣。","cost":"绳子出来时短了一截。","ef":{"cultivate":8500,"material":8,"years":3},"min":22},
+{"c":"心境","tier":"仙缘","t":"斩虚之惑","d":"一个念头反复来缠你。这一夜，你把它认了出来，然后斩了。","f":"认出来，才斩得下去。","cost":"斩完了，你也空了一块。","ef":{"cultivate":5000,"dao":1,"arts":2},"min":22},
+{"c":"功法","tier":"仙缘","t":"虚空引气篇","d":"虚空里没有气，可这本书教你怎么从没有里取。你照着试了一回，居然真有。","f":"空的地方，才装得下东西。","cost":"你试的时候，差点让风卷走。","ef":{"art":{"n":"虚空引气","el":"无","type":"遁法","lv":0},"cultivate":4800},"min":22},
+{"c":"器物","tier":"仙缘","t":"太清炼魔鼎","d":"鼎是冷的，鼎底却一直温着。据说炼过的东西，从来不会再回原样。","f":"炼过的东西，改不回去了。","cost":"你盯着鼎底看久了，头会晕。","ef":{"equip":{"n":"太清炼魔鼎","slot":"treasure","g":5,"spec":"cult"}},"min":22},
+{"c":"危险","tier":"仙缘","t":"虚空罡风","d":"没有来处的风，从骨头缝里穿过去。你蹲在地上，等它过去。","f":"真正的风，穿的是人，不是衣服。","cost":"风过去之后，你像是被抽走了一段日子。","ef":{"cultivate":7500,"material":6,"years":4},"min":22},
+{"c":"地方","tier":"仙缘","t":"渡虚而去","d":"虚空渡口没有船。你在那儿等了三个月，等来一阵能载人的潮汐。","f":"没有渡船的地方，等的是潮。","cost":"你身上带的干粮，只够两个月。","ef":{"locate":"虚"},"min":22,"loc":["州"]},
+{"c":"战斗","tier":"仙缘","t":"虚空里的罡兽","d":"那东西没有皮，也没有骨头，只有一层抖动的灰。它冲着你的方向来了。","f":"没有脸的东西，最难看懂。","cost":"它先动的。","ef":{"battle":{"foe":"虚空罡兽","scale":1.15,"loot":"仙缘","canFlee":true,"ambush":true}},"min":22},
+{"c":"人际","tier":"仙缘","t":"渡口上的摆渡人","d":"那人说自己只在没有岸的地方撑船。他问你上不上。","f":"没有岸的河，也得有人撑。","cost":"你上了船，就没再问去哪儿。","ef":{"cultivate":2200,"rel":{"n":"渡虚人","v":2},"dao":1},"min":22},
+{"c":"宗门","tier":"仙缘","t":"门中的清议","d":"门里要议一件大事，把你也叫去了。你听着，没敢先开口。","f":"议事的时候，先开口的先没退路。","cost":"你坐了一整夜，腿都麻了。","ef":{"cultivate":4000,"contrib":60,"enemy":1},"min":22,"sect":"in"},
+{"c":"宗门","tier":"仙缘","t":"教中传法","d":"门里让你把一门旧法讲给后辈听。你讲着讲着，自己也明白了些。","f":"讲出来，才是自己的。","cost":"你为了这一讲，翻了三天的旧书。","ef":{"cultivate":4000,"contrib":45,"fame":4,"arts":1},"min":22,"sect":"in"},
+{"c":"器物","tier":"仙缘","t":"大挪移令符","d":"一块不起眼的令牌，背面刻着两处地名。你把手指按上去，地在脚下晃了一下。","f":"有去处的牌子，攥不住。","cost":"你按上去之后，站了半天才站稳。","ef":{"equip":{"n":"大挪移令符","slot":"escape","g":5,"spec":"escape"}},"min":22},
+{"c":"疗伤","tier":"仙缘","t":"虚空里的息壤","d":"你在一处空里捡到一撮会呼吸的土。按在伤处，那儿就慢慢长回来了。","f":"会喘气的土，才养得住人。","cost":"你按了很久，土也薄了一层。","ef":{"heal":{"pct":0.9},"cure":true,"material":2},"min":22,"loc":["州","虚"]},
+{"c":"天材地宝","tier":"仙缘","t":"合体旧战场的太初紫芝","d":"旧战场的土是黑的，紫芝就长在一截断戟边上。你连根带土捧了回来。","f":"死过人的地方，长的东西最实。","cost":"你在那儿站了半日，没敢动那截戟。","ef":{"cultivate":14000,"herb":12},"min":25},
+{"c":"机缘奇遇","tier":"仙缘","t":"残界留下的一线道音","d":"破碎的地方飘着一线声音，不成调，可你听着听着就坐下了。","f":"散的地方，剩下的话都不完整。","cost":"你坐了很久，起身时天已经换了几回。","ef":{"cultivate":11500,"dao":2},"min":25},
+{"c":"秘境","tier":"仙缘","t":"合体修士的旧战场","d":"方圆百里的地貌还是碎的。断刃插了一地，没有一把还认主。","f":"打完的地方，连风都绕着走。","cost":"你捡起一把断刃，手被割了。","ef":{"cultivate":16000,"ss":6000,"years":3},"min":25},
+{"c":"心境","tier":"仙缘","t":"合体之我","d":"你看着镜子里的自己，忽然觉得那个「我」字太大了。","f":"把「我」看小，天地就大了。","cost":"你照了半夜的镜子。","ef":{"cultivate":9500,"dao":2,"lifespan":5},"min":25},
+{"c":"功法","tier":"仙缘","t":"合道篇","d":"篇上讲的是「合」。你练到第七日，才明白合的不是两样东西，是一样。","f":"合久了，就分不出哪个是自己。","cost":"你练得忘了吃，也忘了睡。","ef":{"art":{"n":"合道篇","el":"土","type":"炼体","lv":0},"cultivate":9000},"min":25},
+{"c":"器物","tier":"仙缘","t":"天机玉符","d":"玉上有一道极细的裂。你把耳朵贴上去，说不上听见了什么。","f":"听得见天机的人，活得不轻松。","cost":"你贴上去之后，一夜没睡。","ef":{"equip":{"n":"天机玉符","slot":"ornament","g":5,"spec":"insight"}},"min":25},
+{"c":"危险","tier":"仙缘","t":"旧敌寻上门","d":"那人站在门口，什么也没说。你认得那双眼睛，很多年前见过。","f":"结下的仇，跨得过境界。","cost":"这一回，是冲你来的。","ef":{"battle":{"foe":"旧敌","scale":1.2,"loot":"仙缘","canFlee":true,"ambush":true},"enemy":1},"min":25},
+{"c":"地方","tier":"仙缘","t":"天南旧战场","d":"战场没有边。你走了三天，脚下的东西从土变成了碎铁。","f":"打不完的地方，走不到头。","cost":"你走的时候，鞋底磨穿了。","ef":{"locate":"墟2"},"min":25,"loc":["虚","州"]},
+{"c":"战斗","tier":"仙缘","t":"合体期的老怪","d":"山谷里坐着一个人，白发垂地。你靠近时他睁开了眼。","f":"坐得越久的，动起来越慢，也越狠。","cost":"他站起来的时候，山谷里的风停了。","ef":{"battle":{"foe":"合体老怪","scale":1.25,"loot":"仙缘","canFlee":true}},"min":25},
+{"c":"人际","tier":"仙缘","t":"旧战场上的守坟人","d":"那人守着一片没有名字的坟，说自己也不知道守的是谁。","f":"不知道守的是谁，也守着。","cost":"你陪他坐了一夜。","ef":{"cultivate":3800,"rel":{"n":"守坟人","v":2},"karma":1},"min":25},
+{"c":"宗门","tier":"仙缘","t":"门中的旧案","d":"一卷旧案摆在你面前，牵涉到门里一位已故的长老。","f":"旧案翻开，谁都不干净。","cost":"你看完，把它放了回去。","ef":{"cultivate":7500,"contrib":70,"dao":1,"enemy":1},"min":25,"sect":"in"},
+{"c":"宗门","tier":"仙缘","t":"宗门的护山大阵","d":"大阵缺一个人坐镇。执事看了你一眼，你站了出来。","f":"阵眼上的人，是拿命填的。","cost":"你坐了七天七夜，人也薄了一层。","ef":{"cultivate":7500,"contrib":90,"hpMax":{"pct":-0.06}},"min":25,"sect":"in"},
+{"c":"疗伤","tier":"仙缘","t":"合体修士的遗蜕旁","d":"一具坐化的遗蜕旁边，气场还没散。你借着它养了伤。","f":"死人留下的，最安静。","cost":"你出来的时候，觉得自己老了些。","ef":{"heal":{"pct":1},"cure":true,"cultivate":8000,"years":2},"min":25,"loc":["墟2","虚"]},
+{"c":"天材地宝","tier":"道缘","t":"天外落下的混元道果","d":"天上掉下一颗果子，落地时陷了半尺。你伸手去拿，胳膊沉得几乎抬不起来。","f":"天外的东西，不认这片地。","cost":"你捧它的时候，膝盖一直弯着。","ef":{"cultivate":30000,"lifespan":10},"min":28},
+{"c":"机缘奇遇","tier":"道缘","t":"天外那一眼","d":"云裂开一条缝。缝里有东西看了你一眼，只有一瞬。你的腿软了半日。","f":"被看见，是件很重的事。","cost":"你不敢再往那片云看第二眼。","ef":{"cultivate":24000,"dao":2,"years":4},"min":28},
+{"c":"秘境","tier":"道缘","t":"天外陨界","d":"陨石砸出的坑底有别的天。你站在坑里抬头，看见的不是这片云。","f":"从天上掉下来的地方，天是歪的。","cost":"你在坑里分不清方向。","ef":{"cultivate":34000,"material":14,"years":4},"min":28},
+{"c":"心境","tier":"道缘","t":"大乘无我","d":"你试着把「我」放下。放下的一瞬间，身上的许多东西也跟着轻了。","f":"无我，不是没有，是不占地方。","cost":"你差点找不回自己。","ef":{"cultivate":20000,"dao":2},"min":28},
+{"c":"功法","tier":"道缘","t":"天罡秘典","d":"秘典上的字是刻的，不是写的。每一笔都带着一股硬气。","f":"天罡的东西，从不绕弯。","cost":"你抄它的时候，笔折了三根。","ef":{"art":{"n":"天罡秘典","el":"金","type":"攻伐","lv":0},"cultivate":19000},"min":28},
+{"c":"器物","tier":"道缘","t":"混元道印","d":"印是空的，什么也没刻。可你抓着它的时候，心里那些乱的东西自己排好了队。","f":"空印压得住乱心。","cost":"你抓着它，手一直没松。","ef":{"equip":{"n":"混元道印","slot":"ornament","g":5,"spec":"karma"}},"min":28},
+{"c":"危险","tier":"道缘","t":"天外落下的余烬","d":"天上落下一片还热着的东西。你退得慢了半步，半条手臂就没了知觉。","f":"从上面掉下来的，都不讲道理。","cost":"你那半条手臂，养了很久。","ef":{"cultivate":30000,"hpMax":{"pct":-0.12},"years":3},"min":28},
+{"c":"地方","tier":"道缘","t":"天南的古战场","d":"地是碎的，铁是碎的，连风都是碎的。你站在这儿，觉得自己也是碎的。","f":"碎的地方，站久了人也碎。","cost":"你站了半天，一句话没说。","ef":{"locate":"墟2"},"min":28,"loc":["虚","州"]},
+{"c":"战斗","tier":"道缘","t":"残魂里头的旧将","d":"一具无主的战傀从土里站起来。它没有脸，可它的动作像是认得你。","f":"没了主的兵，还在等人。","cost":"它冲你来了。","ef":{"battle":{"foe":"无主战傀","scale":1.3,"loot":"道缘","canFlee":true}},"min":28},
+{"c":"人际","tier":"道缘","t":"天外的同路人","d":"那人说自己来过这片天外三回，每一回都只认得路，不认得人。","f":"认得路的人，未必认得你。","cost":"他说完就走了，没留名字。","ef":{"cultivate":7000,"rel":{"n":"天外同路人","v":2},"fame":4},"min":28},
+{"c":"宗门","tier":"道缘","t":"开山收徒","d":"门里让你开山收徒。你在山下站了一天，来的孩子里没有一个像你当年。","f":"想找个像自己的，最后都找不到。","cost":"你还是收了三个。","ef":{"cultivate":16000,"contrib":80,"fame":8,"debts":1},"min":28,"sect":"in"},
+{"c":"宗门","tier":"道缘","t":"门中的规矩","d":"门里的规矩压下来，谁都得站到队里去。你站了，可心里没站稳。","f":"队站久了，人就直了。","cost":"你站了一天，腰一直没弯。","ef":{"cultivate":16000,"contrib":100,"dao":-1},"min":28,"sect":"in"},
+{"c":"疗伤","tier":"道缘","t":"把旧骨头换一遍","d":"有法子把你的旧伤连骨带肉换掉。过程很慢，也很疼。","f":"换过的东西，不再是原来的。","cost":"你换掉了半年的日子。","ef":{"heal":{"pct":1},"cure":true,"hpMax":{"pct":0.06},"years":5},"min":28},
+{"c":"天材地宝","tier":"道缘","t":"雷海凝出的劫雷精粹","d":"雷海最深处，雷霆凝成了实体，攥在手里发麻。你只取了一小块。","f":"挨过雷的东西，才配拿雷。","cost":"你半边身子麻了三天。","ef":{"cultivate":62000,"material":12,"atk":30},"min":31},
+{"c":"机缘奇遇","tier":"道缘","t":"劫云之下的顿悟","d":"劫云压得很低。你站在云下，忽然想通了一件积压很久的事。","f":"压得越低，看得越清。","cost":"你站在那儿，头发根根立着。","ef":{"cultivate":50000,"dao":1,"arts":2},"min":31},
+{"c":"秘境","tier":"道缘","t":"雷海深处","d":"雷海中央有一处不落雷的眼。你缩在眼里，看着四周炸开的光。","f":"风暴的心里，是静的。","cost":"你出来时，耳朵几个月听不见风声。","ef":{"cultivate":70000,"ss":20000,"years":4},"min":31},
+{"c":"心境","tier":"道缘","t":"渡劫问心","d":"雷在头顶上响。你在雷声里问了自己一句，然后答了。","f":"问心不用挑时候，可雷声里问得最清。","cost":"你答完，雷还没落。","ef":{"cultivate":42000,"dao":2,"years":3},"min":31},
+{"c":"功法","tier":"道缘","t":"渡厄经","d":"经上说，厄是渡的，不是躲的。你读了三遍，第三遍才敢信。","f":"躲不过的，就得迎着走。","cost":"你读完，出了一身冷汗。","ef":{"art":{"n":"渡厄经","el":"水","type":"守御","lv":0},"cultivate":40000,"lifespan":6},"min":31},
+{"c":"器物","tier":"道缘","t":"雷海里的镇雷钉","d":"一枚钉在雷眼里的旧钉，钉头被雷磨得发亮。你拔它的时候，手抖了一下。","f":"钉住雷的东西，自己也不怕雷。","cost":"你拔完，半边身子麻了半日。","ef":{"equip":{"n":"镇雷钉","slot":"treasure","g":5,"spec":"ward"}},"min":31},
+{"c":"危险","tier":"道缘","t":"天劫余波","d":"远处有人在渡劫。劫云散开时，余波扫过来，你趴在地上起不来。","f":"别人挨的雷，你也有份。","cost":"你趴了半日，骨头都是酥的。","ef":{"cultivate":62000,"hpMax":{"pct":-0.15},"years":4},"min":31},
+{"c":"地方","tier":"道缘","t":"雷泽行","d":"雷泽的地是软的，踩下去会陷。天上的雷一直不落，就那么悬着。","f":"悬着的雷，比落下的更吓人。","cost":"你在雷泽里，一夜白了半头。","ef":{"locate":"雷"},"min":31,"loc":["墟2"]},
+{"c":"战斗","tier":"道缘","t":"劫中妖","d":"雷云里落下一个东西，落地时地上的雷纹亮了一瞬。","f":"从雷里生的东西，不怕雷。","cost":"它挡在你和出路之间。","ef":{"battle":{"foe":"劫中妖","scale":1.4,"loot":"道缘","canFlee":false}},"min":31},
+{"c":"人际","tier":"道缘","t":"雷海边的观劫人","d":"一个老修士守在雷海边上，说是来看别人怎么死的。他看了一辈子。","f":"看了一辈子，也没看够。","cost":"你陪他看了三日。","ef":{"cultivate":14000,"rel":{"n":"观劫人","v":2},"dao":1},"min":31},
+{"c":"宗门","tier":"道缘","t":"门里的最后一战","d":"门里有人要反了。执事让你带人守在门口，守到天亮。","f":"守门的活，最不落好。","cost":"你守到天亮，也守出了两个仇人。","ef":{"cultivate":33000,"contrib":120,"enemy":2,"atk":12},"min":31,"sect":"in"},
+{"c":"宗门","tier":"道缘","t":"宗门的香火","d":"门里的香火快断了。有人问你，还愿不愿意再撑一阵。","f":"撑着的人，自己也不知道撑的是什么。","cost":"你没答，可你留下来了。","ef":{"cultivate":33000,"contrib":140,"dao":1,"lifespan":8},"min":31,"sect":"in"},
+{"c":"疗伤","tier":"道缘","t":"把命从雷里捞回来","d":"有人把你从雷里捞了出来，又替你续了半条命。","f":"捞回来的人，得还。","cost":"你欠了一笔还不清的。","ef":{"heal":{"pct":1},"cure":true,"debts":1,"years":4},"min":31},
+{"c":"天材地宝","tier":"道缘","t":"登仙台上的琼露","d":"石台中央积着一汪清露，映出的不是你自己的脸。你掬起一捧，喝了下去。","f":"照不见自己的水，最干净。","cost":"你喝完，忘了自己在找什么。","ef":{"cultivate":90000,"lifespan":20,"dao":1},"min":33},
+{"c":"机缘奇遇","tier":"道缘","t":"接引前的一缕霞光","d":"天边亮起来的时候，你以为是日出。等它近了，你才看清那不是日。","f":"有些光，是来接人的。","cost":"你迎着光站了很久，忘了时辰。","ef":{"cultivate":75000,"lifespan":15,"dao":1},"min":33},
+{"c":"秘境","tier":"道缘","t":"登仙台","d":"台子很高，很高。你爬到顶上，看见整片南荒，也看见南荒之外。","f":"站得够高，才看得见自己有多小。","cost":"你下台的时候，一步一顿。","ef":{"cultivate":100000,"dao":2,"years":5},"min":33},
+{"c":"心境","tier":"道缘","t":"飞升之前","d":"你站在崖边，回头看了一遍走过的路。看完之后，你往前迈了一步。","f":"最后一步，是往前的。","cost":"你迈出去的时候，没有回头。","ef":{"cultivate":60000,"dao":3,"lifespan":10},"min":33},
+{"c":"功法","tier":"道缘","t":"登仙诀","d":"诀很短，只有几句。可每一句，都要用一辈子去对。","f":"短的东西，往往最重。","cost":"你背下来了，也还没做到。","ef":{"art":{"n":"登仙诀","el":"无","type":"养元","lv":0},"cultivate":58000},"min":33},
+{"c":"器物","tier":"道缘","t":"接引台上的一双履","d":"石台边放着一双没有人穿的履，鞋底干净得不像走过路。","f":"没走过路的鞋，才配走上头。","cost":"你穿上它，脚底一凉。","ef":{"equip":{"n":"接引履","slot":"escape","g":5,"spec":"escape"}},"min":33},
+{"c":"危险","tier":"道缘","t":"最后一道关前的心魔","d":"你站在关前，回头看见一路上的自己，都站在原地看着你。","f":"走得越远，回头看见的越多。","cost":"你站了很久，才敢再往前。","ef":{"cultivate":90000,"dao":-2,"years":3},"min":33},
+{"c":"地方","tier":"道缘","t":"登仙台之上","d":"你站在最高的地方。再往上没有路，只有云。","f":"没有路的地方，就是路。","cost":"你站了很久，才决定往前。","ef":{"locate":"雷","fame":12},"min":33,"loc":["雷","墟2"]},
+{"c":"战斗","tier":"道缘","t":"关前来人","d":"关前站着一个人，说自己也是来登仙台的，只是比你早到很久。","f":"早到的人，未必先走。","cost":"他没有让路。","ef":{"battle":{"foe":"关前旧人","scale":1.5,"loot":"道缘","canFlee":false}},"min":33},
+{"c":"人际","tier":"道缘","t":"同路人的告别","d":"和你一路的那个人在关前停下了。他说他就不上去了。","f":"不上去的人，也有他的道理。","cost":"你们谁也没有多说。","ef":{"cultivate":20000,"rel":{"n":"同路人","v":3},"karma":1},"min":33},
+{"c":"宗门","tier":"道缘","t":"开山门","d":"门里请你主持开山门的大典。你站在台上，往下一看，站着的都是年轻人。","f":"台上的人，都是从台下上来的。","cost":"你站了半日，脚一直没动。","ef":{"cultivate":48000,"contrib":160,"fame":15,"dao":1},"min":33,"sect":"in"},
+{"c":"宗门","tier":"道缘","t":"宗门的道统","d":"门里把一卷写了几百年的道统交到你手上。卷子很轻，你拿得很沉。","f":"轻的东西，往往最沉。","cost":"你捧着它，一夜没放下。","ef":{"cultivate":48000,"contrib":180,"lifespan":12,"debts":1},"min":33,"sect":"in"},
+{"c":"疗伤","tier":"道缘","t":"登仙台前的静坐","d":"你在台前坐了下来。什么也不想，也什么都不做。坐完，人就像新的一样。","f":"坐得住的，才走得远。","cost":"你坐掉了一段不长不短的日子。","ef":{"heal":{"pct":1},"cure":true,"hpMax":{"pct":0.08},"years":5},"min":33,"loc":["雷"]},
+{"c":"秘境","tier":"仙缘","t":"裂界的一角","d":"有一处地方裂了很久，边上还在往下掉碎块。你贴着边爬了进去。","f":"裂开的地方，风是从别的天吹来的。","cost":"你出来的时候，身上落满了别处的灰。","ef":{"cultivate":15000,"material":10,"years":3},"min":25},
+{"c":"人际","tier":"道缘","t":"旧账上的名字","d":"有人找到你，说账上还有你的名字没勾掉。你自己都忘了。","f":"忘掉的事，账上记着。","cost":"你把该还的都还了，心里也空了半块。","ef":{"cultivate":7000,"rel":{"n":"旧账人","v":2},"ss":-800,"dao":1},"min":28},
+{"c":"天材地宝","tier":"道缘","t":"雷髓","d":"雷劈过很多次的老木里，中心还留着一线白。你锯了很久才取出来。","f":"挨够雷的木头，里头是甜的。","cost":"你锯完，手上起了一层焦壳。","ef":{"cultivate":65000,"herb":10,"material":8,"atk":20},"min":31},
+{"c":"心境","tier":"道缘","t":"最后一桩心事","d":"你想起一件很久以前的小事，小到不值一提。可它一直在。","f":"不值一提的事，最放不下。","cost":"你想通了，也想累了。","ef":{"cultivate":60000,"dao":2,"karma":1},"min":33},
+{"c":"战斗","tier":"道缘","t":"守台的老猿","d":"台边蹲着一只老猿，毛都白了。它不叫，也不动，只是挡在那儿。","f":"守得最久的东西，未必知道守的是什么。","cost":"它先站了起来。","ef":{"battle":{"foe":"守台老猿","scale":1.35,"loot":"道缘","canFlee":true}},"min":33},
+{"c":"宗门","tier":"仙缘","t":"青云宗的清规","d":"清规刻在山门内壁，一笔一划都是压人的。执事让你从头抄一遍。","f":"抄得越多，心里的东西越少。","cost":"你抄完了，手上的茧厚了一层。","ef":{"cultivate":2000,"contrib":45,"dao":1},"min":19,"sect":"qy"},
+{"c":"宗门","tier":"仙缘","t":"青云宗的道统","d":"长老把一卷讲「守」的旧书交给你，说青云一门，守的是规矩，也是人心。","f":"守得住的人，才敢往下走。","cost":"你接过书，也接过了一个位置。","ef":{"cultivate":4800,"contrib":60,"def":10},"min":22,"sect":"qy"},
+{"c":"宗门","tier":"仙缘","t":"青云宗的护山大阵","d":"大阵缺一个坐镇的人，执事看了你一眼。你站了出来。","f":"阵眼上的人，是拿命填的。","cost":"你坐了七天七夜，人也薄了一层。","ef":{"cultivate":9000,"contrib":90,"hpMax":{"pct":-0.06}},"min":25,"sect":"qy"},
+{"c":"宗门","tier":"道缘","t":"青云宗的传道","d":"门里让你讲一讲修行的路。你讲了半日，台下的人换了三茬。","f":"讲给别人的，最后都是讲给自己。","cost":"你讲完，嗓子哑了三天。","ef":{"cultivate":19000,"contrib":110,"fame":10,"arts":1},"min":28,"sect":"qy"},
+{"c":"宗门","tier":"道缘","t":"青云宗的山门之重","d":"山门前的碑换了新字，刻的是你的名字。你站在碑前，觉得肩上压着什么。","f":"刻上去的名字，是要扛东西的。","cost":"你在碑前站了半日没动。","ef":{"cultivate":40000,"contrib":150,"fame":18,"lifespan":10},"min":31,"sect":"qy"},
+{"c":"宗门","tier":"仙缘","t":"血煞门的血池","d":"堂里那口池子又满了。管事让你把手伸进去，试试水温。","f":"试水温的人，手得先不要了。","cost":"你的手，凉了很久。","ef":{"cultivate":2000,"lifespan":-5,"dao":-1,"contrib":25},"min":19,"sect":"xs"},
+{"c":"宗门","tier":"仙缘","t":"血煞门的血誓","d":"你割开手掌，把血按在一张旧纸上。按完，纸上的字自己红了一下。","f":"发过誓的人，退不出去。","cost":"你的手腕，从此多了一道。","ef":{"cultivate":4800,"atk":15,"contrib":40,"lifespan":-4},"min":22,"sect":"xs"},
+{"c":"宗门","tier":"仙缘","t":"血煞门的以身饲剑","d":"门里有一把喂了血的剑。执事说，敢喂的，就能拿。","f":"喂过血的剑，只认血。","cost":"你喂了，剑是你的；你也瘦了一圈。","ef":{"cultivate":9000,"atk":25,"contrib":60,"hpMax":{"pct":-0.06}},"min":25,"sect":"xs"},
+{"c":"宗门","tier":"道缘","t":"血煞门的断情","d":"堂主让你断一件放不下的事。你断了，堂主却问你，断了之后还剩什么。","f":"断了情的人，最锋利，也最空。","cost":"你答不上来，堂主也没再问。","ef":{"cultivate":19000,"atk":40,"dao":-2,"contrib":90},"min":28,"sect":"xs"},
+{"c":"宗门","tier":"道缘","t":"血煞门的门主之影","d":"你在血池边看见了门主的影子。影子比人高，也比人静。它没有看你。","f":"站得最高的那个，早就不像人了。","cost":"你看完，一夜没敢合眼。","ef":{"cultivate":40000,"atk":60,"contrib":130,"lifespan":-10},"min":31,"sect":"xs"},
+{"c":"宗门","tier":"仙缘","t":"黑石商盟的天货","d":"柜上摆着一件从天上带回来的东西，标价后面跟着很长的数。掌柜问你要不要。","f":"天上掉的东西，也得算钱。","cost":"你把攒的都掏了，还欠了一笔。","ef":{"cultivate":2000,"ss":600,"contrib":35,"debts":1},"min":19,"sect":"hs"},
+{"c":"宗门","tier":"仙缘","t":"黑石商盟的赊命契","d":"一张契上写着先拿货后还账，利息写在最后一行，字很小。","f":"字越小的账，越贵。","cost":"你按了手印，也就把自己押出去了。","ef":{"cultivate":4800,"ss":1200,"contrib":55,"debts":1},"min":22,"sect":"hs"},
+{"c":"宗门","tier":"仙缘","t":"黑石商盟的成山灵石","d":"库房里的灵石堆得像座小山。掌柜说，你搬得动多少，就算你多少。","f":"搬得动的，才真是你的。","cost":"你搬了半日，只搬走了一小角。","ef":{"cultivate":9000,"ss":2600,"contrib":70},"min":25,"sect":"hs"},
+{"c":"宗门","tier":"道缘","t":"黑石商盟的大掌柜","d":"大掌柜把最后一单交给你，说自己要退了。他退了，可是没说他要去哪儿。","f":"做了一辈子生意，最后算的是自己。","cost":"你接了单，也接了他留下的东西。","ef":{"cultivate":40000,"ss":9000,"contrib":160,"fame":20},"min":31,"sect":"hs"},
+{"c":"宗门","tier":"仙缘","t":"无定盟的托孤","d":"盟里有人快不行了，把一个孩子托给你，说自己没别的人。","f":"没宗门的人，只有彼此。","cost":"你应了，肩上多了一个人。","ef":{"cultivate":2000,"contrib":30,"karma":1,"debts":1},"min":19,"sect":"wd"},
+{"c":"宗门","tier":"仙缘","t":"无定盟的公断","d":"两伙人动了刀。你站到中间，两边都停了手。","f":"没规矩的地方，话的分量全在人身上。","cost":"你劝住了他们，也得罪了两边。","ef":{"cultivate":4800,"contrib":50,"fame":6,"enemy":1},"min":22,"sect":"wd"},
+{"c":"宗门","tier":"仙缘","t":"无定盟的人情账","d":"盟里有一本账，记的不是钱，是谁帮过谁。你的名字在上面。","f":"人情这东西，记着比欠着重。","cost":"你看完那本账，坐了很久。","ef":{"cultivate":9000,"contrib":70,"fame":8,"dao":1},"min":25,"sect":"wd"},
+{"c":"宗门","tier":"道缘","t":"无定盟的最后一场酒","d":"盟里最老的一批人凑了一桌酒。喝到一半，有人说以后散了怎么办。","f":"散之前，得先喝上一场。","cost":"那一夜你喝到最后，没醉。","ef":{"cultivate":19000,"contrib":110,"fame":14,"karma":2},"min":28,"sect":"wd"},
+{"c":"宗门","tier":"仙缘","t":"青丘的化形三重","d":"这一次骨头挪得更慢，也更疼。你熬过来了。","f":"借来的身子，用久了要还的。","cost":"你照水看了一眼，没敢看第二眼。","ef":{"cultivate":2000,"def":12,"lifespan":-4,"contrib":30},"min":19,"sect":"qq"},
+{"c":"宗门","tier":"仙缘","t":"青丘的月巡","d":"月起的时候，它们都在林子里走。你也走了，走了一整夜。","f":"走同一条路的人，不必说话。","cost":"你走到天亮，脚底是凉的。","ef":{"cultivate":4800,"def":18,"contrib":45,"esc":20},"min":22,"sect":"qq"},
+{"c":"宗门","tier":"道缘","t":"青丘的祠堂旧契","d":"守祠的翻开一本旧契，指着一行给你看。那行字里有你的名字。","f":"契不是签的，是说的。","cost":"你看完了，从此更不像人。","ef":{"cultivate":24000,"def":40,"lifespan":10,"dao":-2,"contrib":70},"min":28,"sect":"qq"},
+{"c":"宗门","tier":"道缘","t":"青丘的两难","d":"林子里的人问你，等到那一天，你站在哪一边。你没有答。","f":"不答，也是一种答。","cost":"它们看了你很久，然后散了。","ef":{"cultivate":40000,"def":60,"lifespan":12,"contrib":110},"min":31,"sect":"qq"},
+{"c":"战事","tier":"灵缘","t":"征召令","d":"门里来了张令，贴在照壁上。你名字底下的墨还没干。","f":"令到了，人就得走。","cost":"你收拾行装的那一夜，风很大。","ef":{"battle":{"foe":"敌派先锋","scale":0.95,"loot":"灵缘","canFlee":false},"contrib":25},"min":8,"sect":"in","war":{}},
+{"c":"战事","tier":"灵缘","t":"收尸的人","d":"仗打完了，山道上还留着没收拾的。你去收拾了。","f":"收尸的人，从不问死者是谁。","cost":"你收拾到天黑，手一直没停。","ef":{"fame":3,"dao":1,"karma":1,"cultivate":18},"min":9},
+{"c":"战事","tier":"灵缘","t":"散修的两不相帮","d":"两边都来拉你。你说你谁也不帮，两边都没再说话。","f":"不站队的人，两边都防着。","cost":"从此两边都不太待见你。","ef":{"fame":-2,"dao":1,"rel":{"n":"两边的人","v":-1}},"min":9,"sect":"out"},
+{"c":"战事","tier":"宝缘","t":"商路被劫","d":"商队的车翻在道边，护卫蹲在地上数着剩下多少。","f":"路上的钱，一半是买路钱。","cost":"你替他们守了半夜，没要报酬。","ef":{"ss":80,"fame":2,"rel":{"n":"走货人","v":1}},"min":10,"sect":"hs"},
+{"c":"战事","tier":"宝缘","t":"火线上的运粮","d":"前头在打，后头得有人把粮送上去。这一趟轮到你。","f":"送粮的人，也常常回不来。","cost":"你走了一夜，脚底磨破了。","ef":{"battle":{"foe":"劫粮的人","scale":0.9,"loot":"宝缘","canFlee":true},"contrib":30},"min":10,"sect":"in","war":{}},
+{"c":"战事","tier":"宝缘","t":"战场上的厮杀","d":"土是红的，分不清是土还是别的。你只管往前走。","f":"走在这种地方，想不了别的。","cost":"你走出来的时候，手抖得握不住东西。","ef":{"battle":{"foe":"敌派好手","scale":1.05,"loot":"宝缘","canFlee":true},"atk":8},"min":11,"sect":"in","war":{}},
+{"c":"战事","tier":"宝缘","t":"夜袭敌营","d":"夜里没有月亮。你们摸过去的时候，营里的火还没灭。","f":"最静的时候，最该动手。","cost":"你回来时，身上多了一道长的。","ef":{"battle":{"foe":"敌营守夜人","scale":1,"loot":"宝缘","canFlee":true,"ambush":true},"contrib":40,"atk":10},"min":12,"sect":"in","war":{}},
+{"c":"战事","tier":"宝缘","t":"被当弃子","d":"你们这一队被留在了后面。回头一看，退路已经没了。","f":"留下来的人，从来不是被选的，是被舍的。","cost":"你自己找了条路回来，谁也没提。","ef":{"battle":{"foe":"围上来的敌人","scale":1.15,"loot":"宝缘","canFlee":true},"dao":1,"enemy":1},"min":12,"sect":"in","war":{}},
+{"c":"战事","tier":"宝缘","t":"战败被俘","d":"你被捆着押进了敌营。他们问你门里的事，你什么也没说。","f":"不说的人，才留得下命。","cost":"你被关了许久，出来时瘦得不像样。","ef":{"hpMax":{"pct":-0.05},"years":2,"contrib":20,"dao":1},"min":13,"sect":"in","war":{}},
+{"c":"战事","tier":"宝缘","t":"抚恤","d":"死者的东西要有人送回去。你替门里走了一趟。","f":"送东西的人，不好当。","cost":"你送完回来，几天没说话。","ef":{"fame":5,"karma":2,"contrib":25,"cultivate":60},"min":14},
+{"c":"战事","tier":"宝缘","t":"断后","d":"撤的时候总得有人留下。队长看了你一眼，你留下了。","f":"留下的时候，谁都没回头。","cost":"你回了头，看见他们跑得很远。","ef":{"battle":{"foe":"追上来的人","scale":1.2,"loot":"宝缘","canFlee":false},"fame":6,"wound":"light"},"min":14,"sect":"in","war":{}},
+{"c":"战事","tier":"宝缘","t":"结盟的酒","d":"两家的头面人物坐到了一张桌上。酒过了三巡，字也就签了。","f":"酒桌上谈的，比战场上谈的便宜。","cost":"你陪坐到半夜，一口酒没敢多喝。","ef":{"rep":{"id":"qy","v":20},"fame":4,"cultivate":80},"min":15},
+{"c":"战事","tier":"玄缘","t":"破阵","d":"对方的阵眼藏在雾里。你走进去的时候，脚下已经踩着别人的骨。","f":"破阵的人，得先不怕阵。","cost":"你破了阵，也被人记住了样子。","ef":{"battle":{"foe":"守阵的人","scale":1.1,"loot":"玄缘","canFlee":false},"contrib":70,"enemy":1},"min":16,"sect":"in","war":{}},
+{"c":"战事","tier":"玄缘","t":"散修盟的抉择","d":"盟里有人替一家效力，有人替另一家。问你怎么办。","f":"不站队的人凑在一起，也得站一次。","cost":"你说了句话，两边都记下了。","ef":{"rep":{"id":"wd","v":25},"fame":4,"enemy":1,"dao":1},"min":16,"sect":"wd"},
+{"c":"战事","tier":"玄缘","t":"战时夺权","d":"仗还没打完，有人已经开始抢位置了。他们问你站哪边。","f":"打外敌的时候，里头也在打。","cost":"你说了个含糊的答复。","ef":{"contrib":60,"dao":-1,"enemy":1,"cultivate":120},"min":17,"sect":"in"},
+{"c":"战事","tier":"玄缘","t":"通敌的嫌疑","d":"有人指你私通对面。你解释不清，因为那事你确实做过一半。","f":"做了一半的事，最难解释。","cost":"你被查了三个月，什么也没查出来。","ef":{"contrib":-40,"fame":-3,"enemy":2,"dao":1},"min":18,"sect":"in"},
+{"c":"战事","tier":"玄缘","t":"临阵换将","d":"打到一半，上头的令换了人。新来的那个，谁都看得出不行。","f":"换将的时候，死的是底下的人。","cost":"你什么也没说，只是站得更靠后了些。","ef":{"battle":{"foe":"崩下来的阵","scale":1.15,"loot":"玄缘","canFlee":true},"dao":1},"min":18,"sect":"in"},
+{"c":"战事","tier":"玄缘","t":"阵前立威","d":"对面出来一个人叫阵。没人应，你往前迈了一步。","f":"迈出去那一步，退回来就难了。","cost":"你赢了，也从此成了别人要记的名字。","ef":{"battle":{"foe":"对面叫阵的人","scale":1.2,"loot":"玄缘","canFlee":false},"fame":8,"atk":12},"min":19,"sect":"in","war":{}},
+{"c":"战事","tier":"玄缘","t":"斡旋","d":"两家都打不动了，可谁都不肯先开口。你去替他们开口。","f":"肯先开口的，往往是外人。","cost":"你在两边之间跑了半年。","ef":{"years":3,"fame":6,"karma":2,"rep":{"id":"hs","v":20}},"min":20},
+{"c":"战事","tier":"玄缘","t":"论功","d":"仗打完了，功劳簿摊在桌上。上面有几行，你自己都不记得做过。","f":"簿上的字，是别人写的你。","cost":"你看着那几行，没说什么。","ef":{"contrib":110,"fame":6,"cultivate":2000},"min":20,"sect":"in"},
+{"c":"战事","tier":"玄缘","t":"妖族越境","d":"山那边的林子空了。它们越过了界，也带来了自己的规矩。","f":"界是画的，脚是自己的。","cost":"你和它们对峙了三天，谁也没先动。","ef":{"battle":{"foe":"越境妖兵","scale":1.15,"loot":"玄缘","canFlee":true},"rep":{"id":"qq","v":20}},"min":21},
+{"c":"战事","tier":"玄缘","t":"质子","d":"两家换了人质。换的那个人，是个半大的孩子。","f":"押着的不是人，是面子。","cost":"你负责看他，看了很久。","ef":{"years":2,"fame":5,"karma":2,"rep":{"id":"qy","v":15}},"min":22},
+{"c":"战事","tier":"玄缘","t":"重建","d":"打完的地方还得有人重新立起来。门里把这片交给了你。","f":"立起来的东西，没有一样是白立的。","cost":"你在那儿待了很久，久到忘了自己原先是干什么的。","ef":{"years":4,"contrib":130,"fame":10,"cultivate":6500},"min":30,"sect":"in"},
+{"c":"战事","tier":"道缘","t":"被当弃子的老将","d":"当年被留下的人，如今站在了你面前。他说他等了很久。","f":"等得越久的人，说话越轻。","cost":"你听完，出了一身冷汗。","ef":{"battle":{"foe":"旧日的弃将","scale":1.4,"loot":"道缘","canFlee":true},"dao":-1},"min":31},
+{"c":"战事","tier":"道缘","t":"地盘易主","d":"这片地方换了旗。旧旗降下来的时候，没人说话。","f":"换了旗，地里埋的东西不会换。","cost":"你站到最后，才转身走了。","ef":{"territory":{"loc":"煞","to":"qy"},"contrib":180,"fame":15,"enemy":2},"min":32,"sect":"in"},
+{"c":"战事","tier":"道缘","t":"最后一场仗","d":"打到后来，两边的头面人物都死了。剩下的站着的人，谁也不认识谁。","f":"打到最后，忘了是为什么打的。","cost":"你站在战场上，很久没动。","ef":{"battle":{"foe":"对面剩下的最后一人","scale":1.5,"loot":"道缘","canFlee":false},"fame":20,"dao":2},"min":33,"sect":"in","war":{}}
+];
+Array.prototype.push.apply(CARDS, CARDS_ADD);
+
+/* ===== 卡池 F · FDR-012 批3 · R5 扩容（v4 §8.2 普通一〇二 + 天命二四；另补 §8.1 器物一）=====
+   文案由脚本从 v4 修改框架 §8.1/§8.2 逐字抽取，未手工转写；去除与既有卡重复者共一二二张 */
+const CARDS_R5 = [
+{"c":"器物","tier":"宝缘","t":"九曜天甲","d":"甲上嵌着九点星纹，夜里会自己亮。你穿上它，觉得肩上压着整片天。","f":"扛得起天，才穿得起它。","cost":"你穿着它走了半步，喘了半日。","ef":{"equip":{"n":"九曜天甲","slot":"armor","g":5}},"min":19},
+{"c":"天材地宝","tier":"灵缘","t":"映月灵蟾","d":"月夜潭边，一只背上有月纹的灵蟾蹲在石上。你没惊动它，只取走了它蜕下的皮。","f":"会走的东西，留不住，也不必留。","cost":"你在潭边蹲了半宿。","ef":{"cultivate":22,"herb":2},"min":1,"max":6,"loc":["野","泽"]},
+{"c":"天材地宝","tier":"灵缘","t":"玄冰髓","d":"千年不化的冰层底下，有一线流动的白。你敲下极小的一块，指头就冻麻了。","f":"会动的水，才是活的。","cost":"你敲了半天，锤子崩了口。","ef":{"cultivate":26,"material":2},"min":3,"max":12,"loc":["野","泽"]},
+{"c":"天材地宝","tier":"灵缘","t":"淬灵藤","d":"山壁上缠着一根会自己收缩的藤。你顺着它往上爬，省了半日脚力。","f":"山里的东西，也有脾性。","cost":"你爬上去，藤却把路收了。","ef":{"cultivate":30,"material":1},"min":2,"max":12,"loc":["野"]},
+{"c":"天材地宝","tier":"宝缘","t":"地火参王","d":"火山口边的一株参，根须扎进了滚烫的岩缝。你隔着湿布才敢下手。","f":"火里长出来的，性子也烈。","cost":"你拔它时，手上燎了几个泡。","ef":{"cultivate":70,"herb":3,"lifespan":-2},"min":5,"max":15},
+{"c":"天材地宝","tier":"宝缘","t":"五色石卵","d":"河床里一枚卵石泛着五种颜色，摸上去温润。你揣进怀里，觉得心也定了几分。","f":"好看的东西，未必没用。","cost":"你在河床里翻了一整天。","ef":{"cultivate":55,"dao":1},"min":4,"max":15},
+{"c":"天材地宝","tier":"宝缘","t":"星尘砂","d":"陨石坑底积着一层会发亮的细砂。你装了满满一袋，回来后袖子都是亮的。","f":"从天上掉下来的，都是碎的。","cost":"你装袋时，指缝里漏了大半。","ef":{"material":4,"ss":120},"min":6,"max":16,"loc":["野","天"]},
+{"c":"天材地宝","tier":"宝缘","t":"千年血芝","d":"血煞岭的阴坡上长着一株血色灵芝。你摘下它时，身边的人脸色都变了。","f":"红的东西，都是有来处的。","cost":"你摘下它，回头看了那坡一眼。","ef":{"cultivate":80,"herb":3,"dao":-1},"min":7,"max":16,"loc":["煞"]},
+{"c":"天材地宝","tier":"玄缘","t":"紫府金莲","d":"丹房后山一口废井底，开着一朵金莲。你下去时井绳断了半截。","f":"不让人够着的东西，才叫宝贝。","cost":"你爬上来的时候，指甲全翻了。","ef":{"cultivate":140,"pill":2,"lifespan":4},"min":8},
+{"c":"机缘奇遇","tier":"凡缘","t":"山雨初歇","d":"雨停时你在坡上站了一会儿。云散开的那一下，你心里也跟着开了。","f":"天晴了，人也松了。","cost":"你多站了半日，误了脚程。","ef":{"cultivate":8,"dao":1},"max":4},
+{"c":"机缘奇遇","tier":"灵缘","t":"市集偶得","d":"收摊的市集上，你在一堆杂物里翻出半卷帛书。摊主说随便给几个钱拿走。","f":"别人不要的，未必没用。","cost":"你付了钱，摊主看你的眼神不太好。","ef":{"cultivate":18,"ss":-6},"min":2,"max":10,"loc":["市","墟"]},
+{"c":"机缘奇遇","tier":"灵缘","t":"破庙夜谈","d":"破庙里一个落魄修士与你对坐到天亮。他说的多是废话，可有一句你记住了。","f":"废话里，也有一句真。","cost":"你陪他熬了一夜，也听他诉了一夜苦。","ef":{"cultivate":24,"rel":{"n":"落魄修士","v":1}},"min":2,"max":10},
+{"c":"机缘奇遇","tier":"灵缘","t":"赌坊看客","d":"你在赌坊外站了一夜，看人输光了膀子。你一分没赌，也一分没赢。","f":"看别人输，也是本事。","cost":"你站了一夜，腿都麻了。","ef":{"ss":15,"dao":1},"min":3,"max":12,"loc":["市","墟"]},
+{"c":"机缘奇遇","tier":"灵缘","t":"药庐候诊","d":"药庐里有个孩子高烧不退。你把路上采的草给了他的娘。","f":"救人的时候，没想那么多。","cost":"你那味药，本来是给自己留的。","ef":{"herb":-1,"fame":2,"karma":1},"min":2,"max":12},
+{"c":"机缘奇遇","tier":"宝缘","t":"一页残图","d":"旧书里夹着一页残图，画的像是某处山谷。你辨了半日，只认出两个笔画。","f":"缺了头尾的东西，最吊人。","cost":"你为这两个笔画，搭进去半个月。","ef":{"cultivate":40,"material":1},"min":4,"max":14},
+{"c":"机缘奇遇","tier":"宝缘","t":"旧友信笺","d":"一封辗转多时的信落到你手上，写信的人已经死了三年。","f":"迟到的信，还是信。","cost":"你读完之后，一夜没说话。","ef":{"cultivate":35,"rel":{"n":"已故旧友","v":1},"lifespan":-2},"min":5,"max":15},
+{"c":"机缘奇遇","tier":"玄缘","t":"云上过夜","d":"你在云层之上缩了一夜。天亮时风把你吹醒，你看见脚下是整片南荒。","f":"看得远，才知道自己小。","cost":"你冻得嘴唇发紫。","ef":{"cultivate":100,"dao":2,"lifespan":-4},"min":9},
+{"c":"人际","tier":"凡缘","t":"摆渡阿婆","d":"阿婆摆了一辈子的渡，说水底下的东西比岸上的实在。","f":"过河的人多，记得她的少。","cost":"你陪她说了半日的话。","ef":{"cultivate":6,"rel":{"n":"摆渡阿婆","v":1}},"max":4,"loc":["镇","野"]},
+{"c":"人际","tier":"凡缘","t":"同门师兄","d":"师兄把自己那半碗饭推给你，说练功的人不能饿着。他自己喝了口汤。","f":"日子紧的时候，才看得出人。","cost":"你把饭吃了，也把这份情记下了。","ef":{"fame":1,"rel":{"n":"师兄","v":1}},"max":4,"sect":"in"},
+{"c":"人际","tier":"灵缘","t":"债主上门","d":"债主堵在门口。你把能拿的都拿了出来，他还是嫌少。","f":"欠钱的日子，睡觉都不踏实。","cost":"你把压箱底的也掏了出来。","ef":{"ss":-30,"dao":-1},"min":1,"max":9},
+{"c":"人际","tier":"灵缘","t":"走货的老周","d":"老周跑商路跑了二十年，认得每一处险口。他愿意带你走一趟。","f":"走过路的人，话里有准头。","cost":"这一趟你不白走，可得还他人情。","ef":{"ss":40,"rel":{"n":"老周","v":1},"debts":1},"min":3,"max":12,"loc":["市","墟"]},
+{"c":"人际","tier":"灵缘","t":"断腿的旧卒","d":"一个断了腿的老卒守在山口，说年轻时候见过仙人。你陪他坐了一下午。","f":"见过仙的人，眼睛是不一样。","cost":"你听了一下午的旧事。","ef":{"cultivate":20,"fame":1,"karma":1},"min":2,"max":10},
+{"c":"人际","tier":"宝缘","t":"卖药的姑娘","d":"药摊后的姑娘认得你。她压低声音说，这批药里有一味是假的。","f":"肯告诉你真话的人，不多。","cost":"你把这事记在了心里。","ef":{"herb":2,"rel":{"n":"卖药的姑娘","v":2}},"min":4,"max":14,"loc":["市","镇"]},
+{"c":"人际","tier":"宝缘","t":"山门执事","d":"执事把你叫到偏房，说了些不该说的门中旧事。你听着，没敢应声。","f":"知道得越多，越要装不知道。","cost":"你从此多留了个心眼，也多了一个人惦记。","ef":{"contrib":25,"dao":-1,"enemy":1},"min":6,"max":16,"sect":"in"},
+{"c":"人际","tier":"宝缘","t":"散修老韩","d":"老韩把他那本翻烂的笔记借给你。他说，里面的错处比对的还多，你自己挑。","f":"没门没派的人，全靠自己攒。","cost":"你把笔记抄了一遍才还。","ef":{"cultivate":60,"arts":1,"rel":{"n":"散修老韩","v":2}},"min":5,"max":15,"sect":"out"},
+{"c":"功法","tier":"灵缘","t":"镇岳再站","d":"「厚土镇岳式」的三个桩步，你比头一回站得稳了。","f":"熟，是站出来的。","cost":"你这一夜没干别的。","ef":{"art":{"n":"厚土镇岳式","el":"土","type":"守御","lv":0},"cultivate":18},"min":3},
+{"c":"功法","tier":"灵缘","t":"柔劲三演","d":"「玄水柔劲」的卸力法子，你演了三遍，第三遍水似的顺。","f":"软的东西，练到后来最硬。","cost":"你胳膊酸了三天。","ef":{"art":{"n":"玄水柔劲","el":"水","type":"守御","lv":0},"cultivate":20},"min":3},
+{"c":"功法","tier":"宝缘","t":"长青诀新解","d":"你对「青木长生诀」有了新的解。翻来覆去就那么几句，可这几句变了个意思。","f":"同样的字，不同的年纪读，不一样。","cost":"你为了这个新解，折腾了半季。","ef":{"art":{"n":"青木长生诀","el":"木","type":"养元","lv":0},"cultivate":26},"min":4},
+{"c":"功法","tier":"宝缘","t":"庚金指诀再授","d":"把「庚金指」的路数重新捋了一遍。这一回你才看出起手的别扭在哪里。","f":"回头再看，处处都是破绽。","cost":"你的指关节又肿了一回。","ef":{"art":{"n":"庚金指","el":"金","type":"攻伐","lv":0},"cultivate":30},"min":4},
+{"c":"功法","tier":"宝缘","t":"万木回春谱","d":"谱上讲的是养。你照着练，身上那些旧伤，一寸一寸地退了。","f":"活得久的人，都懂得养。","cost":"你练得很慢，慢到差点放弃。","ef":{"art":{"n":"万木回春谱","el":"木","type":"养元","lv":0},"cultivate":58,"lifespan":4},"min":6},
+{"c":"功法","tier":"宝缘","t":"沧浪归元功","d":"一种把气收得极紧的法子。练成之后，你出手更慢，可也更沉。","f":"收得住，才放得出。","cost":"你练得整个人发闷。","ef":{"art":{"n":"沧浪归元功","el":"水","type":"养元","lv":0},"cultivate":64,"lifespan":3},"min":6},
+{"c":"功法","tier":"宝缘","t":"磐石不动禅","d":"一套看着不像功夫的功夫。你坐着不动，别人推你，推不动。","f":"不动，也是一种动。","cost":"你坐得腿都没了知觉。","ef":{"art":{"n":"磐石不动禅","el":"土","type":"炼体","lv":0},"cultivate":60},"min":6},
+{"c":"功法","tier":"玄缘","t":"金乌焚天诀","d":"练的时候血是热的，练完人是空的。你躺在地上喘了半日才起来。","f":"烧得旺的，灭得也快。","cost":"你练一次，人要虚好几天。","ef":{"art":{"n":"金乌焚天诀","el":"火","type":"攻伐","lv":0},"cultivate":120,"lifespan":-3},"min":8},
+{"c":"功法","tier":"玄缘","t":"罡风万里行","d":"一套借着风走的身法。风往哪儿去，你往哪儿去，一秒不差。","f":"顺着风走的人，最快。","cost":"你被风带丢过两回。","ef":{"art":{"n":"罡风万里行","el":"无","type":"遁法","lv":0},"cultivate":110},"min":9},
+{"c":"功法","tier":"玄缘","t":"百炼金身诀","d":"一遍遍地捶打自己，直到皮肉变成了另一种东西。","f":"打不烂的，才算到家。","cost":"你身上没有一块好皮。","ef":{"art":{"n":"百炼金身诀","el":"金","type":"炼体","lv":0},"cultivate":130,"lifespan":-2},"min":10},
+{"c":"危险","tier":"灵缘","t":"山道塌方","d":"半边山塌了下来。你贴着崖根滚过去，耳朵里全是碎石。","f":"山是活的，也会翻脸。","cost":"你擦破了半边身子。","ef":{"lifespan":-2,"wound":"light"},"min":2,"max":10,"loc":["野"]},
+{"c":"危险","tier":"灵缘","t":"野火","d":"山火顺着风烧过来。你退了十里，眉毛还是焦了。","f":"火不认人，也不认路。","cost":"你退得急，丢了不少东西。","ef":{"lifespan":-2,"herb":-1},"min":3,"max":12,"loc":["野"]},
+{"c":"危险","tier":"宝缘","t":"毒沼","d":"一脚踩进毒沼。你爬出来的时候，半条腿已经没了知觉。","f":"看着是草地的地方，最要命。","cost":"你躺了两天，才觉得腿是自己的。","ef":{"hpMax":{"pct":-0.06},"lifespan":-4},"min":4,"max":14,"loc":["泽"]},
+{"c":"危险","tier":"宝缘","t":"修士余波","d":"两个高人在你头顶上过了一招。余波扫下来，你半天爬不起来。","f":"神仙打架，凡人遭殃。","cost":"你趴在地上，连喘气都得省着。","ef":{"cultivate":40,"hpMax":{"pct":-0.08},"lifespan":-3},"min":6,"max":16},
+{"c":"危险","tier":"宝缘","t":"丹毒反噬","d":"药味越来越重。这一夜它全涌上来，你伏在地上吐到天光。","f":"吃下去的，总要出来。","cost":"吐完了，人也空了一截。","ef":{"danPoison":-4,"lifespan":-5,"hpMax":{"pct":-0.05}},"min":5},
+{"c":"危险","tier":"宝缘","t":"妖兽围猎","d":"三头妖狼把你堵在山坳里。你退到岩缝里，熬到天亮。","f":"围住你的东西，从来不止一头。","cost":"你一夜没敢合眼。","ef":{"battle":{"foe":"妖狼群","pw":[70,110],"loot":"宝缘","canFlee":true}},"min":6,"loc":["野","秘"]},
+{"c":"危险","tier":"玄缘","t":"心魔夜访","d":"夜里有人敲门。你开了，门外站着的还是你自己。","f":"看见自己，是件很累的事。","cost":"这一夜之后，你老了很多。","ef":{"dao":-2,"lifespan":-6,"cultivate":60},"min":8},
+{"c":"危险","tier":"玄缘","t":"雷雨夜行","d":"你在雷雨里赶了一夜的路。雷电落得极近，头发根根立着。","f":"走在雷底下的人，心里是亮的。","cost":"你被雷气扫过一回，手麻了好些天。","ef":{"cultivate":80,"lifespan":-8,"atk":4},"min":9},
+{"c":"抉择","tier":"凡缘","t":"放生","d":"网里那条鱼的眼睛一直看着你。你把它放了。","f":"放掉的东西，不会再回来。","cost":"你这一天，什么也没吃着。","ef":{"fame":1,"karma":1},"max":5},
+{"c":"抉择","tier":"灵缘","t":"分饼与分赃","d":"一伙人抢了趟货，让你来分。你把自己那份往中间推了推。","f":"穷人的规矩，是分出来的。","cost":"你少拿了一份，还替人多担了话。","ef":{"ss":-15,"fame":2,"karma":1},"min":3,"max":12,"sect":"out"},
+{"c":"抉择","tier":"灵缘","t":"说与不说","d":"你知道了一件事。说出来能救人，也能害人。","f":"有些话，说出口就收不回。","cost":"你说了，也从此多了一个仇人。","ef":{"dao":1,"enemy":1,"karma":1},"min":4,"max":14},
+{"c":"抉择","tier":"灵缘","t":"还债","d":"一笔旧账，利滚利。你还了，兜里空了，心里松了。","f":"了了的账，才睡得着。","cost":"你还完，连买药的钱都没了。","ef":{"ss":-50,"debts":-1,"karma":1},"min":3,"max":13},
+{"c":"抉择","tier":"宝缘","t":"救与不救","d":"山道上躺着一个人。你先看了眼他身边的东西，又看了眼他的脸。","f":"看第二眼的时候，你心里已经有了答案。","cost":"你把他背了很远，自己的药也搭了进去。","ef":{"fame":3,"herb":-1,"karma":2,"debts":1},"min":4,"max":14},
+{"c":"抉择","tier":"宝缘","t":"断义","d":"旧友求你办一件伤天害理的事。你摇了头，他转身就走了，再没回头。","f":"断了的关系，比没结过还冷。","cost":"你站在那儿，很久没动。","ef":{"rel":{"n":"旧友","v":-2},"dao":1,"karma":2,"ss":-20},"min":5,"max":15},
+{"c":"抉择","tier":"宝缘","t":"收徒","d":"一个半大的孩子跪在你面前，说不怕吃苦。你想起当年那个道人。","f":"当年也有人这样看过你。","cost":"从此你身边多了一个人，也多了一份牵挂。","ef":{"debts":1,"fame":3,"rel":{"n":"徒弟","v":2},"karma":1},"min":6,"max":16},
+{"c":"抉择","tier":"玄缘","t":"立誓","d":"你对着天起了一个誓。说完之后，你觉得自己身上重了些，也稳了些。","f":"说出口的誓，天记着。","cost":"你从此不能反悔。","ef":{"dao":1,"karma":3,"lifespan":5},"min":8},
+{"c":"心境","tier":"凡缘","t":"长夜","d":"夜里睡不着，你到院子里站着。月亮走了半圈，你也站了半宿。","f":"睡不着的人，想的事最多。","cost":"你第二天起晚了。","ef":{"cultivate":8,"dao":1},"max":5},
+{"c":"心境","tier":"灵缘","t":"观雨","d":"雨打在瓦上。你什么也没想，听了一整夜。","f":"有些声音，听久了就静了。","cost":"你一夜没睡，可也不困。","ef":{"cultivate":20,"dao":1},"min":2,"max":10},
+{"c":"心境","tier":"灵缘","t":"对弈","d":"与一个老僧下了一盘棋。你输了，可输得心里敞亮。","f":"输得明白，比赢得糊涂好。","cost":"你为这一盘棋，坐了一日。","ef":{"cultivate":28,"dao":1},"min":3,"max":12},
+{"c":"心境","tier":"宝缘","t":"洗剑","d":"你把剑上的血一寸一寸擦干净。擦到剑柄时，手停了一下。","f":"擦得干净，可你知道它杀过人。","cost":"你擦了一夜。","ef":{"cultivate":40,"dao":1},"min":4,"max":14},
+{"c":"心境","tier":"宝缘","t":"执念","d":"你放不下一件事。越练越乱，越乱越练。","f":"放不下的东西，磨的是自己。","cost":"你白耗了几个月。","ef":{"cultivate":50,"dao":-1,"lifespan":-2},"min":5,"max":15},
+{"c":"心境","tier":"宝缘","t":"放下","d":"你想通了。松开手的那一刻，手里空空，心里也空空。","f":"空出来的地方，才装得下别的。","cost":"你空了很久，才觉得不空。","ef":{"cultivate":60,"dao":1,"karma":1},"min":6,"max":16},
+{"c":"心境","tier":"玄缘","t":"顿悟","d":"走在路上，你忽然想起很多年前的一句话。那一瞬间，卡在心里的东西松了。","f":"顿悟不多，一辈子就那么几次。","cost":"你错过了那场雨，也想通了那句话。","ef":{"cultivate":130,"dao":2},"min":8},
+{"c":"心境","tier":"玄缘","t":"认命","d":"你终于承认有些东西求不来。承认之后，反倒轻了。","f":"认了，才走得远。","cost":"你认了，也放下了一些。","ef":{"cultivate":90,"dao":1,"karma":1},"min":10},
+{"c":"器物","tier":"灵缘","t":"祖传的锁甲","d":"一个老兵把祖传的锁甲让给你，说自己穿不动了。","f":"穿不动的人，才肯松手。","cost":"你把身上的钱都给了他。","ef":{"ss":-60,"equip":{"n":"百炼锁甲","slot":"armor","g":1}},"min":2,"max":10},
+{"c":"器物","tier":"宝缘","t":"坊市新到的法器","d":"摊主刚摆上一件灵纹长剑，说是从北边来的。你掂了掂，刃口有一道细线。","f":"会挑的人看刃，不会挑的人看鞘。","cost":"你花光了攒下的灵石。","ef":{"ss":-140,"equip":{"n":"灵纹长剑","slot":"weapon","g":2}},"min":5,"max":15,"loc":["市","墟"]},
+{"c":"器物","tier":"宝缘","t":"泽底捞出的宝珠","d":"蚌壳里一颗玄水珠，握在手里是凉的，久了却又暖。","f":"水底的东西，最会藏。","cost":"你在水里憋得太久，耳鸣了半旬。","ef":{"equip":{"n":"玄水宝珠","slot":"treasure","g":2,"spec":"heal"}},"min":6,"max":16,"loc":["泽"]},
+{"c":"器物","tier":"宝缘","t":"老匠人的护腕","d":"老匠人把一副玄鳞宝铠推给你，说这甲他打了三年。","f":"三年打一副甲，值不值只有他知道。","cost":"你几乎掏空了自己。","ef":{"ss":-180,"equip":{"n":"玄鳞宝铠","slot":"armor","g":3}},"min":8,"max":18,"loc":["镇","市"]},
+{"c":"器物","tier":"玄缘","t":"洞天里的一双履","d":"石台上放着一双踏虚履，落满了灰。你穿上走了两步，脚不沾地。","f":"路走多了，才想着不走路。","cost":"你穿上它，走了很久才敢停。","ef":{"equip":{"n":"踏虚履","slot":"escape","g":3,"spec":"escape"}},"min":10,"loc":["天"]},
+{"c":"器物","tier":"玄缘","t":"拍卖行压轴的念珠","d":"台上的念珠是旧的，绳都换过三回。你把它戴上，心一下子静了。","f":"旧东西，最压得住乱心。","cost":"你几乎掏空了积蓄。","ef":{"ss":-260,"equip":{"n":"因果念珠","slot":"ornament","g":4,"spec":"karma","set":"guirelic"}},"min":11,"loc":["市","墟"]},
+{"c":"秘境","tier":"灵缘","t":"无定旧窖","d":"棚户底下那个旧窖又塌了一角。你抢在人前头进去了。","f":"穷人的窖，富人的坟。","cost":"你呛了一身灰。","ef":{"ss":80,"material":3,"herb":2},"min":4,"max":14,"loc":["墟"]},
+{"c":"秘境","tier":"宝缘","t":"落霞深处","d":"落霞秘境往里再走三里，雾散开，露出一片你从没见过的石林。","f":"走得深的人，看见的才多。","cost":"你在石林里绕了三天。","ef":{"cultivate":70,"material":3},"min":6,"max":16,"loc":["秘"]},
+{"c":"秘境","tier":"宝缘","t":"血煞地宫","d":"岭下有一处旧地宫，门上的血印是新的。你进去了。","f":"新的血印，说明里头有活的东西。","cost":"你出来的时候，手一直在抖。","ef":{"cultivate":90,"pill":2,"dao":-1,"lifespan":-4},"min":7,"max":17,"loc":["煞"]},
+{"c":"秘境","tier":"宝缘","t":"沉船二层","d":"沉船最底舱的门被锁着。你用铁器撬了半日。","f":"锁着的东西，都值钱。","cost":"你在水里呛了好几回。","ef":{"ss":150,"material":4},"min":8,"max":18,"loc":["泽"]},
+{"c":"秘境","tier":"宝缘","t":"云梦水眼","d":"泽心有一处泉眼，水从地底往上涌。你在泉边坐了半日。","f":"会冒水的地方，地气足。","cost":"你坐到忘了时辰。","ef":{"cultivate":80,"heal":{"pct":0.5},"cure":true},"min":8,"max":18,"loc":["泽"]},
+{"c":"秘境","tier":"宝缘","t":"青丘林心","d":"林子最深处有一棵通天的老树，树洞里供着东西。","f":"供着的东西，不能白拿。","cost":"你取了东西，也留了点什么。","ef":{"cultivate":100,"dao":1,"lifespan":-3},"min":9,"max":18,"loc":["丘"]},
+{"c":"秘境","tier":"玄缘","t":"归墟三重","d":"归墟的第三重比前两重静。静得你能听见自己的血在走。","f":"最静的地方，最吓人。","cost":"你在里面不知待了多久。","ef":{"cultivate":260,"material":6,"lifespan":-10},"min":12,"loc":["天"]},
+{"c":"秘境","tier":"玄缘","t":"天南裂缝","d":"地面裂开一道缝，缝里透出不属于此界的光。","f":"不属于这里的东西，看一眼就够。","cost":"你看完之后，眼睛疼了很久。","ef":{"cultivate":180,"ss":300,"dao":1,"lifespan":-8},"min":13},
+{"c":"地方","tier":"灵缘","t":"潜行坊市","d":"你压低斗笠进了坊市。没人认得出你。","f":"认得你的人越少，走得越稳。","cost":"你连话都没敢多说。","ef":{"locate":"市","fame":-1},"min":3,"loc":["镇","野","墟"]},
+{"c":"地方","tier":"灵缘","t":"借道无定","d":"你从无定墟穿过去，没跟任何人打招呼。","f":"借路的人，不欠人情。","cost":"你走得急，什么也没看。","ef":{"locate":"墟"},"min":4,"loc":["市","野"]},
+{"c":"地方","tier":"宝缘","t":"绕行血煞","d":"血煞岭走不得。你多绕了半个月的山路。","f":"绕着走的人，活得久。","cost":"你多走了半个月，也多折了些寿。","ef":{"locate":"野","lifespan":-1},"min":5,"loc":["丘","泽"]},
+{"c":"地方","tier":"宝缘","t":"立寨自守","d":"你在一处背风的山坳里立了个寨。没人管，也没人赶。","f":"有个屋顶，心就定了。","cost":"从此你的担子多了一份。","ef":{"locate":"野","cultivate":20,"debts":1},"min":6,"loc":["野"]},
+{"c":"地方","tier":"玄缘","t":"北上中州","d":"你顺着地脉往北走。走了半年，天忽然宽了。","f":"走远了，才知道南荒有多小。","cost":"你把南荒的东西都留在了山外。","ef":{"locate":"州"},"min":19,"loc":["野","秘","天"]},
+{"c":"宗门","tier":"宝缘","t":"岭上的血池","d":"堂里那口池子又满了。管事让你把手伸进去，试试水温。","f":"试水温的人，手得先不要了。","cost":"你的手，凉了很久。","ef":{"cultivate":85,"lifespan":-5,"dao":-1,"contrib":20},"min":8,"max":16,"sect":"xs"},
+{"c":"宗门","tier":"玄缘","t":"血使的号令","d":"你腰上的黑牌震了一下。你知道该去哪儿了。","f":"认牌不认人。","cost":"你去了，也留了个名字在别人心里。","ef":{"contrib":45,"ss":120,"lifespan":-4,"enemy":1},"min":11,"max":18,"sect":"xs"},
+{"c":"宗门","tier":"玄缘","t":"堂主的密令","d":"密令只有一个字。你看了很久才明白那是谁的名字。","f":"知道得越多，退路越少。","cost":"你接下了，也就没有回头路了。","ef":{"contrib":70,"atk":8,"dao":-1,"lifespan":-6},"min":14,"max":20,"sect":"xs"},
+{"c":"宗门","tier":"宝缘","t":"大掌柜的算盘","d":"大掌柜把算盘推给你，说这一笔你自己算。","f":"算得清的，才叫账。","cost":"你算了半宿，手心全是汗。","ef":{"ss":200,"contrib":35},"min":8,"max":16,"sect":"hs"},
+{"c":"宗门","tier":"宝缘","t":"商盟的规矩","d":"有人在商盟的地盘上赖账。掌柜说，你去。你就去了。","f":"欠商盟的，躲不掉。","cost":"你去收账，也收了个仇人。","ef":{"contrib":60,"ss":150,"enemy":1},"min":13,"max":20,"sect":"hs"},
+{"c":"宗门","tier":"玄缘","t":"夜市的暗账","d":"账本上有几行是用别的墨写的。你装作没看见。","f":"看不见的账，才最值钱。","cost":"你记住了那几行，也记住了自己不该记。","ef":{"ss":400,"contrib":50,"dao":-1},"min":11,"max":18,"sect":"hs"},
+{"c":"宗门","tier":"宝缘","t":"盟里的老人","d":"盟里最老的那个把你叫过去，说了些他年轻时候的事。","f":"老人的话，顺着听。","cost":"你听了半日，也不好走。","ef":{"cultivate":70,"contrib":30,"fame":3,"debts":1},"min":8,"max":16,"sect":"wd"},
+{"c":"宗门","tier":"宝缘","t":"共渡的夜","d":"盟里有个人快不行了。一群人守着他到天亮，谁也没走。","f":"散修没有宗门，可也有送终的人。","cost":"你掏了治病的钱。","ef":{"contrib":40,"dao":1,"karma":1,"ss":-40},"min":10,"max":18,"sect":"wd"},
+{"c":"宗门","tier":"玄缘","t":"无定的公断","d":"两伙人动了刀。你站到中间，两边都停了手。","f":"没规矩的地方，话的分量全在人身上。","cost":"你劝住了他们，也得罪了两边。","ef":{"contrib":65,"fame":6,"dao":1,"enemy":1},"min":13,"max":20,"sect":"wd"},
+{"c":"宗门","tier":"宝缘","t":"林中的大礼","d":"它们抬出一件东西，说是给「新来的」的。你收下了。","f":"它们的礼数，和人反着来。","cost":"你收下了，也就欠了。","ef":{"cultivate":110,"lifespan":4,"dao":-1,"contrib":25},"min":9,"max":16,"sect":"qq"},
+{"c":"宗门","tier":"玄缘","t":"化形第二重","d":"这一次骨头挪得更慢，也更疼。你熬过来了。","f":"借来的身子，用久了要还的。","cost":"你照水看了一眼，没敢看第二眼。","ef":{"cultivate":150,"def":10,"lifespan":-4,"contrib":30},"min":12,"max":18,"sect":"qq"},
+{"c":"宗门","tier":"玄缘","t":"祠堂的旧契","d":"守祠的翻开一本旧契，指着一行给你看。那行字里有你的名字。","f":"契不是签的，是说的。","cost":"你看完了，从此更不像人。","ef":{"cultivate":200,"lifespan":10,"dao":-2,"contrib":60},"min":15,"max":22,"sect":"qq"},
+{"c":"战斗","tier":"灵缘","t":"山匪余党","d":"一伙人堵在山口。为首的那个，你好像在哪儿见过。","f":"见过的脸，未必是好事。","cost":"这一趟躲不过。","ef":{"battle":{"foe":"山匪余党","pw":[16,30],"loot":"凡缘","canFlee":true}},"min":2,"max":9,"loc":["野"]},
+{"c":"战斗","tier":"宝缘","t":"夺洞的散修","d":"你占了半年的山洞，来了个散修，说这洞是他先看上的。","f":"先看上的，也得守得住。","cost":"他堵在洞口，不走。","ef":{"battle":{"foe":"夺洞散修","scale":0.95,"loot":"灵缘","canFlee":true}},"min":5,"max":15},
+{"c":"战斗","tier":"宝缘","t":"商队的护卫","d":"商队丢了货，把你当成了贼。","f":"认错人的时候，最难讲理。","cost":"解释要时间，他们不给。","ef":{"battle":{"foe":"商队护卫","scale":1,"loot":"宝缘","canFlee":true}},"min":7,"max":17,"loc":["市","墟"]},
+{"c":"战斗","tier":"宝缘","t":"同门问剑","d":"同门提着剑来找你，说要分个高下。他没说是为什么。","f":"台上台下，都是同一把剑。","cost":"你接了，也结了个梁子。","ef":{"battle":{"foe":"同门","scale":1.05,"loot":"凡缘","canFlee":false},"contrib":-10},"min":10,"sect":"in"},
+{"c":"战斗","tier":"玄缘","t":"天外邪修","d":"他穿的衣服不是此界的样式。他冲你笑了一下。","f":"笑的时候，手已经动了。","cost":"他先动的手。","ef":{"battle":{"foe":"天外邪修","scale":1.3,"loot":"玄缘","canFlee":true,"ambush":true}},"min":28},
+{"c":"疗伤","tier":"宝缘","t":"高人的一丸丹","d":"你把那丸药藏了很多年。这一回，你舍得吃了。","f":"留着的药，总有要吃的一天。","cost":"药是好药，可也带毒。","ef":{"heal":{"pct":0.75},"pill":-1,"danPoison":3},"min":6},
+{"c":"疗伤","tier":"玄缘","t":"药王谷的引路","d":"有人告诉你药王谷还有传人。你找了三年，找到了。","f":"找得久的东西，才找得到。","cost":"这三年，你什么也没干。","ef":{"heal":{"pct":1},"cure":true,"herb":4},"min":15},
+{"c":"疗伤","tier":"玄缘","t":"换血","d":"有人肯为你换血。针扎进去的时候，你听见自己骨头在响。","f":"换过的东西，不再是原来的。","cost":"你换回了命，也折了寿。","ef":{"heal":{"pct":1},"cure":true,"hpMax":{"pct":0.06},"lifespan":-10},"min":20},
+{"c":"天命","tier":"凡缘","t":"掷命一卦","d":"卦摊上的人让你随手掷一卦。你掷了，铜钱在桌上转了很久。","f":"掷出去的东西，不问你自己愿不愿意。","cost":"你要等它停下来。","ef":{"fate":{"risk":"std"}},"min":1},
+{"c":"天命","tier":"凡缘","t":"问天三签","d":"庙里的签筒放在那儿，没人管。你抽了一支，签上的字看不太清。","f":"庙里的签，好坏都得认。","cost":"你把签拿在手里，很久没放下。","ef":{"fate":{"risk":"low"}},"min":1},
+{"c":"天命","tier":"凡缘","t":"路边的签筒","d":"路边摆着一个签筒，旁边没人。筒底压着一张纸：「自取」。","f":"没人看着的时候，看你敢不敢。","cost":"你拿了，也没人知道。","ef":{"fate":{"risk":"low"},"fame":1},"min":2},
+{"c":"天命","tier":"凡缘","t":"老道的卦摊","d":"一个老道在镇口摆摊，问你算不算一卦。你坐下了。","f":"算得准的，不收钱。","cost":"你听他算了半日。","ef":{"fate":{"risk":"std"}},"min":2,"loc":["镇","市"]},
+{"c":"天命","tier":"灵缘","t":"赌坊一局","d":"赌坊里的骰子转个不停。你把身上的钱押了上去。","f":"押下去容易，收回来难。","cost":"你把能押的都押了。","ef":{"fate":{"risk":"high"}},"min":3,"loc":["市","墟"]},
+{"c":"天命","tier":"灵缘","t":"血签","d":"堂里的签要用血来养。你割了手指，把血滴上去。","f":"沾了血的签，最灵也最凶。","cost":"你的血，滴了三滴。","ef":{"fate":{"risk":"high"},"dao":-1},"min":4,"sect":"血煞门"},
+{"c":"天命","tier":"灵缘","t":"商盟的抽彩","d":"柜上摆着一只彩匣，押注的人排到了门外。你也押了一份。","f":"生意人赌的，也是命。","cost":"押注的钱，不退。","ef":{"fate":{"risk":"std"},"ss":-30},"min":3,"sect":"黑石商盟"},
+{"c":"天命","tier":"灵缘","t":"月下的妖卜","d":"它们围着一堆碎骨坐下，让你把手伸进去摸一块。","f":"它们的卜，和人不一样。","cost":"你摸出来的那块，还带着温。","ef":{"fate":{"risk":"std"}},"min":5,"sect":"青丘妖族"},
+{"c":"天命","tier":"灵缘","t":"散修的盟誓","d":"盟里的人让你在火堆前说一句话。你说了，火忽然旺了一下。","f":"散修的盟誓，天听得见。","cost":"你说了，就得算数。","ef":{"fate":{"risk":"low"},"karma":1},"min":4,"sect":"无定散修盟"},
+{"c":"天命","tier":"灵缘","t":"洞天里的半卦","d":"石壁上刻着半幅卦象，缺了下半。你盯着它，把它在脑子里补全了。","f":"补齐的东西，是你的还是它的？","cost":"你补完之后，出了一身汗。","ef":{"fate":{"risk":"std"}},"min":6,"loc":["秘","天"]},
+{"c":"天命","tier":"宝缘","t":"窥命","d":"一面旧镜里照出的不是你。你盯着看，镜子里的人也盯着你。","f":"看得见的命，最不好改。","cost":"你看完之后，好几天不敢照镜子。","ef":{"fate":{"risk":"std"}},"min":7},
+{"c":"天命","tier":"宝缘","t":"夺命一线","d":"一线生机就悬在眼前。你伸手去够，够不够得着，全看天。","f":"够得着的，未必是你的。","cost":"你把手伸了出去。","ef":{"fate":{"risk":"high"}},"min":8},
+{"c":"天命","tier":"宝缘","t":"劫前问卜","d":"关口就在前头。你找了个没人的地方，先给自己算了一卦。","f":"心里没底的人，才要算。","cost":"你算完，心里更没底了。","ef":{"fate":{"risk":"low"}},"min":9},
+{"c":"天命","tier":"宝缘","t":"逆天改命","d":"你把该做的事反着做了一遍。天没说话，可你的命数动了动。","f":"逆着来的人，走得快，也走得险。","cost":"你改的，是自己的寿。","ef":{"fate":{"risk":"high"},"lifespan":-5},"min":10},
+{"c":"天命","tier":"宝缘","t":"三生石前","d":"石头上刻着许多名字，你找到了自己的那个。旁边还有一个，你不认得。","f":"刻上去的名字，擦不掉。","cost":"你在石前站了很久。","ef":{"fate":{"risk":"std"}},"min":11},
+{"c":"天命","tier":"宝缘","t":"因果秤","d":"一杆秤摆在面前，一头是你做过的，一头是你欠下的。秤没平。","f":"秤不平，路就不平。","cost":"你自己往上添了分量。","ef":{"fate":{"risk":"std"},"karma":1},"min":12},
+{"c":"天命","tier":"玄缘","t":"天机一窥","d":"你顺着一条线索往上摸，摸到了一个不该看的地方。你只看了一眼。","f":"天机不是给人看的。","cost":"你那一夜，头痛欲裂。","ef":{"fate":{"risk":"std"}},"min":13},
+{"c":"天命","tier":"玄缘","t":"赌命","d":"你把命摆上了桌。对面坐着的，你看不清脸。","f":"拿命押的，赢面最大，也最险。","cost":"你把手按在了桌上。","ef":{"fate":{"risk":"high"}},"min":15},
+{"c":"天命","tier":"玄缘","t":"命轮","d":"一个轮子在你面前转。轮上的刻度密得像星。你按住了它。","f":"按住轮子的人，自己也被推着走。","cost":"轮子停了，你看清了那格。","ef":{"fate":{"risk":"std"}},"min":16},
+{"c":"天命","tier":"玄缘","t":"断因果","d":"你找到了一条线，一头连着你，一头连着你看不见的地方。你把它断了。","f":"断了因果的人，轻，也空。","cost":"你断的时候，胸口疼了一下。","ef":{"fate":{"risk":"high"},"lifespan":-10},"min":19},
+{"c":"天命","tier":"玄缘","t":"逆天而行","d":"天要你往东，你偏往西。走得越远，天越沉。","f":"逆天的人，天记着他。","cost":"你走得很累，可也没停。","ef":{"fate":{"risk":"high"}},"min":22},
+{"c":"天命","tier":"玄缘","t":"问劫","d":"你快走到那道关前了。你先问了劫一句，劫没答。","f":"有的问题，问了也白问。","cost":"你问完，天更阴了。","ef":{"fate":{"risk":"std"}},"min":28},
+{"c":"天命","tier":"玄缘","t":"命数已定","d":"你终于看清了那本册子上的字。字是定的，可你看得很慢。","f":"定了的东西，也有早晚。","cost":"你看完了，天也黑了。","ef":{"fate":{"risk":"low"}},"min":31},
+{"c":"天命","tier":"玄缘","t":"与天对赌","d":"你把最后的东西摆上桌。天没有手，可它押了。","f":"和天赌的，从来不亏本。","cost":"你押上了自己。","ef":{"fate":{"risk":"high"}},"min":33}
+];
+Array.prototype.push.apply(CARDS, CARDS_R5);
+
+/* FDR-013 批4 · R6 组合解锁的专属卡（默认不进池；checkCombos 命中后置 S.unlocked[...] 才由 eligible() 放行）。
+   🔴 卡面 t/d/f/cost 零阿拉伯数字。 */
+Array.prototype.push.apply(CARDS, [
+  {"c":"秘境","tier":"仙缘","t":"归墟之门","d":"门后的路不是你走过的任何一种。你站在门口，听见有东西在里头等。","f":"钥匙不是为了开门，是为了让你敢开。","cost":"你走进去，就没打算按原路回来。","ef":{"cultivate":300,"material":8,"lifespan":-6},"min":10,"loc":["天"],"unlock":"归墟之门"},
+  {"c":"功法","tier":"仙缘","t":"大衍","d":"五行不是五种东西，是一条线上的五个结。你顺着一数过去，线就直了。","f":"数到最后，才知道一在哪里。","cost":"你把从前学的都忘了一遍。","ef":{"art":{"n":"大衍","el":"无","type":"养元","lv":0},"cultivate":260,"lifespan":6},"min":10,"unlock":"大衍"}
+]);
+
 /* 旧 equip 语义迁移：equip:{n,p} → {n,slot,g}；旧 mainArt → 功法对象规格 */
 (function normalizeCards(){
   CARDS.forEach(c=>{
@@ -741,6 +1432,22 @@ function wpick(w){                                   // 按权重取索引
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function signed(v, unit){ return (v>0?'<span class="pos">+'+v+'</span>':'<span class="neg">'+v+'</span>')+(unit||''); }
+/* FDR-010 批1 · 数值分档显示（v4 §4.2/§7.6）：只作用于数值层，卡面仍零数字。
+   目的：35 档后 STEP/气血/战力可达 6 位，HUD 面板需压缩宽度以守 390×844 · HUD ≤110px */
+function fmtNum(v){
+  v = Math.round(v);
+  const a = Math.abs(v);
+  if(a >= 1e8) return (v/1e8).toFixed(1)+'亿';
+  if(a >= 1e4) return (v/1e4).toFixed(1)+'万';
+  return String(v);
+}
+/* FDR-012 批3 · R3 §3.2 装备境界缩放：clamp( HP_BASE[stage] / HP_BASE[GRADE_MIN[g]], 1, GEAR_CAP[g] )
+   低品阶装备在高境界自动贬值（凡铁在渡劫≈无效）；同一件随主人境界增强（法器认主），避免越级装备 */
+function gearScale(g){
+  const sb  = clamp(S.stage, 0, HP_BASE.length-1);
+  const idx = clamp(GRADE_MIN[clamp(g,0,5)], 0, HP_BASE.length-1);
+  return clamp(HP_BASE[sb] / HP_BASE[idx], 1, GEAR_CAP[clamp(g,0,5)]);
+}
 
 /* ---------- 9. 状态 ---------- */
 let S=null, cur=[], over=false, turnBox=null, needSeal=false;
@@ -771,8 +1478,13 @@ function newGame(tal){
     rel:{}, debts:0, enemy:0,
     loc:0, seen:[0], nextLoc:null, nudge:0, declined:false, noJoin:{}, hailCd:0,
     sect:null, trade:null, contrib:0, rep:{}, guard:0, breakCd:0, breakTry:{}, swFrom:null,
+    yearsTotal:0, yearsCd:YEARS_CD_INIT, swapUsed:false, flags:{}, karma:0, escBonus:0,   // FDR-010 批1
+    fate:50, fateCd:FATE_CD_INIT,   // FDR-012 批3 · R5 天命值（初值 50 / 冷却 6）
+    seenCard:{}, codex:{}, comboReroll:0, unlocked:{},   // FDR-013 批4 · R6 组合（history 账 / 见闻录 / 专属卡解锁）
     memory:[], chg:[]
   };
+  /* FDR-010 批1 · 还原地盘归属（LOCS_OWN0 快照 · 增补 §C.1.3 可逆性）。只改 own 属性，不重建 LOCS 数组 */
+  LOCS.forEach((L,i)=>{ L.own = LOCS_OWN0[i]; });
   over=false; cur=[]; turnBox=null; needSeal=false; CH=null;
   const st = stats(); S.hp = st.hpMax;
   logEl.innerHTML='';
@@ -783,7 +1495,7 @@ function newGame(tal){
 }
 
 function curStep(){ return (S && S.stage < STEP.length) ? STEP[S.stage] : Infinity; }
-function stepText(){ const s=curStep(); return isFinite(s) ? String(s) : '圆满'; }
+function stepText(){ const s=curStep(); return isFinite(s) ? fmtNum(s) : '圆满'; }
 function coef(){ return REALM_COEF[clamp(S.stage,0,REALM_COEF.length-1)]; }
 function poisonMul(){ return S.danPoison>=6 ? 0.85 : 1; }
 function lifeLeft(){ return S.lifespan - S.age; }
@@ -793,6 +1505,59 @@ function durMul(it){ return it ? DUR_MUL[clamp(it.dur||0,0,2)] : 0; }
 function itemVal(it){                        // 用于比较取舍的粗估值
   if(!it) return 0;
   return (it.atk||0)+(it.def||0)+((it.hp||0)*0.35)+((it.esc||0)*0.8)+(it.g||0)*1.5;
+}
+/* ---------- FDR-011 批2 · spec 辅助（v4 §3.3 / §D.5） ---------- */
+/* 中文数字（卡面"重习可得"等零阿拉伯数字文案用） */
+const CN_D = ['零','一','二','三','四','五','六','七','八','九'];
+function cnNum(n){
+  n = Math.round(n);
+  if(!isFinite(n) || n<=0) return '零';
+  if(n<10) return CN_D[n];
+  if(n===10) return '十';
+  if(n<20) return '十'+CN_D[n%10];
+  if(n<100){ const t=Math.floor(n/10), o=n%10; return CN_D[t]+'十'+(o?CN_D[o]:''); }
+  if(n<1000){ const h=Math.floor(n/100), r=n%100; return CN_D[h]+'百'+(r?cnNum(r):''); }
+  return String(n);
+}
+function specInfo(it){ if(!it||!it.spec||!SPEC_TBL[it.spec]) return null; return Object.assign({id:it.spec}, SPEC_TBL[it.spec]); }
+/* 生效中的 spec（佩饰主 + 法器副） */
+function activeSpecList(){
+  return [S.equip.ornament, S.equip.treasure].filter(it=>it && it.spec && SPEC_TBL[it.spec]).map(specInfo);
+}
+function specsText(){
+  const l = activeSpecList();
+  return l.length ? l.map(s=>s.n).join('/') : '无';
+}
+/* spec 摊平数值（抽屉/引擎层数值，允许阿拉伯数字） */
+function specFlat(id, g){
+  g = clamp(g||0,0,5);
+  switch(id){
+    case 'heal':     return '回血 +'+(5*(g+1))+'%';
+    case 'lifespan': return '寿元上限 +'+(4*(g+1))+' 载';
+    case 'fame':     return '声望获取 ×'+(1+0.10*(g+1)).toFixed(2)+' · 佩之 +'+g;
+    case 'cult':     return '修为 ×'+(1+0.04*(g+1)).toFixed(2);
+    case 'ward':     return '受创 −'+(3*(g+1))+'%';
+    case 'escape':   return '遁走 +'+(2*(g+1))+' · 脱身 +'+(2*(g+1))+'%';
+    case 'fortune':  return '掉落 ×'+(1+0.08*(g+1)).toFixed(2);
+    case 'thorns':   return '反伤 '+(5*(g+1))+'% 敌攻';
+    case 'insight':  return '熟练获取 ×'+(1+0.06*(g+1)).toFixed(2);
+    case 'karma':    return '天命偏移 +'+(4*(g+1))+'%';
+    case 'vigor':    return '气血上限 +'+(3*(g+1))+'%';
+    case 'purity':   return '丹毒 ×0.70 · 走火 ×0.70';
+    default:         return '';
+  }
+}
+/* 引擎行 tag：spec=延寿(lifespan)[寿元上限 +16 载] */
+function specEngTag(id, g){
+  const sp = SPEC_TBL[id]; if(!sp) return String(id);
+  return sp.n+'('+id+')['+specFlat(id,g)+']';
+}
+/* 品阶适配提示（越境界穿戴允许，但给提示 · §D.2） */
+function gradeFitHint(it){
+  const g = clamp(it.g||0,0,5);
+  if(GRADE_MIN[g] > S.stage) return '此物于你境界尚显沉';
+  if(S.stage >= GRADE_MIN[g]+6) return '此物于你境界已显轻';
+  return '';
 }
 function artMulOf(a){
   const w = WX_ATTR[wxRel(S.rootEl, a.el)];
@@ -806,19 +1571,26 @@ function artBonus(detail){
   const m0 = mainArt(), secs = secArts();
   let mainAdj = 1;
   if(m0 && secs.some(s=>wxRel(m0.el,s.el)==='ke')) mainAdj = 0.80;      // 气息相冲
+  /* 兼修互克（FDR-014）：不限量后兼修可多门 —— 凡与任一同门兼修相克者 ×0.85（成对判定，不叠乘） */
   let secAdj = {};
-  if(secs.length===2 && wxRel(secs[0].el,secs[1].el)==='ke'){          // 兼修互克
-    secAdj[secs[0].n]=0.85; secAdj[secs[1].n]=0.85;
+  for(let i=0;i<secs.length;i++){
+    for(let j=i+1;j<secs.length;j++){
+      if(wxRel(secs[i].el,secs[j].el)==='ke'){ secAdj[secs[i].n]=0.85; secAdj[secs[j].n]=0.85; }
+    }
   }
+  const cf = persistSum();                               // FDR-013 批4 · R6 组合持久加成
   S.arts.forEach(a=>{
     const tbl = ART_TBL[a.type] || ART_TBL['养元'];
     const row = tbl[clamp(a.lv,0,4)];
+    const cap = Math.min(1 + CP_STEP*((a.cp)||0), 1.20);   // FDR-011 批2 · 参悟加成（v4 §2.2 规则3，封顶 ×1.20）
     let m;
     if(a.main) m = WX_ATTR[wxRel(S.rootEl,a.el)] * mainAdj;
     else       m = (1 + (WX_ATTR[wxRel(S.rootEl,a.el)]-1)*0.5) * 0.60 * (secAdj[a.n]||1);
-    const A = row[0]*m, D = row[1]*m, H = row[2]*m;
+    let cmul = cf.artMul * (a.type==='炼体' ? cf.bodyArtMul : 1) * (a.main ? cf.mainMul : 1);
+    const cpB = a.main ? (cf.mainAtkBonusPerCp * (a.cp||0)) : 0;
+    const A = row[0]*m*cap*cmul*(1+cpB), D = row[1]*m*cap*cmul, H = row[2]*m*cap*cmul;
     atk+=A; def+=D; hp+=H;
-    if(detail) detail.push({n:a.n, lv:a.lv, type:a.type, el:a.el, mul:m, atk:A, def:D, hp:H});
+    if(detail) detail.push({n:a.n, lv:a.lv, type:a.type, el:a.el, mul:m*cap*cmul, cp:(a.cp||0), atk:A, def:D, hp:H});
   });
   return {atk:atk, def:def, hp:hp};
 }
@@ -832,6 +1604,45 @@ function rootBonus(){
   if(S.rootGrade==='天灵根'){A+=0.08;D+=0.08;H+=0.08;}
   return {A:A,D:D,H:H};
 }
+/* FDR-012 批3 · R3 §3.5 套装统计：同一套同时装备的件数 → p2/p3 效果（含行囊不计） */
+function setSum(){
+  const equipped = SLOTS.map(s=>S.equip[s[0]]).filter(Boolean).map(it=>it.n);
+  const r = {atk:0,def:0,esc:0,life:0,bag:0,ssGain:0,contribGain:0,artGain:0,
+             fleeP:0,breakP:0,fateShift:0,sell:0,pay:0,xuanDrop:0,xuanWeight:1,sets:[]};
+  Object.keys(SET_TBL).forEach(id=>{
+    const S0 = SET_TBL[id];
+    let cnt = 0;
+    S0.parts.forEach(p=>{ if(equipped.indexOf(p)>=0) cnt++; });
+    if(cnt<=0) return;
+    const fx2 = cnt>=2 ? S0.p2 : null, fx3 = cnt>=3 ? S0.p3 : null;
+    [fx2,fx3].forEach(fx=>{ if(!fx) return;
+      Object.keys(fx).forEach(k=>{ if(k==='xuanWeight') r.xuanWeight *= fx[k]; else r[k] = (r[k]||0) + fx[k]; });
+    });
+    r.sets.push({id:id, n:S0.n, cnt:cnt, max:S0.parts.length, on2:!!fx2, on3:!!fx3});
+  });
+  return r;
+}
+/* 套装效果文案（抽屉/引擎层 · 数值可含阿拉伯数字） */
+const SET_FX_LABEL = {atk:'攻击', def:'防御', esc:'遁走', life:'寿元上限', lifeMax:'寿元上限', bag:'行囊',
+  ssGain:'灵石获取', contribGain:'宗门贡献', artGain:'功法熟练', fleeP:'遁走成功率', breakP:'冲境把握',
+  fateShift:'天命偏移', sell:'折价', pay:'商路俸禄', xuanDrop:'玄缘掉落', xuanWeight:'玄缘权重'};
+const SET_FX_PCT = {ssGain:1, contribGain:1, artGain:1, fleeP:1, breakP:1, fateShift:1, sell:1, xuanDrop:1};
+function setFxText(id){
+  const S0 = SET_TBL[id]; if(!S0) return '';
+  const fx = Object.assign({}, S0.p2, S0.p3);
+  return Object.keys(fx).map(k=>{
+    const v = fx[k], lab = SET_FX_LABEL[k] || k;
+    if(SET_FX_PCT[k]) return lab+' +'+Math.round(v*100)+'%';
+    if(k==='xuanWeight') return lab+' ×'+v;
+    return lab+' '+(v>0?'+':'')+v;
+  }).join(' · ');
+}
+/* R3 §3.6 修复代价文案（灵材修复为主：耗 灵材 = g+1 → 全修；有宗门则可耗贡献修一档） */
+function repairCostText(slot){
+  const it = S.equip[slot]; if(!it || !(it.dur>0)) return '';
+  const g = clamp(it.g||0,0,5);
+  return '修复需 灵材 '+(g+1)+(S.sect ? ('（或 '+esc(FACTIONS[S.sect.id].axis)+' 八点修一档）') : '');
+}
 function equipSum(){
   let atk=0,def=0,hp=0,esc=0;
   SLOTS.forEach(s=>{
@@ -839,15 +1650,38 @@ function equipSum(){
     const m = durMul(it);
     atk += (it.atk||0)*m; def += (it.def||0)*m; hp += (it.hp||0)*m; esc += (it.esc||0)*m;
   });
-  const orn = S.equip.ornament;
-  let life=0, cult=1, healB=0;
-  if(orn && orn.spec){
-    if(orn.spec==='lifespan') life += Math.round(6*(orn.g+1)*0.5);
-    if(orn.spec==='fame')     healB += 0;
-    if(orn.spec==='heal')     healB += 0.10;
-    if(orn.spec==='cult')     cult += 0.05*(orn.g>=4?3:(orn.g>=2?1:0));
-  }
-  return {atk:atk, def:def, hp:hp, esc:esc, life:life, cult:cult, healB:healB};
+  /* FDR-011 批2 · spec 生效来源：佩饰(主) + 法器(副)（v4 §3.3）。非叠取最高、可叠累加 */
+  const srcs = [S.equip.ornament, S.equip.treasure].filter(it=>it && it.spec && SPEC_TBL[it.spec]);
+  const best = {}, acc = {};
+  srcs.forEach(it=>{
+    const id = it.spec, g = clamp(it.g||0,0,5);
+    const val = SPEC_VAL[id] ? SPEC_VAL[id](g) : 0;
+    if(SPEC_TBL[id].stack) acc[id] = (acc[id]||0) + val;
+    else                   best[id] = Math.max(best[id]||0, val);
+  });
+  const life       = best.lifespan || 0;
+  const cult       = 1 + (best.cult || 0);
+  const healB      = best.heal || 0;
+  const fameMul    = (best.fame||0) > 0 ? best.fame : 1;
+  const ward       = best.ward || 0;
+  const fortune    = best.fortune || 0;
+  const vigor      = best.vigor || 0;
+  const purity     = (best.purity||0) > 0 ? best.purity : 1;
+  const escapeSpec = acc.escape || 0;
+  const thorns     = acc.thorns || 0;
+  const karmaShift = Math.min(acc.karma || 0, 0.35);     // 因果可叠，上限 +0.35（v4 §3.3）
+  /* FDR-012 批3 · R3 §3.5 套装并入：直接加成并入 atk/def/esc/寿元；其余派生经 setFx 透出 */
+  const st = setSum();
+  atk += st.atk; def += st.def; esc += st.esc;
+  const insightMul = ((best.insight||0)>0 ? best.insight : 1) * (1 + st.artGain);
+  const fateShift  = karmaShift + st.fateShift;   // 因果 spec + 归墟套装（上限在 fateTier 内统一施加）
+  return {atk:atk, def:def, hp:hp, esc:esc + escapeSpec, life:life + st.life, cult:cult, healB:healB,
+          fameMul:fameMul, ward:ward, fortune:fortune, vigor:vigor, insightMul:insightMul,
+          purity:purity, thorns:thorns, karmaShift:karmaShift, specs:srcs.map(specInfo),
+          setFx:{bag:st.bag, ssGain:st.ssGain, contribGain:st.contribGain, artGain:st.artGain,
+                 fleeP:st.fleeP, breakP:st.breakP, fateShift:st.fateShift, sell:st.sell, pay:st.pay,
+                 xuanDrop:st.xuanDrop, xuanWeight:st.xuanWeight},
+          sets:st.sets, fateShift:fateShift};
 }
 function stats(detail){
   const sb = clamp(S.stage,0,STAGES.length-1);
@@ -859,15 +1693,18 @@ function stats(detail){
   const boneAtk = (S.bone-50)/100*6;
   const boneDef = (S.bone-50)/100*4;
 
-  let hpMax = (HP_BASE[sb] + eq.hp + ab.hp + HP_BASE[sb]*rb.H) * boneHp * (1 - clamp(S.wound,0,0.50));
+  let hpMax = (HP_BASE[sb] + eq.hp + ab.hp + HP_BASE[sb]*rb.H + HP_BASE[sb]*eq.vigor) * boneHp * (1 - clamp(S.wound,0,0.50)) * (1 + persistSum().hpMaxPct);
   hpMax = Math.max(Math.round(HP_BASE[sb]*0.15), Math.round(hpMax));
   const atk = Math.round(ATK_BASE[sb] + eq.atk + ab.atk + ATK_BASE[sb]*rb.A + boneAtk + S.atkBonus);
   const def = Math.round(DEF_BASE[sb] + eq.def + ab.def + DEF_BASE[sb]*rb.D + boneDef + S.defBonus);
   const maxLife = Math.max(LIFE_CAP[sb], Math.max(S.lifespan,0) + eq.life);
   const power = Math.round(atk + def*0.5 + hpMax*0.1);
   const o = {
-    hpMax:hpMax, atk:atk, def:def, power:power, esc:Math.round(eq.esc),
+    hpMax:hpMax, atk:atk, def:def, power:power, esc:Math.round(eq.esc + (S.escBonus||0)),
     maxLife:maxLife, cult:eq.cult, healB:eq.healB,
+    fameMul:eq.fameMul, ward:eq.ward, fortune:eq.fortune, thorns:eq.thorns,
+    insightMul:eq.insightMul, purity:eq.purity, vigor:eq.vigor, karmaShift:eq.karmaShift,
+    specs:eq.specs, setFx:eq.setFx, sets:eq.sets, fateShift:eq.fateShift,
     baseA:ATK_BASE[sb], baseD:DEF_BASE[sb], baseH:HP_BASE[sb],
     eqA:eq.atk, eqD:eq.def, eqH:eq.hp,
     abA:ab.atk, abD:ab.def, abH:ab.hp,
@@ -900,20 +1737,26 @@ function renderHUD(){
       '<span class="chip loc">'+LOCS[S.loc].name+'</span>' +
       (S.sect ? '<span class="chip sect">'+FACTIONS[S.sect.id].short+'</span>'
               : '<span class="chip loose">无门无派</span>');
-  let n = '<span>寿元<b class="'+(lifeLeft()<=10?'red':'')+'">'+S.age+'/'+S.lifespan+'</b></span>'
-        + '<span>气血<b class="'+(hpp<=30?'red':'')+'">'+S.hp+'/'+st.hpMax+'</b></span>'
-        + '<span>战力<b>'+st.power+'</b></span>'
-        + '<span>攻<b>'+st.atk+' · </b>防<b>'+st.def+'</b></span>'
-        + '<span>修为<b class="gold">'+S.progress+'/'+stepText()+'</b></span>'
-        + '<span>灵石<b>'+S.ss+'</b></span>'
+  let n = '<span>寿元<b class="'+(lifeLeft()<=10?'red':'')+'">'+S.age+'/'+fmtNum(S.lifespan)+'</b></span>'
+        + '<span>气血<b class="'+(hpp<=30?'red':'')+'">'+fmtNum(S.hp)+'/'+fmtNum(st.hpMax)+'</b></span>'
+        + '<span>战力<b data-cu="power" data-cv="'+st.power+'">'+fmtNum(st.power)+'</b></span>'
+        + '<span>攻<b>'+fmtNum(st.atk)+' · </b>防<b>'+fmtNum(st.def)+'</b></span>'
+        + '<span>修为<b class="gold">'+fmtNum(S.progress)+'/'+stepText()+'</b></span>'
+        + '<span>灵石<b data-cu="ss" data-cv="'+Math.round(S.ss)+'">'+fmtNum(S.ss)+'</b></span>'
         + '<span>药材<b>'+S.herb+'</b></span>'
         + '<span>丹药<b>'+S.pill+'</b></span>'
-        + '<span>声望<b>'+S.fame+'</b></span>';
+        + '<span>声望<b data-cu="fame" data-cv="'+S.fame+'">'+S.fame+'</b></span>';
   if(S.sect) n += '<span>'+esc(FACTIONS[S.sect.id].axis)+'<b class="gold">'+S.contrib+'</b></span>';
   if(S.trade) n += '<span>商路<b class="gold">'+esc(FACTIONS.hs.short)+'</b></span>';
   if(S.danPoison) n += '<span>丹毒<b class="red">'+S.danPoison+'</b></span>';
   if(S.woundTurns>0) n += '<span>疗养<b class="red">'+S.woundTurns+'</b></span>';
+  /* FDR-011 批2 · spec 显性化：生效中的饰品特效在 HUD 行尾留一枚金字 chip，点击跳详情 */
+  const sps = activeSpecList();
+  if(sps.length) n += '<span class="spec-hud" data-jump="drawer">佩·'+sps.map(s=>esc(s.n)).join('/')+'</span>';
+  /* FDR-012 批3 · R5 §5.4：天命值档位 chip（中文，具体数值点「详情」看） */
+  n += '<span class="fate-chip" data-jump="drawer">命数·'+fateWord()+'</span>';
   $('h-nums').innerHTML = n;
+  animateHudNumbers();                       // FDR-013 批4 · A3 结算数字跳动（纯视觉）
 }
 
 function rankName(){
@@ -938,6 +1781,7 @@ function renderDrawer(){
     + P('灵根', esc(S.rootName)+'<em>'+S.rootEl+' 属 · 修炼 ×'+S.rootMul.toFixed(2)+'</em>')
     + P('根骨', S.bone+'<em>×'+S.boneMul.toFixed(2)+'</em>')
     + P('道心', DAO[S.dao][0]+'<em>冲境 '+(DAO[S.dao][1]>=0?'+':'')+Math.round(DAO[S.dao][1]*100)+'%</em>')
+    + P('天命', fateWord()+'<em>'+S.fate+' / 100 · 命数偏移 '+(fateShiftValue()>=0?'+':'')+fateShiftValue().toFixed(2)+'</em>')
     + P('寿元', S.age+' / '+S.lifespan+'<em>余 '+lifeLeft()+' 载</em>')
     + P('伤势累积', '气血上限 −'+Math.round(st.wound*100)+'%')
     + '</div>');
@@ -956,19 +1800,35 @@ function renderDrawer(){
       + (S.atkBonus?' · 额外攻 '+S.atkBonus:'') + (S.defBonus?' · 额外防 '+S.defBonus:'') + '</div>'
     + '</div>');
 
-  /* 功法 */
+  /* 功法（FDR-014 · 不限量习练 + 手动「遗忘」） */
   let ah = '';
   if(S.arts.length){
     S.arts.forEach(a=>{
       const w = wxRel(S.rootEl, a.el);
-      ah += '<div class="prow"><span>'+esc(a.n)+'</span><span>'+ART_LV[a.lv]+'<em>'+esc(a.el)+'·'+esc(a.type)+' · '+WX_NAME[w]+'</em></span></div>';
+      /* FDR-011 批2 · R2 UI：功法行加熟练度进度条；化境后改为参悟圆点（v4 §2.4） */
+      let bar;
+      if(a.lv>=4){
+        const cp = clamp(a.cp||0, 0, CP_CAP);
+        bar = '<i class="cpdots">'+'●'.repeat(cp)+'○'.repeat(CP_CAP-cp)+'</i>';
+      }else{
+        const lo = ART_EXP[a.lv], hi = ART_EXP[a.lv+1] || (ART_EXP[a.lv]+1);
+        const pct = clamp(Math.round((a.exp-lo)/Math.max(1,hi-lo)*100), 0, 100);
+        bar = '<i class="lvbar"><b style="width:'+pct+'%"></b></i>';
+      }
+      ah += '<div class="prow art-row"><span>'
+          + (a.main?'<i class="art-tag main">主修</i>':'')
+          + esc(a.n)+'</span>'
+          + '<span>'+ART_LV[a.lv]+bar+'<em>'+esc(a.el)+'·'+esc(a.type)+' · '+WX_NAME[w]+'</em></span>'
+          + '<button class="mini-btn forget" data-art="'+esc(a.n)+'">遗忘</button></div>';
     });
     const md = st.arts || [];
-    ah += '<div class="engine">'+ (md.length ? md.map(x=>esc(x.n)+' lv'+x.lv+' 攻'+(Math.round(x.atk*10)/10)+'/防'+(Math.round(x.def*10)/10)+'/血'+(Math.round(x.hp*10)/10)+' mul'+x.mul.toFixed(2)).join(' · ') : '—') +'</div>';
+    ah += '<div class="engine">'+ (md.length ? md.map(x=>esc(x.n)+' lv'+x.lv+(x.cp?(' cp'+x.cp):'')+' 攻'+(Math.round(x.atk*10)/10)+'/防'+(Math.round(x.def*10)/10)+'/血'+(Math.round(x.hp*10)/10)+' mul'+x.mul.toFixed(2)).join(' · ') : '—') +'</div>';
   }else ah = '<div class="prow"><span>尚未入门</span><span></span></div>';
-  rows.push('<div class="sec"><div class="sec-h">功 法</div>'+ah+'</div>');
+  rows.push('<div class="sec"><div class="sec-h">功 法 · '+cnNum(S.arts.length)+' 门</div>'+ah
+    + '<div class="mini">不 限 门 数 · 点 「遗 忘」放 下 一 门（主修若忘，余下最熟者继任）</div>'
+    + '</div>');
 
-  /* 装备 */
+  /* 装备（FDR-011 批2 · R10 手动换装 + spec 显示修复） */
   let eh = '';
   SLOTS.forEach(sl=>{
     const it = S.equip[sl[0]];
@@ -979,14 +1839,45 @@ function renderDrawer(){
     if(it.def) bits.push('防 '+Math.round(it.def*m));
     if(it.hp)  bits.push('血 '+Math.round(it.hp*m));
     if(it.esc) bits.push('遁 '+Math.round(it.esc*m));
-    eh += '<div class="prow"><span>'+esc(it.n)+'</span><span>'+(bits.join(' · ')||'—')
-        + '<em>'+GRADE_N[clamp(it.g,0,5)]+(it.dur?(' · '+DUR_N[clamp(it.dur,0,2)]):'')+'</em></span></div>';
+    const sp = specInfo(it), gh = gradeFitHint(it);
+    const setS0 = (it.set && SET_TBL[it.set]) ? SET_TBL[it.set] : null;
+    const repBtn = (it.dur>0) ? '<button class="mini-btn fix" data-slot="'+sl[0]+'">修复</button>' : '';
+    eh += '<div class="prow equip-row"><span>'+esc(it.n)+'</span><span>'+(bits.join(' · ')||'—')
+        + (sp?'<i class="spec-chip">'+esc(sp.n)+'</i>':'')
+        + (setS0?'<i class="set-chip">'+esc(setS0.n)+'</i>':'')
+        + '<em>'+GRADE_N[clamp(it.g,0,5)]+(it.dur?(' · '+DUR_N[clamp(it.dur,0,2)]):'')+'</em>'
+        + (gh?'<i class="warn">'+gh+'</i>':'')
+        + '</span>'+repBtn+'<button class="mini-btn off"'+(bagRoom()<=0?' disabled':'')+' data-slot="'+sl[0]+'">卸下</button></div>';
+    if(sp) eh += '<div class="prow spec-note"><em>'+esc(sp.n)+' — '+esc(sp.desc)+'（'+esc(specFlat(sp.id,it.g))+'）</em></div>';
+    if(it.dur>0) eh += '<div class="prow set-note"><em>'+esc(DUR_N[clamp(it.dur,0,2)])+' · '+esc(repairCostText(sl[0]))+'</em></div>';
   });
   const bh = S.bag.length
-    ? S.bag.map(it=>'<div class="prow"><span>'+esc(it.n)+'</span><span>'+GRADE_N[clamp(it.g,0,5)]+'<em>'+SLOT_N[it.slot]+'</em></span></div>').join('')
+    ? S.bag.map((it,i)=>{
+        const sp = specInfo(it), gh = gradeFitHint(it);
+        const setB = (it.set && SET_TBL[it.set]) ? SET_TBL[it.set].n : null;
+        return '<div class="prow bag-row"><span>'+esc(it.n)+'</span><span>'+GRADE_N[clamp(it.g,0,5)]
+          + (it.dur?(' · '+DUR_N[clamp(it.dur,0,2)]):'')
+          + (sp?(' · '+esc(sp.n)):'')
+          + (setB?('<i class="set-chip">'+esc(setB)+'</i>'):'')
+          + '<em>'+SLOT_N[it.slot]+'</em>'+(gh?'<i class="warn">'+gh+'</i>':'')+'</span>'
+          + '<button class="mini-btn swap" data-i="'+i+'">换上</button></div>';
+      }).join('')
     : '<div class="prow"><span>囊中空空</span><span></span></div>';
   rows.push('<div class="sec"><div class="sec-h">器 物</div>'+eh
-    + '<div class="engine">行囊 '+S.bag.length+' / '+BAG_MAX+' · 槽位 '+SLOTS.filter(s=>S.equip[s[0]]).length+' / '+SLOTS.length+'</div>'+bh+'</div>');
+    + '<div class="engine">行囊 '+S.bag.length+' / '+bagMax()+' · 槽位 '+SLOTS.filter(s=>S.equip[s[0]]).length+' / '+SLOTS.length+'</div>'
+    + '<div class="bag-list">'+bh+'</div></div>');
+
+  /* FDR-012 批3 · R3 §3.5 套装：已装备凑齐的套数 → 2/3 件成势（数值摊在引擎/抽屉层） */
+  const setRes = setSum();
+  if(setRes.sets.length){
+    let sw = '';
+    setRes.sets.forEach(s=>{
+      sw += '<div class="prow"><span>'+esc(s.n)+'</span><span>'+s.cnt+' / '+s.max
+          + '<i class="set-chip">'+(s.on3?'三件成势':(s.on2?'两件成势':'未成势'))+'</i></span></div>';
+      if(s.on2) sw += '<div class="prow set-note"><em>'+esc(setFxText(s.id))+'</em></div>';
+    });
+    rows.push('<div class="sec"><div class="sec-h">套 装</div>'+sw+'</div>');
+  }
 
   /* 派系 */
   let fh = '';
@@ -1023,6 +1914,20 @@ function renderDrawer(){
     + '<div class="locs">'+locHtml+'</div>'
     + '<div class="mini"><b>'+L.name+'</b> 常见威胁<br>'+L.foes+'</div>'
     + '<div class="engine">qi='+L.qi+' · pw '+L.pw[0]+'–'+L.pw[1]+(L.own?(' · 地头 '+FACTIONS[L.own].n):'')+'</div>'
+    + '</div>');
+
+  /* FDR-013 批4 · R1 §1.4 开关 + R6 §6.3 见闻录入口（塞进抽屉，不撑高 HUD） */
+  const combosGot = Object.keys(S.codex||{}).length;
+  let cmHtml = '';
+  Object.keys(S.codex||{}).forEach(id=>{ const cm=COMBO_BY_ID[id]; if(cm) cmHtml += '<i class="combo-chip">'+esc(cm.n)+'</i> '; });
+  rows.push('<div class="sec"><div class="sec-h">声 色 · 见 闻</div>'
+    + '<div class="setrow">'
+    + '<button class="hbtn '+(MUTE?'':'on')+'" id="btn-sound">声 · '+(MUTE?'静':'开')+'</button>'
+    + '<button class="hbtn '+(MOTION_REDUCED?'on':'')+'" id="btn-motion">静 · '+(MOTION_REDUCED?'减':'常')+'</button>'
+    + '<button class="hbtn" id="btn-codex">见 闻 录</button>'
+    + '</div>'
+    + '<div class="mini"><b>声</b> 音效（现场合成）。<b>静</b> 减少动态效果（系统偏好亦自动生效）。</div>'
+    + '<div class="mini"><b>机缘相合</b> 已录 '+cnNum(combosGot)+' / '+cnNum(COMBO_TBL.length)+(cmHtml?('<br>'+cmHtml):'')+'</div>'
     + '</div>');
 
   $('dgrid').innerHTML = rows.join('');
@@ -1140,6 +2045,27 @@ function eligible(c){
     if(S.declined) return false;
     if(S.noJoin && S.noJoin[c.t]) return false;       // 这张入门卡已被当面回绝过，不再反复劝
   }
+  /* FDR-010 批1 · years 卡治理（增补 §B.4 G5/G6）：冷却未过或预算用尽 → 门控屏蔽 */
+  if(c.ef && c.ef.years && ((S.yearsCd||0)>0 || (S.yearsTotal||0) >= YEAR_BUDGET)) return false;
+  /* FDR-011 批2 · R9 对阵类战争卡关系门控（增补 §C.1.2）。复用现成 factionRel()/REL_TBL，零新表。
+     🔴 商盟(hs) 在 REL_TBL 无敌对行 ⇒ 商盟玩家天然遇不到对阵类 —— 刻意，不要"修"。
+     🔴 o.war={} 缺省 relMax=-41(WAR_REL_GATE)；给出 vs 则只看该派，否则看整行最差。 */
+  if(c.war){
+    if(!S.sect) return false;                                  // 无门无派不主动参战（散修卷入卡不挂 war）
+    const thr = (c.war.relMax != null) ? c.war.relMax : WAR_REL_GATE;
+    let hostile = false;
+    if(c.war.vs){ hostile = factionRel(c.war.vs) <= thr; }
+    else {
+      const row = REL_TBL[S.sect.id] || {};
+      for(const k in row){ if(factionRel(k) <= thr){ hostile = true; break; } }
+    }
+    if(!hostile) return false;
+  }
+  /* FDR-012 批3 · R5 §5.5 天命卡频率门控：走正常类目通道（天然满足"三卡类目互异"），
+     另加冷却 + 解锁门槛：stage ≥ 1 才见；结算后 fateCd=4（最多每 5 回合一次）；开局前 6 回合不出 */
+  if(c.c==='天命' && (S.stage < 1 || (S.fateCd||0) > 0)) return false;
+  /* FDR-013 批4 · R6 组合专属卡：未解锁不入池（默认隐藏，命中组合后放行） */
+  if(c.unlock && !(S.unlocked && S.unlocked[c.unlock])) return false;
   if(S.woundTurns>0 && (c.c==='战斗' || c.c==='危险')) return false;
   return true;
 }
@@ -1174,10 +2100,17 @@ function genCards(){
   if(L.own){ const v = factionRel(L.own); hostile = v <= -21; }
   const drawFrom = pool=>{
     const own0 = LOCS[S.loc].own;              // FDR-007：站在别家地盘上，这家人更愿意来搭话
+    const ownCount = S.sect ? LOCS.filter(X=>X.own===S.sect.id).length : 0;
+    const relRow = S.sect ? (REL_TBL[S.sect.id] || {}) : {};
+    let worst = 0; for(const k in relRow){ if(relRow[k] < worst) worst = relRow[k]; }
+    const warMul = 1 + Math.max(0, -worst - 41) / 20;   // FDR-011 批2 · R9：最差关系 −41→×1.0，−81→×3.0
     const w = pool.map(c=>{
       let v = TIER_W[c.tier] || 1;
       if(hostile && c.c==='战斗') v *= (factionRel(L.own) <= -41 ? 3.0 : 1.8);
       if(own0 && joinTarget(c)===own0) v *= 6; // 地盘所属派系的入门卡曝光提升
+      if(c.war && S.sect) v *= warMul;         // R9 关系加权：与敌派越差，战争卡越密
+      // R9 · W-2 卡池效应：战败失地后（我方地盘 ≤1）本门 sect 门控卡出现率减半
+      if(c.sect && S.sect && c.sect===S.sect.id && ownCount<=1) v *= 0.5;
       return v;
     });
     return pool[wpick(w)];
@@ -1215,6 +2148,17 @@ function genCards(){
     rest.forEach(c=>{ if(out.length<3 && !usedId.has(c.id) && !usedCat.has(c.c)){ usedId.add(c.id); usedCat.add(c.c); out.push(c); } });
     rest.forEach(c=>{ if(out.length<3 && !usedId.has(c.id)){ usedId.add(c.id); out.push(c); } });
   }
+  /* FDR-011 批2 · R9 ③ 关口强制注入：BIG 关口前一回合，若本局尚未出过战事卡，
+     强制把一张 min≤stage 的战事卡塞进三选一（"战火延烧"），保证关键节点必遇战争。 */
+  const nearGate = BIG[S.stage] && isFinite(curStep()) && S.progress >= curStep()*0.85;
+  if(!(S.flags && S.flags.warSeen) && nearGate && out.length>=3 && !out.some(c=>c.c==='战事')){
+    const wp = all.filter(c=>c.c==='战事' && !usedId.has(c.id));
+    if(wp.length){
+      const hit = wp[Math.floor(Math.random()*wp.length)];
+      out[2] = hit; usedId.add(hit.id);      // 替换最后一格：out[0]/out[1] 必非战事，三卡类目仍互异
+    }
+  }
+  if(S.flags && out.some(c=>c.c==='战事')) S.flags.warSeen = true;
   return out.slice(0,3);
 }
 
@@ -1237,9 +2181,11 @@ function cardEng(c){
     if(k==='equip' && v){
       p.push('equip='+v.n+'[slot='+v.slot+',g='+v.g+',grade='+GRADE_N[clamp(v.g||0,0,5)]
         +(v.atk!=null?',atk='+v.atk:'')+(v.def!=null?',def='+v.def:'')
-        +(v.hp!=null?',hp='+v.hp:'')+(v.esc!=null?',esc='+v.esc:'')+(v.spec?',spec='+v.spec:'')+']');
+        +(v.hp!=null?',hp='+v.hp:'')+(v.esc!=null?',esc='+v.esc:'')+(v.spec?',spec='+specEngTag(v.spec, v.g==null?0:v.g):'')+(v.set?',set='+v.set:'')+']');
       return;
     }
+    /* FDR-012 批3 · R5 天命卡引擎行：fate=risk:std · tier 由 rollFate 摊出 */
+    if(k==='fate' && v){ p.push('fate=risk:'+(v.risk||'std')); return; }
     if(k==='art' && v){ p.push('art='+v.n+'['+v.el+'/'+v.type+',lv='+(v.lv||0)+']'); return; }
     if(k==='battle' && v){
       p.push('battle='+v.foe+(v.pw?('[pw='+v.pw[0]+'–'+v.pw[1]+']'):('[scale=×'+v.scale+']'))
@@ -1260,20 +2206,47 @@ function renderCards(){
   g.innerHTML='';
   $('quota').textContent = '门控 · ' + STAGES[clamp(S.stage,0,STAGES.length-1)] + ' / ' + LOCS[S.loc].name
     + ' / ' + (S.sect ? FACTIONS[S.sect.id].short : '无门无派');
-  cur.forEach(c=>{
+  cur.forEach((c,ci)=>{
     const d = document.createElement('div');
     d.className = 'card';
+    /* FDR-011 批2 · R2 显性化：已习 chip（卡面纯中文，零数字）+ 器物 spec 行 */
+    const seen = (c.ef && c.ef.art && S.seenArt[c.ef.art.n])
+               ? (S.arts.filter(x=>x.n===c.ef.art.n)[0]||null) : null;
+    const learnChip = seen
+      ? '<span class="learn-chip">'+(seen.lv>=4?'已习 · 可参悟':'已习 · 可精进')+'</span>' : '';
+    /* FDR-012 批3 · R5：天命卡加「命数·稳/常/险」中文标签（零阿拉伯数字） */
+    const fateChip = (c.c==='天命' && c.ef && c.ef.fate)
+      ? '<span class="fate-risk">命数·'+(({low:'稳', std:'常', high:'险'})[c.ef.fate.risk]||'常')+'</span>' : '';
+    let extra = '';
+    if(c.ef && c.ef.equip && c.ef.equip.spec && SPEC_TBL[c.ef.equip.spec]){
+      const sp = SPEC_TBL[c.ef.equip.spec];
+      extra += '<div class="tspec">特效 · '+esc(sp.n)+'：'+esc(sp.desc)+'</div>';   // 纯中文，零阿拉伯数字
+    }
+    /* FDR-012 批3 · R3：器物卡展示新装备所属套装（中文，零数字） */
+    if(c.ef && c.ef.equip && c.ef.equip.set && SET_TBL[c.ef.equip.set]){
+      extra += '<div class="tset">所属 · '+esc(SET_TBL[c.ef.equip.set].n)+'（同套多件，可得势）</div>';
+    }
+    if(seen){
+      extra += '<div class="tretake">重习可得 · 熟练 +'+cnNum(ART_RETAKE[c.tier]||15)+'</div>';
+    }
     d.innerHTML =
-      '<div class="chead"><span class="cat">'+esc(c.c)+'</span><span class="tier t-'+c.tier+'">'+esc(c.tier)+'</span></div>'
+      '<div class="chead"><span class="cat">'+esc(c.c)+'</span>'+learnChip+fateChip+'<span class="tier t-'+c.tier+'">'+esc(c.tier)+'</span></div>'
       + '<div class="ttitle serif">'+esc(c.t)+'</div>'
       + '<div class="tdesc serif">'+esc(c.d)+'</div>'
-      + '<div class="textra"><div class="tflav serif">「'+esc(c.f||'')+'」</div><div class="tcost">'+esc(c.cost||'')+'</div></div>'
+      + '<div class="textra"><div class="tflav serif">「'+esc(c.f||'')+'」</div><div class="tcost">'+esc(c.cost||'')+'</div>'+extra+'</div>'
       + '<div class="cfoot"><button class="more">细节</button><button class="pick">选 它</button></div>'
       + '<div class="eng">'+esc(cardEng(c))+'</div>';
     d.querySelector('.more').onclick = ()=>{ d.classList.toggle('ext'); };
-    d.querySelector('.pick').onclick = ()=>{ choose(c); };
+    d.querySelector('.pick').onclick = ()=>{
+      try{ playSE('pick');
+        document.querySelectorAll('#cgrid .card').forEach(x=>{ x.classList.remove('deal'); if(x!==d) x.classList.add('fading'); });
+        d.classList.add('pick-seal'); }catch(e){}
+      choose(c);
+    };
+    d.classList.add('deal'); d.style.animationDelay = (ci*60)+'ms';   // A1 发牌（纯视觉）
     g.appendChild(d);
   });
+  try{ playSE('deal'); }catch(e){}
 }
 
 /* ---------- 15. 器物 / 功法 发放 ---------- */
@@ -1283,25 +2256,42 @@ function mkItem(spec){
   const capG = (function(){ let mx=0; for(let i=0;i<GRADE_MIN.length;i++) if(S.stage>=GRADE_MIN[i]) mx=i; return mx; })();
   if(g > capG) g = capG;
   const G = G_TBL[g];
+  const gs = gearScale(g);                    // FDR-012 批3 · R3 §3.2 境界缩放（法器认主：同件随主人增强）
   const r = ()=>rnd(0.85,1.15);
   const it = {n:spec.n, slot:slot, g:g, atk:0, def:0, hp:0, esc:0, dur:0};
   switch(slot){
-    case 'weapon':   it.atk = spec.atk!=null?spec.atk:Math.max(1,Math.round(G[0]*r())); break;
-    case 'armor':    it.def = spec.def!=null?spec.def:Math.max(1,Math.round(G[1]*r()));
-                     it.hp  = spec.hp !=null?spec.hp :Math.max(1,Math.round(G[2]*0.60*r())); break;
-    case 'treasure': it.atk = spec.atk!=null?spec.atk:Math.max(1,Math.round(G[0]*0.55*r()));
-                     it.def = spec.def!=null?spec.def:Math.max(1,Math.round(G[1]*0.35*r())); break;
-    case 'escape':   it.def = spec.def!=null?spec.def:Math.max(0,Math.round(G[1]*0.50*r()));
-                     it.esc = spec.esc!=null?spec.esc:Math.max(1,Math.round(G[3]*r())); break;
-    case 'ornament': it.hp  = spec.hp !=null?spec.hp :Math.max(1,Math.round(G[2]*0.80*r())); break;
-    default:         it.atk = spec.atk!=null?spec.atk:Math.max(1,Math.round(G[0]*r()));
+    case 'weapon':   it.atk = spec.atk!=null?spec.atk:G[0]*r(); break;
+    case 'armor':    it.def = spec.def!=null?spec.def:G[1]*r();
+                     it.hp  = spec.hp !=null?spec.hp :G[2]*0.60*r(); break;
+    case 'treasure': it.atk = spec.atk!=null?spec.atk:G[0]*0.55*r();
+                     it.def = spec.def!=null?spec.def:G[1]*0.35*r(); break;
+    case 'escape':   it.def = spec.def!=null?spec.def:G[1]*0.50*r();
+                     it.esc = spec.esc!=null?spec.esc:G[3]*r(); break;
+    case 'ornament': it.hp  = spec.hp !=null?spec.hp :G[2]*0.80*r(); break;
+    default:         it.atk = spec.atk!=null?spec.atk:G[0]*r();
   }
+  /* R3 §3.2 · 派生属性 × gearScale(g)。空格位保持 0；有值的位置保底 1 */
+  it.atk = it.atk>0 ? Math.max(1, Math.round(it.atk*gs)) : 0;
+  it.def = it.def>0 ? Math.max(1, Math.round(it.def*gs)) : 0;
+  it.hp  = it.hp >0 ? Math.max(1, Math.round(it.hp *gs)) : 0;
+  it.esc = it.esc>0 ? Math.max(1, Math.round(it.esc*gs)) : 0;
   if(spec.spec) it.spec = spec.spec;
+  if(spec.set)  it.set  = spec.set;
   return it;
 }
+const SPEC_IDS = Object.keys(SPEC_TBL);
 function gradeDrop(tier){
   const L = LOOT_TBL[tier] || LOOT_TBL['凡缘'];
   const g = wpick(L.w);
+  /* FDR-012 批3 · R3 §8.3：优先从 60 件新装备表按品阶取名；取不到再回落到通用名 */
+  const pool = (EQ_BY_G[g] && EQ_BY_G[g].length) ? EQ_BY_G[g] : null;
+  if(pool){
+    const e = pick(pool);
+    let sp = e.spec;
+    /* R3 §3.6：品阶 ≥3 的佩饰/法器掉落有 30% 带 spec（只在 spec 生效槽位生成，避免无效特效） */
+    if(!sp && e.g>=3 && (e.slot==='ornament'||e.slot==='treasure') && Math.random()<0.30) sp = pick(SPEC_IDS);
+    return mkItem({n:e.n, slot:e.slot, g:e.g, spec:sp, set:e.set});
+  }
   const slots = ['weapon','armor','treasure','escape','ornament'];
   const slot = pick(slots);
   const mkName = ['铁口之物','旧锻之器','坊间法器','认主之器','古遗之宝','洞天之珍'][g];
@@ -1315,9 +2305,12 @@ function itemLine(it){
   if(it.esc) bits.push('遁'+it.esc);
   return esc(it.n)+'［'+GRADE_N[clamp(it.g,0,5)]+' · '+SLOT_N[it.slot]+' · '+(bits.join(' ')||'无')+'］';
 }
-function bagRoom(){ return BAG_MAX - S.bag.length; }
+/* FDR-012 批3 · R3 §3.5 套装（无定·散修 三件）使行囊 +2 */
+function bagMax(){ return BAG_MAX + ((equipSum().setFx && equipSum().setFx.bag) || 0); }
+function bagRoom(){ return bagMax() - S.bag.length; }
 function sellItem(it){
-  const v = Math.round((GRADE_SELL[clamp(it.g,0,5)]||8) * DUR_MUL[clamp(it.dur||0,0,2)] * 0.4);
+  const sfx = equipSum().setFx || {};
+  const v = Math.round((GRADE_SELL[clamp(it.g,0,5)]||8) * DUR_MUL[clamp(it.dur||0,0,2)] * 0.4 * (1 + (sfx.sell||0)));
   S.ss += v;
   return v;
 }
@@ -1326,6 +2319,99 @@ function destroyWeakest(){
   let idx=0;
   for(let i=1;i<S.bag.length;i++) if(itemVal(S.bag[i])<itemVal(S.bag[idx])) idx=i;
   return S.bag.splice(idx,1)[0];
+}
+
+/* ---------- FDR-011 批2 · R10 手动换装（增补 §D；不耗 AP / 回合，不触发结算） ---------- */
+let _toastT = null;
+function toast(msg){
+  const el = $('toast'); if(!el) return;
+  el.textContent = msg;
+  el.classList.add('in');
+  if(_toastT) clearTimeout(_toastT);
+  _toastT = setTimeout(()=>{ el.classList.remove('in'); }, 1200);
+}
+/* 行囊 ↔ 槽位 原地交换（不改变 S.bag.length ⇒ 包满时「换上」仍可用） */
+function swapEquip(bagIndex){
+  if(over) return;
+  const it = S.bag[bagIndex];
+  if(!it){ return; }
+  if(!SLOTS.some(s=>s[0]===it.slot)){ toast('此物无处可着'); return; }
+  const slot = it.slot;
+  const b = stats(), bSpec = specsText(), bHp = S.hp;
+  const old = S.equip[slot] || null;
+  S.equip[slot] = it;
+  if(old) S.bag.splice(bagIndex, 1, old);
+  else    S.bag.splice(bagIndex, 1);
+  recomputeBound(); renderAll();
+  const st = stats();
+  entry('', '你换了件随身的', '你把'+esc(it.n)+'换到了身上。'+(old?'换下来的那件，收进了行囊。':'那槽位原先空着。'),
+    '换装 · '+slot+' '+(old?esc(old.n):'（空）')+' → '+esc(it.n)+'［'+GRADE_N[clamp(it.g,0,5)]+',g'+it.g+'］'
+    + ' · 攻 '+b.atk+'→'+st.atk+' · 防 '+b.def+'→'+st.def+' · 气血 '+fmtNum(b.hpMax)+'→'+fmtNum(st.hpMax)+' · 遁 '+b.esc+'→'+st.esc
+    + ' · 特效 '+bSpec+' → '+specsText() + (S.hp<bHp?(' · 气血收口 '+fmtNum(bHp)+'→'+fmtNum(S.hp)):''));
+  toast(old?('已换上《'+it.n+'》'):('已装备《'+it.n+'》'));
+}
+/* 卸下进包；包满则拒绝 + toast（§D.2） */
+function unequipSlot(slot){
+  if(over) return;
+  const it = S.equip[slot];
+  if(!it) return;
+  if(bagRoom()<=0){ toast('囊已满，先腾出一格'); return; }
+  const b = stats(), bSpec = specsText(), bHp = S.hp;
+  S.bag.push(it); S.equip[slot] = null;
+  recomputeBound(); renderAll();
+  const st = stats();
+  entry('', '你把这件收进了行囊', '你把'+esc(it.n)+'卸了下来，归进囊中。',
+    '卸下 · '+slot+' '+esc(it.n)+'［'+GRADE_N[clamp(it.g,0,5)]+',g'+it.g+'］'
+    + ' · 攻 '+b.atk+'→'+st.atk+' · 防 '+b.def+'→'+st.def+' · 气血 '+fmtNum(b.hpMax)+'→'+fmtNum(st.hpMax)+' · 遁 '+b.esc+'→'+st.esc
+    + ' · 特效 '+bSpec+' → '+specsText() + (S.hp<bHp?(' · 气血收口 '+fmtNum(bHp)+'→'+fmtNum(S.hp)):''));
+  toast('已卸下《'+it.n+'》');
+}
+/* FDR-012 批3 · R3 §3.6 修复：灵材全修 > 宗门修一档 > 坊市修一档（不触及永久伤 S.wound） */
+function repairItem(slot){
+  if(over) return;
+  const it = S.equip[slot];
+  if(!it || !(it.dur>0)) return;
+  const g = clamp(it.g||0,0,5);
+  const L = [];
+  if(S.mat >= g+1){                                   // 灵材修复：耗 灵材 = g+1 → dur=0（全修）
+    S.mat -= (g+1); it.dur = 0;
+    L.push('灵材 <span class="neg">−'+(g+1)+'</span>'); L.push('器物 <span class="pos">'+esc(DUR_N[0])+'</span>');
+  }else if(S.sect && S.contrib >= 8){                 // 宗门修复：耗 贡献 8 → 修一档
+    S.contrib -= 8; it.dur = Math.max(0, it.dur-1);
+    L.push(esc(FACTIONS[S.sect.id].axis)+' <span class="neg">−8</span>'); L.push('器物 <span class="pos">'+esc(DUR_N[clamp(it.dur,0,2)])+'</span>');
+  }else{                                              // 坊市修复：耗 灵石 = round(GRADE_SELL[g]×0.6×dur) → 修一档
+    const cost = Math.round((GRADE_SELL[g]||8)*0.6*(it.dur||1));
+    if(S.ss < cost){ toast('手中之物，还修不起'); return; }
+    S.ss -= cost; it.dur = Math.max(0, it.dur-1);
+    L.push('灵石 <span class="neg">−'+cost+'</span>'); L.push('器物 <span class="pos">'+esc(DUR_N[clamp(it.dur,0,2)])+'</span>');
+  }
+  recomputeBound(); renderAll();
+  entry('', '你把《'+esc(it.n)+'》修补了一番', '旧东西补一补，还能再用些时日。',
+    '修复 · '+esc(it.n)+'［g'+g+',dur→'+it.dur+'］ · '+L.join(' · ')+' · 永久伤不受修复影响');
+  toast('已修复《'+it.n+'》');
+}
+
+/* FDR-014 · 功法「遗忘」：不限量习练的出口。遗忘一门（并清去「曾习」记录，以便日后重遇重学），
+   若所忘为主修则将余下熟练最高者推为新主修，免落「无根之木」之罚。不耗 AP、不推回合。 */
+function forgetArt(name){
+  if(over) return;
+  let i = -1; for(let k=0;k<S.arts.length;k++) if(S.arts[k].n===name){ i=k; break; }
+  if(i<0) return;
+  const a = S.arts[i], wasMain = !!a.main;
+  S.arts.splice(i,1);
+  if(S.seenArt) delete S.seenArt[name];
+  let heir = null;
+  if(wasMain && S.arts.length){
+    let bi=0; for(let k=1;k<S.arts.length;k++) if(S.arts[k].lv>S.arts[bi].lv) bi=k;
+    S.arts[bi].main = true; heir = S.arts[bi].n;
+  }
+  if(!mainArt() && S.arts.length){ S.arts[0].main = true; heir = S.arts[0].n; }
+  recomputeBound(); renderAll();
+  toast('已忘《'+a.n+'》'+(heir?(' · '+heir+' 继为主修'):''));
+  entry('', '你把《'+esc(a.n)+'》忘在了脑后',
+    '练过的路数，一笔勾去。手底下空出一片地方。',
+    '遗忘 · '+esc(a.n)+' ［'+ART_LV[a.lv]+(a.lv>=4&&(a.cp||0)?('·参悟'+cnNum(a.cp)):'')+'］'
+    + ' · 门数 → '+cnNum(S.arts.length)+(heir?(' · 主修 → '+esc(heir)):' · 已无主修'));
 }
 
 /* 获得器物：槽内为空即装上；已有则由玩家三选一取舍 */
@@ -1359,7 +2445,7 @@ function giveEquip(spec, done){
   askChoice('器 物 取 舍', '你手里已有'+esc(old.n)+'。'+esc(it.n)+'看着更好，可要换，旧的就得有个去处。',
     '<div class="prow"><span>新得</span><span>'+esc(it.n)+'<em>'+GRADE_N[clamp(it.g,0,5)]+' · 估值 '+itemVal(it).toFixed(1)+'</em></span></div>'
     + '<div class="prow"><span>原有</span><span>'+esc(old.n)+'<em>'+GRADE_N[clamp(old.g,0,5)]+' · 估值 '+itemVal(old).toFixed(1)+'</em></span></div>'
-    + '<div class="prow"><span>行囊</span><span>'+S.bag.length+' / '+BAG_MAX+'</span></div>',
+    + '<div class="prow"><span>行囊</span><span>'+S.bag.length+' / '+bagMax()+'</span></div>',
     opts,
     k=>{
       const L = [];
@@ -1385,23 +2471,52 @@ function giveEquip(spec, done){
     });
 }
 
-function giveArt(spec, L){
+function giveArt(spec, L, tier){
   const key = spec.n;
+  tier = tier || '灵缘';
   if(S.seenArt[key]){
     const a = S.arts.filter(x=>x.n===key)[0];
-    if(a){ addArtExp(a, 10); L.push('重习 <span class="pos">'+esc(a.n)+'</span> 熟练 +10'); note(7,'习 '+esc(a.n)); return; }
+    if(a){
+      const wmul = WX_EXP[wxRel(S.rootEl, a.el)] * (equipSum().insightMul || 1);
+      /* FDR-011 批2 · 规则3 · 满级（化境）后重复获得 → 转「参悟」，折算修为（v4 §2.2） */
+      if(a.lv>=4){
+        const cp0 = (a.cp||0);
+        if(cp0 < CP_CAP){
+          a.cp = cp0 + 1;
+          const gain = Math.round(80*coef());
+          S.progress += gain;
+          L.push('重习《'+esc(a.n)+'》· <span class="pos">参悟 '+cnNum(a.cp)+'</span> · 修为 +'+gain);
+          note(7, '《'+esc(a.n)+'》参悟 '+cnNum(a.cp));
+          entry('retake','','这一门你早已练透。再走一遍，走的是另一条路上的东西。',
+            '参悟 · '+esc(a.n)+' cp '+cp0+'→'+a.cp+' · 功法数值 ×'+Math.min(1+CP_STEP*a.cp,1.20).toFixed(2)+' · 修为 +'+gain);
+        }else{
+          const gain = Math.round(60*coef());
+          S.progress += gain;
+          L.push('《'+esc(a.n)+'》已极，重习只余 <span class="pos">修为 +'+gain+'</span>');
+          note(5, '修为 +'+gain);
+          entry('retake','','这一门已经练到不能再练。剩下的，只能熬成修为。',
+            '参悟已满 · '+esc(a.n)+' · 修为 +'+gain+'（cp 封顶 '+CP_CAP+'，不再提示参悟）');
+        }
+        return;
+      }
+      /* 规则1 · 重复获得按品阶给推进量（五行适配 / 慧根已在 addArtExp 内乘入） */
+      const amt = ART_RETAKE[tier] || 15;
+      const up = addArtExp(a, amt);
+      const shown = Math.round(amt*wmul);
+      L.push('重习 <span class="pos">'+esc(a.n)+'</span> · 熟练大进 +'+shown+(up>0?(' 晋 '+ART_LV[a.lv]):''));
+      note(7,'习 '+esc(a.n));
+      entry('retake','','你把《'+esc(a.n)+'》又走了一遍。这一遍，比头一遍更顺。',
+        '重习 · 品阶 '+tier+' · 熟练 +'+shown+(up>0?(' · 晋 '+ART_LV[a.lv]):'')+' · 五行 '+WX_NAME[wxRel(S.rootEl,a.el)]);
+      return;
+    }
   }
   let el = spec.el || '无', ty = spec.type || '养元';
   if(!ART_TBL[ty]) ty = '养元';
-  const a = {n:key, el:el, type:ty, exp:0, lv:0, main:false};
+  const a = {n:key, el:el, type:ty, exp:0, lv:0, main:false, cp:0};
   const m0 = mainArt();
+  /* FDR-014 · 功法不限量：唯首位入门者为「主修」，其后习得皆列「兼修」，不再顶替旧学 ——
+     取舍全交玩家（详情页「遗忘」）。 */
   if(!m0) a.main = true;
-  else if(secArts().length >= 2){
-    const secs = secArts();
-    let wi=0; for(let i=1;i<secs.length;i++) if(secs[i].lv<secs[wi].lv) wi=i;
-    S.arts.splice(S.arts.indexOf(secs[wi]),1);
-    L.push('放下 <span class="neg">'+esc(secs[wi].n)+'</span>');
-  }
   S.arts.push(a);
   S.seenArt[key] = 1;
   L.push('习得 <span class="pos">'+esc(a.n)+'</span>' + (a.main?'（主修）':'（兼修）'));
@@ -1413,7 +2528,8 @@ function artLvOf(a){
 }
 function addArtExp(a, v){
   if(!a) return 0;
-  const mul = WX_EXP[wxRel(S.rootEl, a.el)];
+  const ins = equipSum().insightMul || 1;                 // FDR-011 批2 · 慧根：功法熟练获取 ×
+  const mul = WX_EXP[wxRel(S.rootEl, a.el)] * ins;
   const before = a.lv;
   a.exp += Math.max(1, Math.round(v*mul));
   a.lv = artLvOf(a);
@@ -1494,7 +2610,7 @@ function runBattle(card, foe, mode, recovering, done){
   if(mode==='flee'){
     const st0 = stats();
     const p = clamp(0.35 + (st0.esc/(foe.pw*0.5))*0.30 + (function(){const m=mainArt(); return (m&&m.type==='遁法')?m.lv*0.06:0;})()
-              + (st0.def/Math.max(1,foe.atk))*0.15 - (b.ambush?0.20:0), 0.10, 0.85);
+              + (st0.def/Math.max(1,foe.atk))*0.15 + persistSum().fleeP - (b.ambush?0.20:0), 0.10, 0.85);
     const roll = Math.random(), ok = roll < p;
     entry('', '你选了：遁走', ok ? '你抽身往后退。它没有追上来——也许是不想，也许是没能。'
                                 : '你转身就跑，可它比你以为的快。',
@@ -1508,7 +2624,7 @@ function runBattle(card, foe, mode, recovering, done){
       renderAll();
       return done();
     }
-    const dmg = Math.max(1, Math.round(foe.atk*rnd(0.85,1.15) - st0.def*0.5));
+    const dmg = Math.max(1, Math.round((foe.atk*rnd(0.85,1.15) - st0.def*0.5) * (1-clamp(st0.ward||0,0,0.6))));   // 护体减伤
     S.hp -= dmg;
     const ssLoss = Math.min(S.ss, Math.round(foe.pw*0.5));
     S.ss -= ssLoss; S.fame = Math.max(0, S.fame-2);
@@ -1532,6 +2648,8 @@ function runBattle(card, foe, mode, recovering, done){
   let atkFull = stFull.atk; if(recovering) atkFull *= 0.7;
   let eAtkE = foe.atk*pwScale, eDefE = foe.def*edmM, eHpE = Math.round(foe.hp*pwScale);
   let round = 0, critR = 0.10, missR = 0.08;
+  const wardM = clamp(stats().ward||0, 0, 0.6);          // FDR-011 批2 · 护体：受创 ×(1−ward)
+  const thorn = clamp(stats().thorns||0, 0, 0.5);        // FDR-011 批2 · 反噬：受击反弹敌攻 ×thorn
   const m0 = mainArt();
   if(S.rootEl==='火') critR += 0.03;
   if(m0 && m0.type==='攻伐' && m0.lv>=2) critR += 0.02;
@@ -1565,15 +2683,20 @@ function runBattle(card, foe, mode, recovering, done){
       lines.push('轮'+round+' 你 −'+dp+' → 敌倒 '+cen);
       break;                                     // 胜负已分，过程统一在下方输出
     }
-    let de = Math.max(1, Math.round(eAtkE*rnd(0.85,1.15) - pDef0*0.5));
+    let de = Math.max(1, Math.round((eAtkE*rnd(0.85,1.15) - pDef0*0.5) * (1-wardM)));
     S.hp -= de;
+    if(thorn>0 && eHpE>0){ const rf = Math.max(1, Math.round(eAtkE*thorn)); eHpE -= rf; }   // 反噬
     lines.push('轮'+round+' 你 −'+dp+' → 敌 '+Math.max(0,eHpE)+' ｜ 敌 −'+de+' → 你 '+Math.max(0,S.hp)+' '+cen);
     if(S.hp<=0){ S.hp=0; break; }
+    if(eHpE<=0) break;                                    // 反噬补刀：敌先倒
   }
 
   const resolved = eHpE<=0 ? 'win' : (S.hp<=0 ? 'lose' : 'stall');
   const ratio = clamp(S.hp/Math.max(1,st0.hpMax), 0, 1);
-  entry('', '交手经过', '', '<div class="engine">'+lines.join('<br>')+'</div>');
+  /* FDR-013 批4 · A5 战斗交手：引擎行逐条浮现（纯视觉，可跳过） */
+  const lineHtml = lines.map((ln,i)=>'<span class="bl" style="display:block;animation:dealIn .32s cubic-bezier(.2,.8,.3,1) both;animation-delay:'+(i*130)+'ms">'+ln+'</span>').join('');
+  const be = entry('', '交手经过', '', '<div class="engine">'+lineHtml+'</div>');
+  playBattleSeq(be);
   return afterBat(ratio, foe, card, done, [], resolved, mode);
 }
 
@@ -1658,9 +2781,9 @@ function afterBat(ratio, foe, card, done, tags, resolved, mode){
     if(hb>0){ S.herb += hb; got.push('药材 +'+hb); }
     const ma = Math.round(ri(LT.mat[0], LT.mat[1]) * lootMul);
     if(ma>0){ S.mat += ma; got.push('灵材 +'+ma); }
-    const fa = Math.round(LT.fame * lootMul);
+    const fa = Math.round(LT.fame * lootMul * (stats().fameMul||1));
     if(fa>0){ S.fame += fa; got.push('声望 +'+fa); }
-    if(Math.random() < LT.drop*lootMul){
+    if(Math.random() < LT.drop*lootMul*(1+(stats().fortune||0))*(b.loot==='玄缘'?persistSum().xuanDrop:1)){
       const it = gradeDrop(b.loot);
       if(bagRoom()>0){ S.bag.push(it); got.push('得 '+esc(it.n)+'（'+GRADE_N[it.g]+'）'); note(7,'战利 '+esc(it.n)); }
       else{
@@ -1676,7 +2799,7 @@ function afterBat(ratio, foe, card, done, tags, resolved, mode){
       if(REST.length){
         const c2 = pick(REST);
         const sub = [];
-        giveArt(c2.ef.art, sub);
+        giveArt(c2.ef.art, sub, c2.tier);
         got.push('功法残篇 · '+sub.join(' '));
       }
     }
@@ -1696,7 +2819,7 @@ function afterBat(ratio, foe, card, done, tags, resolved, mode){
 /* ---------- 17. 大境界突破 ---------- */
 function brkTerms(force){
   const st = S.stage;
-  const base_ = st===9?0.42 : st===12?0.32 : 0.24;
+  const base_ = (BASE_BRK[st] != null) ? BASE_BRK[st] : 0.24;   // FDR-010 批1：九关口基数表
   const daoM  = DAO[S.dao][1];
   const boneM = (S.bone-50)/100*0.20;
   const rootM = (typeof S.rootPtr==='number') ? S.rootPtr : (P_ROOTSTEP[S.rootGrade]||0);
@@ -1716,7 +2839,8 @@ function brkTerms(force){
   const ageM = left2<=10 ? -0.10 : left2>=60 ? 0.05 : 0;
   const tries = S.breakTry[st]||0;
   const tryM  = tries>=2 ? 0.05*(tries-1) : 0;            // 第 3 次起 +5%/次（D3 推荐值）
-  let sum = base_+daoM+boneM+rootM+artM+danM+guardM+qiM+ageM+tryM;
+  const cfB = persistSum();                               // FDR-013 批4 · R6 组合：冲境把握 / 飞升增益
+  let sum = base_+daoM+boneM+rootM+artM+danM+guardM+qiM+ageM+tryM + cfB.breakP + (st===33 ? cfB.ascendP : 0);
   if(force) sum *= 0.5;
   const p = clamp(sum, 0.05, 0.85);
   return {st:st, base_:base_, daoM:daoM, boneM:boneM, rootM:rootM, artM:artM, hasDan:hasDan, danM:danM,
@@ -1760,6 +2884,7 @@ function doBreakthrough(force, done){
   const t = brkTerms(force);
   const roll = Math.random(), ok = roll < t.p;
   const F = BRK_FAIL[st] || BRK_FAIL[9];
+  try{ playGateSeq(ok, String(Math.round(roll*100))); }catch(e){}   // A4 冲关四段（非阻塞；判定值已定）
   let consumed = false;
   if(t.hasDan){ S.pill--; consumed = true; }
   let eng = brkEngine(t) + '<div class="engine">骰 '+Math.round(roll*100)+' → <b>'+(ok?'成功':'失败')+'</b>'
@@ -1778,10 +2903,16 @@ function doBreakthrough(force, done){
     if(S.lifespan <= S.age){ S.lifespan = S.age+5; guardLife = '吊住一口气 · '; }
     recomputeBound();
     entry('big','', '通了。丹田里那口气忽然落了地，落进了一片你从没到过的地方。', eng);
+    try{ playRealmUp(STAGES[S.stage]); }catch(e){}          // A6 冲境成功
     entry('sys','','境界提升 → '+STAGES[S.stage]+' ｜ 寿元上限 '+oldCap+' → '+S.lifespan+' 载'
       + (guardLife?'（'+guardLife+'）':''), '旧伤痊愈 −5% · 永久伤累计 '+Math.round(S.wound*100)+'%');
     note(1, '冲境成功 → '+STAGES[S.stage]);
     checkLoc(); renderAll();
+    if(S.stage >= STAGES.length-1){            // FDR-010 批1 · 渡劫→飞升成功 → T6 羽化登仙（v4 §4.6）
+      note(1, '羽化登仙');
+      renderAll();
+      return endGame('ascend');
+    }
     return done();
   }
 
@@ -1826,10 +2957,12 @@ function applyCard(c){
   const e = c.ef || {};
   const L = [];
   const st0 = stats();
+  const _cf = persistSum();                              // FDR-013 批4 · R6 组合持久加成（贡献/人情/疗伤/水行）
 
   if(e.cultivate){
     let base = e.cultivate;
     if(S.woundTurns>0) base *= 0.5;
+    if(base>0 && e.art && e.art.el==='水') base *= _cf.waterCultMul;   // R6「渡口三别」水行加成
     if(base>0){
       const gain = Math.max(1, Math.round(base * coef() * S.rootMul * S.boneMul * st0.cult * poisonMul() * rnd(0.9,1.1)));
       S.progress += gain;
@@ -1845,28 +2978,49 @@ function applyCard(c){
     S.progress = Math.max(0, S.progress-loss);
     L.push('修为 <span class="neg">−'+loss+'</span>');
   }
-  if(e.ss){ S.ss = Math.max(0, S.ss+e.ss); L.push('灵石 '+signed(e.ss)); note(6,'灵石 '+(e.ss>0?'+':'')+e.ss); }
+  /* FDR-012 批3 · R3 §3.5 套装倍率：商盟（灵石获取 +）/ 青云（贡献获取 +） */
+  const _sfx = st0.setFx || {};
+  if(e.ss){ const sv = e.ss>0 ? Math.round(e.ss*(1+(_sfx.ssGain||0))) : e.ss; S.ss = Math.max(0, S.ss+sv); L.push('灵石 '+signed(sv)); note(6,'灵石 '+(sv>0?'+':'')+sv); }
   if(e.herb){ S.herb = Math.max(0, S.herb+e.herb); L.push('药材 '+signed(e.herb)); }
   if(e.material){ S.mat = Math.max(0, S.mat+e.material); L.push('灵材 '+signed(e.material)); note(6,'灵材 +'+e.material); }
   if(e.pill){ S.pill = Math.max(0, S.pill+e.pill); L.push('丹药 '+signed(e.pill)); }
-  if(e.fame){ S.fame = Math.max(0, S.fame+e.fame); L.push('声望 '+signed(e.fame)); }
+  if(e.fame){ const fv = e.fame>0 ? Math.round(e.fame*st0.fameMul) : e.fame; S.fame = Math.max(0, S.fame+fv); L.push('声望 '+signed(fv)); }
   if(e.contrib){
-    S.contrib = Math.max(0, S.contrib+e.contrib);
-    L.push(esc(FACTIONS[S.sect?S.sect.id:'qy'].axis)+' '+signed(e.contrib));
+    const cv = e.contrib>0 ? Math.round(e.contrib*(1+(_sfx.contribGain||0)+_cf.contribGain)) : e.contrib;
+    S.contrib = Math.max(0, S.contrib+cv);
+    L.push(esc(FACTIONS[S.sect?S.sect.id:'qy'].axis)+' '+signed(cv));
     checkRank(L);
-    note(8, '贡献 '+(e.contrib>0?'+':'')+e.contrib);
+    note(8, '贡献 '+(cv>0?'+':'')+cv);
   }
-  if(e.danPoison){ S.danPoison = Math.max(0, S.danPoison+e.danPoison); L.push('丹毒 '+signed(e.danPoison)); }
+  if(e.danPoison){ const dpv = e.danPoison>0 ? Math.round(e.danPoison*st0.purity) : e.danPoison; S.danPoison = Math.max(0, S.danPoison+dpv); L.push('丹毒 '+signed(dpv)); }
   if(e.debts){ S.debts += e.debts; L.push('添了一桩 <span class="neg">未了的人情</span>'); }
-  if(e.enemy){ S.enemy += e.enemy; L.push('多了一个 <span class="neg">仇家</span>'); }
+  if(e.enemy){ S.enemy += e.enemy; L.push('多了一个 <span class="neg">仇家</span>');
+               S.fate = clamp((S.fate||50) - e.enemy, 0, 100); }   // FDR-012 §5.4：结仇 fate −1
   if(e.rel){
-    const n = e.rel.n; S.rel[n] = (S.rel[n]||0) + e.rel.v;
-    L.push('与 <span class="pos">'+esc(n)+'</span> 的关系 '+signed(e.rel.v));
+    const n = e.rel.n; const rv = e.rel.v>0 ? Math.round(e.rel.v*_cf.relGainMul) : e.rel.v;
+    S.rel[n] = (S.rel[n]||0) + rv;
+    L.push('与 <span class="pos">'+esc(n)+'</span> 的关系 '+signed(rv));
   }
   if(e.atk){ S.atkBonus += e.atk; L.push('攻击 <span class="pos">+'+e.atk+'</span>'); }
   if(e.def){ S.defBonus += e.def; L.push('防御 <span class="pos">+'+e.def+'</span>'); }
   if(e.guard){ S.guard += e.guard; L.push('护法 <span class="pos">+'+e.guard+'</span>'); }
   if(e.rep && e.rep.id){ S.rep[e.rep.id] = (S.rep[e.rep.id]||0) + (e.rep.v||0); L.push('派系声望 '+signed(e.rep.v)); }
+  /* FDR-010 批1 · 新增 effect 字段结算（增补 §E.5 / v4 §7.5） */
+  if(e.esc){ S.escBonus = (S.escBonus||0) + e.esc; L.push('遁走 <span class="pos">+'+e.esc+'</span>'); }
+  if(e.karma){ S.karma = (S.karma||0) + e.karma; S.fate = clamp((S.fate||0) + e.karma*3, 0, 100);
+               L.push('因果 <span class="'+(e.karma>0?'pos':'neg')+'">'+signed(e.karma)+'</span>'); note(8, '因果 '+(e.karma>0?'+':'')+e.karma); }
+  if(e.years){                                    // 时间吞噬：只推时钟 age，不动上限 lifespan（增补 §B.4 G2）
+    const _y = Math.min(Math.max(1, e.years|0), yearCap());
+    S.age += _y; S.yearsTotal = (S.yearsTotal||0) + _y;
+    S.yearsCd = YEARS_CD_MAX;                     // G6：冷却 4；选卡当回合不递减（见 finishTurn），故相邻跨年选择最小间隔 = 5 回合
+    S._yaT = S.turn;                              // 标记本回合选过跨年卡
+    L.push('岁月 <span class="neg">+'+_y+' 载</span>');
+    note(2, '岁月流逝 +'+_y+' 载');
+  }
+  if(e.territory && e.territory.loc){             // 地盘易主（增补 §E.5）：只改 own 属性，改后必须 renderAll()
+    const _ti = LOC_INDEX[e.territory.loc];
+    if(_ti!=null && LOCS[_ti]){ LOCS[_ti].own = e.territory.to; L.push('地盘易主 · <span class="pos">'+esc(LOCS[_ti].name)+'</span>'); renderAll(); }
+  }
   if(e.lifespan){
     S.lifespan += e.lifespan;
     L.push('寿元 <span class="'+(e.lifespan>0?'pos':'neg')+'">'+(e.lifespan>0?'+':'')+e.lifespan+' 载</span>');
@@ -1877,8 +3031,10 @@ function applyCard(c){
     S.dao = clamp(S.dao+e.dao, 0, DAO.length-1);
     if(S.dao!==b0) L.push('道心 <span class="'+(e.dao>0?'pos':'neg')+'">'+DAO[b0][0]+' → '+DAO[S.dao][0]+'</span>');
     note(8, '道心 → '+DAO[S.dao][0]);
+    /* FDR-012 §5.4：善行 dao+1 → fate+2；恶行 dao−1 → fate−2（每次变动 ≤ ±2） */
+    S.fate = clamp((S.fate||50) + (S.dao!==b0 ? e.dao*2 : 0), 0, 100);
   }
-  if(e.art){ giveArt(e.art, L); }
+  if(e.art){ giveArt(e.art, L, c.tier); }
   if(e.artExp){
     const mv = mainArt() || S.arts[0];
     const v0 = (typeof e.artExp==='number') ? e.artExp : (e.artExp.v||8);
@@ -1903,7 +3059,7 @@ function applyCard(c){
   }
   if(e.mainArt){                                  // 旧字段
     const mul = OLD_ART[e.mainArt] || ['无','养元'];
-    giveArt({n:e.mainArt, el:mul[0], type:mul[1]}, L);
+    giveArt({n:e.mainArt, el:mul[0], type:mul[1]}, L, c.tier || '凡缘');
   }
   if(e.hp && e.hp.pct){
     const st = stats();
@@ -1920,7 +3076,7 @@ function applyCard(c){
   }
   if(e.heal && e.heal.pct){
     const st = stats();
-    const mul = 1 + (S.rootEl==='水'?0.15:0) + st.healB;
+    const mul = (1 + (S.rootEl==='水'?0.15:0) + st.healB) * _cf.healMul;
     const g = Math.round(st.hpMax*e.heal.pct*mul);
     S.hp = Math.min(st.hpMax, S.hp + g);
     L.push('气血 <span class="pos">+'+g+'</span>');
@@ -2051,11 +3207,169 @@ function replaceCard(idx, old){
   return pool[wpick(pool.map(c=>TIER_W[c.tier]||1))];
 }
 
+/* =========================================================
+   FDR-012 批3 · R5 天命系（rollFate / fateTier / applyFateTier）
+   —— 结果由引擎侧在动画前定值（v4 §5.3.1 步4 红线）
+   ========================================================= */
+/* 天命值档位中文（HUD / 抽屉用，零阿拉伯数字） */
+function fateWord(){ return S.fate>=60 ? '天命所归' : S.fate<=40 ? '命途多舛' : '命数尚可'; }
+/* 命数偏移：shift = (S.fate−50)/50 + Σ spec.karma（上限 +0.35，§5.4） */
+function fateShiftValue(){
+  const st = stats();
+  const karma = Math.min(st.fateShift || 0, FATE_TBL.shift.cap);
+  return clamp(((S.fate||50) - 50) / 50 + karma, -1.35, 1.35);
+}
+/* 按 risk 基础分布 + shift 修正 → 归一化得五档概率（§5.3.1 / §5.4） */
+function fateDist(risk){
+  const base = FATE_TBL.risk[risk] || FATE_TBL.risk.std;
+  const sh = fateShiftValue(), ap = FATE_TBL.shift.apply;
+  const cfF = persistSum();                                // FDR-013 批4 · R6「天命所归」：吉/凶偏移
+  const d = {};
+  FATE_TIERS.forEach(t=>{
+    const bias = (t==='大吉') ? ap['大吉'] : (t==='吉') ? ap['吉']
+               : (t==='无咎') ? ap['无咎'] : (t==='大凶') ? ap['大凶'] : 0;
+    let v = (base[t]||0) + bias*sh;
+    if(t==='大吉') v += cfF.luckyP;
+    if(t==='大凶') v += cfF.badP;
+    d[t] = Math.max(0.004, v);
+  });
+  let sum = 0; FATE_TIERS.forEach(t=>{ sum += d[t]; });
+  FATE_TIERS.forEach(t=>{ d[t] /= sum; });
+  return d;
+}
+/* 采样得档位（引擎侧） */
+function fateTier(risk){
+  const d = fateDist(risk); let r = Math.random(), acc = 0;
+  for(let i=0;i<FATE_TIERS.length;i++){ acc += d[FATE_TIERS[i]]; if(r <= acc) return FATE_TIERS[i]; }
+  return '平';
+}
+/* 套用五档奖惩（量 = base × REALM_COEF[stage]；寿元/道心/伤势不缩放） */
+function applyFateTier(tier){
+  const L = [];
+  const fx = FATE_TBL.tierEffect[tier]; if(!fx) return L;
+  const cv = coef(), sfx = (stats().setFx) || {};
+  if(fx.cultivate){
+    const g = fx.cultivate>0 ? Math.max(1, Math.round(fx.cultivate*cv)) : -Math.max(1, Math.round(-fx.cultivate*cv));
+    if(g>=0){ S.progress += g; L.push('修为 <span class="pos">+'+g+'</span>'); note(5,'修为 +'+g); }
+    else    { S.progress = Math.max(0, S.progress+g); L.push('修为 <span class="neg">'+g+'</span>'); }
+  }
+  if(fx.ss){
+    const sv = fx.ss>0 ? Math.round(fx.ss*cv*(1+(sfx.ssGain||0))) : Math.round(fx.ss*cv);
+    S.ss = Math.max(0, S.ss+sv); L.push('灵石 '+signed(sv)); note(6,'灵石 '+(sv>0?'+':'')+sv);
+  }
+  if(fx.fame){ const fv = fx.fame>0 ? Math.round(fx.fame*((stats().fameMul)||1)) : fx.fame; S.fame = Math.max(0,S.fame+fv); L.push('声望 '+signed(fv)); }
+  if(fx.lifespan){ S.lifespan += fx.lifespan; L.push('寿元 <span class="'+(fx.lifespan>0?'pos':'neg')+'">'+(fx.lifespan>0?'+':'')+fx.lifespan+' 载</span>'); note(2,'寿元 '+(fx.lifespan>0?'+':'')+fx.lifespan+' 载'); }
+  if(fx.dao){ const b0=S.dao; S.dao = clamp(S.dao+fx.dao,0,DAO.length-1); if(S.dao!==b0) L.push('道心 <span class="'+(fx.dao>0?'pos':'neg')+'">'+DAO[b0][0]+' → '+DAO[S.dao][0]+'</span>'); }
+  if(fx.hpMaxPct){ S.wound = clamp(S.wound + Math.abs(fx.hpMaxPct), 0, 0.50); L.push('气血上限 <span class="neg">'+Math.round(fx.hpMaxPct*100)+'%</span>'); }
+  if(fx.wound){ const w = {light:1,heavy:2,mortal:3}[fx.wound]; if(w){ S.woundTurns = Math.max(S.woundTurns, ri(1,3)); L.push('伤势 · '+['','轻伤','重伤','濒死'][w]); note(3,'天命 · 重伤'); } }
+  if(fx.enemy){ S.enemy += fx.enemy; L.push('多了一个 <span class="neg">仇家</span>'); }
+  if(fx.dropHigh){                                 // 大吉可掉落 g≥4 装备（§5.3.2）
+    const g = (S.stage >= GRADE_MIN[5]) ? 5 : 4;
+    const pool = (EQ_BY_G[g] && EQ_BY_G[g].length) ? EQ_BY_G[g] : EQ_BY_G[4];
+    if(pool && pool.length){
+      const e = pick(pool);
+      const it = mkItem({n:e.n, slot:e.slot, g:e.g, spec:e.spec, set:e.set});
+      if(bagRoom()>0){ S.bag.push(it); L.push('得 <span class="pos">'+esc(it.n)+'</span>'); note(7,'天命赠 '+esc(it.n)); }
+      else { const v = sellItem(it); L.push('得 '+esc(it.n)+'（囊满 · 折价 <span class="pos">+'+v+'</span>）'); }
+    }
+  }
+  /* 写回天命值：好事 +、坏事 −（§5.3.1 步6） */
+  const fd = {'大吉':3, '吉':1, '平':0, '无咎':-1, '大凶':-3}[tier] || 0;
+  if(fd){ S.fate = clamp((S.fate||50)+fd, 0, 100); L.push('天命 <span class="'+(fd>0?'pos':'neg')+'">'+signed(fd)+'</span>'); }
+  return L;
+}
+/* 判定呈现基础版（A8 · §5.3.3）：环形卦象轮盘 + 指针定格；批4 可经 window.__fateAnim 替换为完整动画 */
+let _fateBusy = false;
+function respectMotion(){
+  try{ return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){ return false; }
+}
+function playFateWheel(tier, risk, done){
+  const ov = $('ov-fate');
+  if(!ov){ if(done) done(); return; }
+  const needle = $('fate-needle'), tierEl = $('fate-tier'), noteEl = $('fate-note'),
+        goBtn = $('fate-go'), engEl = $('fate-eng');
+  const tone = (tier==='大吉'||tier==='吉') ? 'good' : (tier==='大凶' ? 'bad' : 'flat');
+  tierEl.textContent = tier;
+  tierEl.className = 'fate-tier '+tone;
+  noteEl.textContent = ({low:'此签偏稳，凶险不多。', std:'常签。成算在天，谁也说不准。', high:'重注之签，大起大落。'}[risk]) || '';
+  engEl.innerHTML = 'fate · risk='+risk+' · tier='+tier+' · shift='+fateShiftValue().toFixed(2)+' · 判定值于动画前已定值';
+  goBtn.style.display = 'none';
+  tierEl.classList.remove('in');
+  ov.classList.remove('in');            // .ov.in = 隐藏 → 移除即显示
+  ov.classList.add('spinning');
+  let settled = false, closed = false, tickT = null;
+  const stopTicks = ()=>{ if(tickT){ try{ clearTimeout(tickT); }catch(e){} tickT = null; } };
+  const spinTicks = ()=>{ let iv=120; const go=()=>{ if(settled) return; playSE('tick'); iv=Math.max(40, iv-7); tickT=setTimeout(go, iv); }; go(); };
+  const settle = ()=>{
+    if(settled) return; settled = true;
+    stopTicks();
+    ov.classList.remove('spinning');
+    needle.style.transition = 'none';
+    tierEl.classList.add('in');                    // 档位字爆出（transition · 纯视觉）
+    playSE((tier==='大凶') ? 'fate_bad' : (tier==='大吉'||tier==='吉') ? 'fate_good' : 'tick');
+    goBtn.style.display = '';
+    engEl.style.display = '';
+  };
+  const close = ()=>{
+    if(closed) return; closed = true;
+    stopTicks();
+    ov.classList.add('in');
+    ov.removeEventListener('click', onAny);
+    if(done) done();
+  };
+  function onAny(){ if(!settled) settle(); else close(); }
+  if(respectMotion()){
+    needle.style.transform = 'rotate(0deg)';
+    setTimeout(settle, 0);
+  }else{
+    const seg = Math.floor(Math.random()*12);
+    const target = 360*3 + seg*30;
+    needle.style.transition = 'none';
+    needle.style.transform = 'rotate(0deg)';
+    void needle.offsetWidth;                                   // 强制 reflow 使 transition 生效
+    needle.style.transition = 'transform 1.4s cubic-bezier(.16,.72,.22,1)';
+    needle.style.transform = 'rotate('+target+'deg)';
+    spinTicks();                                              // A8：加速滴答（音频，纯增）
+    setTimeout(settle, 1420);                                  // 加速+减速+定格 ≈ 1400 ms
+  }
+  goBtn.onclick = close;
+  ov.addEventListener('click', onAny);
+}
+/* FDR-013 批4 · 把完整天命 roll 动画挂到 window.__fateAnim（批3 预留钩子兑现） */
+window.__fateAnim = playFateWheel;
+/* 天命主流程（§5.3.1）：定值 → 结算 → 呈现 → 续回合 */
+function rollFate(card, done){
+  const risk = (card.ef && card.ef.fate && card.ef.fate.risk) || 'std';
+  let tier = fateTier(risk);                   // ★ 引擎侧定值（动画前）
+  let rerolled = false;
+  /* FDR-013 批4 · R6「逆命者」：大凶可重掷（每局有尽，引擎侧在动画前定值） */
+  if(tier==='大凶' && (S.comboReroll||0)>0){ S.comboReroll--; tier = fateTier(risk); rerolled = true; }
+  if(_fateBusy){ if(done) done(); return; }    // 防御：重入保护
+  _fateBusy = true;
+  const L = applyFateTier(tier);
+  S.fateCd = FATE_CD_MAX;                       // §5.5：结算一张天命卡后冷却 4
+  entry('big','','你求得一卦。','<span class="'+(tier==='大凶'?'neg':'pos')+'">命数 · '+tier+'</span> · risk='+risk+' · shift='+fateShiftValue().toFixed(2)+' · 天命 '+Math.round(S.fate)+(rerolled?' · <span class="pos">逆命重掷</span>':''));
+  if(L.length) entry('', '天命结算', '', L.join(' · '));
+  const after = ()=>{
+    _fateBusy = false;
+    recomputeBound(); renderAll();
+    if(!over && S.lifespan <= S.age){
+      entry('big','','那一卦算到了底。你没能等到第二日。','<span class="neg">天命 · '+tier+' · lifespan ≤ age</span>');
+      return endGame('dead');
+    }
+    if(done) done();
+  };
+  const anim = (typeof window!=='undefined' && window.__fateAnim) ? window.__fateAnim : playFateWheel;
+  anim(tier, risk, after);
+}
+window.playFateWheel = playFateWheel;   // 调试 / 批4 覆盖入口
+
 function doChoose(c){
   const L = applyCard(c);
+  if(S && S.seenCard) S.seenCard[c.t] = 1;       // FDR-013 批4 · R6：记入 history 账（永久）
   if(turnBox) turnBox._card = c.t;               // 供折叠摘要显示卡名
   entry('choice', '第 '+S.turn+' 年 · 你选了', '《'+esc(c.t)+'》'+esc(c.d), null);
-  if(L.length) entry('', '结算', '', L.join(' · '));
+  if(L.length){ entry('', '结算', '', L.join(' · ')); try{ playSE(L.join('').indexOf('pos')>=0?'gain':'loss'); }catch(e){} }
   recomputeBound();
 
   // T2：某些卡直接把寿元压到年岁之下，立即终局（规格 §10.1 lifespan 字段语义）
@@ -2076,9 +3390,15 @@ function doChoose(c){
     const spec = c.ef.equip;
     return giveEquip(spec, ()=>{ if(!over) afterCard(); });
   }
+  /* FDR-012 批3 · R5 天命卡：选卡后进入 rollFate() 子流程（含 A8 判定呈现），定格后再续回合 */
+  if(c.ef && c.ef.fate && typeof c.ef.fate==='object'){
+    return rollFate(c, ()=>{ if(!over) afterCard(); });
+  }
   return afterCard();
 }
 function afterCard(){
+  if(over) return;
+  checkCombos();                                 // FDR-013 批4 · R6（applyCard 结算后、advance 前）
   if(over) return;
   advance();
 }
@@ -2101,6 +3421,7 @@ function zaihuo(){
   let p = 0;
   if(conflictsRoot) p = conflictArt ? 0.12 : 0.05;
   else if(conflictArt) p = 0.06;
+  p *= clamp(equipSum().purity||1, 0, 1);              // FDR-011 批2 · 净心：走火判定 P ×0.70
   if(p>0 && Math.random()<p){
     S.progress = Math.max(0, Math.round(S.progress*0.90));
     S.wound = clamp(S.wound+0.01, 0, 0.50);
@@ -2127,6 +3448,7 @@ function promoteLoop(){
     S.lifespan = Math.max(S.lifespan, cap);
     recomputeBound();
     entry('sys','','境界提升 → '+STAGES[S.stage], null);
+    try{ playRealmUp(STAGES[S.stage]); }catch(e){}          // A6 境界提升（纯视觉）
     if(S.lifespan>old){ entry('sys','','寿元上限提升 '+old+' → '+S.lifespan+' 载', null); note(1,'境界 → '+STAGES[S.stage]); }
     else note(1,'境界 → '+STAGES[S.stage]);
     checkLoc();
@@ -2151,10 +3473,12 @@ function advance(){
   if(S.hp < st1.hpMax*0.60) need = 1;
   else if(S.progress >= (isFinite(curStep())?curStep():Infinity)*0.80) need = 2;
   if(need>0 && S.pill>0){
+    const cfp = persistSum();                          // FDR-013 批4 · R6「丹道」：丹药更速 / 丹毒更浅
     S.pill--;
-    S.progress += Math.round(8*coef());
-    S.danPoison += 2;
-    entry('sys','','你抠出一粒丹咽了下去。','服丹 · 修为 +'+Math.round(8*coef())+' · 丹毒 +2');
+    const pg = Math.round(8*coef()*cfp.pillMul), dp = Math.round(2*cfp.danPoisonMul);
+    S.progress += pg;
+    S.danPoison += dp;
+    entry('sys','','你抠出一粒丹咽了下去。','服丹 · 修为 +'+pg+' · 丹毒 +'+dp);
   }
   if(S.danPoison>0) S.danPoison = Math.max(0, S.danPoison-1);
   if(S.danPoison>=10){ S.lifespan -= 1; note(2,'丹毒反噬 −1 载'); entry('sys','','你身上的药味越来越重了。','丹毒 ≥10 · 寿元 −1 载'); }
@@ -2194,6 +3518,8 @@ function finishTurn(){
   }
   if(S.hp < st.hpMax) S.hp = Math.min(st.hpMax, S.hp + heal);
   if(S.breakCd>0) S.breakCd--;
+  if(S.yearsCd>0 && S._yaT!==S.turn) S.yearsCd--;   // FDR-010 批1 · years 冷却递减（选卡当回合不递减 → 最小间隔 5 回合）
+  if(S.fateCd>0) S.fateCd--;                        // FDR-012 批3 · R5 天命冷却递减（最多每 5 回合一次）
 
   S.age++; S.turn++;
   recomputeBound();
@@ -2235,18 +3561,21 @@ function endGame(reason){
   }else if(reason==='cap'){
     title='此 局 终 结';
     desc='这一世长得连记事的人都换了几茬。就到这里吧。';
+  }else if(reason==='ascend'){
+    title='羽 化 登 仙';
+    desc='南荒太小。你抬头，云开了。';
   }else{
     title='寿 元 耗 尽';
     desc='你停在'+STAGES[clamp(S.stage,0,STAGES.length-1)]+'。回头再看青石镇，已经小得看不清了。';
   }
   $('end-title').textContent = title;
   $('end-desc').textContent  = desc;
-  const arts = S.arts.length ? S.arts.map(a=>esc(a.n)+'·'+ART_LV[a.lv]).join('、') : '无';
+  const arts = S.arts.length ? S.arts.map(a=>esc(a.n)+'·'+ART_LV[a.lv]+(a.lv>=4&&a.cp?('·参悟'+cnNum(a.cp)):'')).join('、') : '无';
   const eqn  = SLOTS.map(s=>S.equip[s[0]]).filter(Boolean).length;
   $('end-stat').innerHTML =
       '<div class="prow"><span>最终境界</span><span>'+STAGES[clamp(S.stage,0,STAGES.length-1)]+'<em>修为 '+S.progress+' / '+stepText()+'</em></span></div>'
     + '<div class="prow"><span>享年</span><span>'+S.age+' 岁<em>寿元上限 '+S.lifespan+'</em></span></div>'
-    + '<div class="prow"><span>死因</span><span>'+({battle:'战死',dead:'老死',gate:'冲境殒身',cap:'安全上限'}[reason]||'—')+'</span></div>'
+    + '<div class="prow"><span>死因</span><span>'+({battle:'战死',dead:'老死',gate:'冲境殒身',cap:'安全上限',ascend:'飞升'}[reason]||'—')+'</span></div>'
     + '<div class="prow"><span>气血 / 攻击 / 防御</span><span>'+S.hp+' / '+st.atk+' / '+st.def+'</span></div>'
     + '<div class="prow"><span>战力（派生）</span><span>'+st.power+'</span></div>'
     + '<div class="prow"><span>灵根 / 根骨</span><span>'+esc(S.rootName)+' · '+S.bone+'</span></div>'
@@ -2254,8 +3583,12 @@ function endGame(reason){
     + '<div class="prow"><span>功法</span><span>'+arts+'</span></div>'
     + '<div class="prow"><span>器物</span><span>身上一 '+eqn+' 件 · 行囊 '+S.bag.length+' 件</span></div>'
     + '<div class="prow"><span>走过的年头</span><span>'+S.turn+' 年</span></div>'
+    + '<div class="prow"><span>见闻录</span><span>机缘相合 '+cnNum(Object.keys(S.codex||{}).length)+' / '+cnNum(COMBO_TBL.length)+'</span></div>'
     + '<div class="prow"><span>声望 / 恩怨</span><span>'+S.fame+' · 仇怨 '+S.enemy+'</span></div>';
   renderAll();
+  const _eb = $('ov-end').querySelector('.box');           // FDR-013 批4 · A7 终局（标题逐字浮现 / 飞升金雨）
+  if(_eb){ _eb.classList.remove('finale'); void _eb.offsetWidth; _eb.classList.add('finale'); }
+  playFinaleFx(reason==='ascend');
   $('ov-end').classList.remove('in');
 }
 
@@ -2278,6 +3611,8 @@ function showOpening(){
   $('ov-open').classList.remove('in');
   $('ov-end').classList.add('in');
   $('ov-ch').classList.add('in');
+  const _eb = $('ov-end').querySelector('.box'); if(_eb) _eb.classList.remove('finale');
+  const _fx = $('fx'); if(_fx) _fx.innerHTML='';
   $('cards').style.display='none';
 }
 function start(){
@@ -2295,16 +3630,359 @@ function start(){
   renderCards();
 }
 
+/* =========================================================
+   FDR-013 批4 · R6 组合系统 + R1 表现层（音频 / 动画 / 开关 / 见闻录）
+   🔴 铁律：动画只是视觉叠加，绝不 `setTimeout` 延迟状态变更（fate roll 例外）。
+   ========================================================= */
+
+/* ---------- R6 组合：触发账 / 持久加成 ---------- */
+function hist(t){ return !!(S && S.seenCard && S.seenCard[t]); }
+function heldEquipName(n){ return SLOTS.some(s=>S.equip[s[0]] && S.equip[s[0]].n===n); }
+function inBag(n){ return !!(S && S.bag && S.bag.some(it=>it.n===n)); }
+function hasArt(n){ return !!(S && ((S.seenArt && S.seenArt[n]) || S.arts.some(a=>a.n===n))); }
+function held(n){ return heldEquipName(n) || inBag(n) || hasArt(n); }
+function setHas(id){ try{ const r=setSum(); return r.sets.some(x=>x.id===id && x.cnt>=3); }catch(e){ return false; } }
+/* 已解锁组合的持久（乘/率）加成汇总；立即一次性效果另在 applyComboImmediate 结算 */
+function persistSum(){
+  const r={artMul:1, bodyArtMul:1, mainMul:1, mainAtkBonusPerCp:0, xuanDrop:1, pillMul:1, danPoisonMul:1,
+           healMul:1, waterCultMul:1, hpMaxPct:0, contribGain:0, relGainMul:1, breakP:0,
+           luckyP:0, badP:0, ascendP:0, fateReroll:0, fleeP:0};
+  if(!S || !S.codex) return r;
+  const ids = Object.keys(S.codex);
+  for(let i=0;i<ids.length;i++){
+    const cm = COMBO_BY_ID[ids[i]]; if(!cm || !cm.fx) continue;
+    const f = cm.fx;
+    if(f.artMul)            r.artMul *= f.artMul;
+    if(f.bodyArtMul)        r.bodyArtMul *= f.bodyArtMul;
+    if(f.mainMul)           r.mainMul *= f.mainMul;
+    if(f.mainAtkBonusPerCp) r.mainAtkBonusPerCp += f.mainAtkBonusPerCp;
+    if(f.xuanDrop)          r.xuanDrop *= f.xuanDrop;
+    if(f.pillMul)           r.pillMul *= f.pillMul;
+    if(f.danPoisonMul)      r.danPoisonMul *= f.danPoisonMul;
+    if(f.healMul)           r.healMul *= f.healMul;
+    if(f.waterCultMul)      r.waterCultMul *= f.waterCultMul;
+    if(f.hpMaxPct)          r.hpMaxPct += f.hpMaxPct;
+    if(f.contribGain)       r.contribGain += f.contribGain;
+    if(f.relGainMul)        r.relGainMul *= f.relGainMul;
+    if(f.breakP)            r.breakP += f.breakP;
+    if(f.luckyP)            r.luckyP += f.luckyP;
+    if(f.badP)              r.badP += f.badP;
+    if(f.ascendP)           r.ascendP += f.ascendP;
+    if(f.fateReroll)        r.fateReroll += f.fateReroll;
+    if(f.fleeP)             r.fleeP += f.fleeP;
+  }
+  return r;
+}
+/* 立即一次性效果（永久属性 / 数值）；仅组合命中那一次调用 */
+function applyComboImmediate(cm){
+  try{
+    const f = cm.fx || {};
+    if(f.fame)       S.fame = Math.max(0, S.fame + f.fame);
+    if(f.fate)       S.fate = clamp((S.fate||50) + f.fate, 0, 100);
+    if(f.dao)        S.dao  = clamp(S.dao + f.dao, 0, DAO.length-1);
+    if(f.enemyClear) S.enemy = 0;
+    if(f.enemy)      S.enemy += f.enemy;
+    if(f.herb)       S.herb = Math.max(0, S.herb + f.herb);
+    if(f.lifespan)   S.lifespan += f.lifespan;
+    if(f.atk)        S.atkBonus += f.atk;
+    if(f.def)        S.defBonus += f.def;
+    if(f.guard)      S.guard += f.guard;
+    if(f.esc)        S.escBonus = (S.escBonus||0) + f.esc;
+    if(f.unlockCard && S.unlocked) S.unlocked[f.unlockCard] = 1;
+    if(f.unlockEnding){ S.flags.ending = S.flags.ending || {}; S.flags.ending[f.unlockEnding] = 1; }
+    if(f.fateReroll) S.comboReroll = (S.comboReroll||0) + f.fateReroll;
+  }catch(e){}
+}
+/* 组合命中判定：applyCard 结算后、advance 前调用（§6.1） */
+function checkCombos(){
+  try{
+    if(!S || over) return;
+    for(let i=0;i<COMBO_TBL.length;i++){
+      const cm = COMBO_TBL[i];
+      if(S.codex[cm.id]) continue;
+      let met = false;
+      try{ met = !!cm.cond(); }catch(e){ met = false; }
+      if(!met) continue;
+      S.codex[cm.id] = 1;
+      applyComboImmediate(cm);
+      entry('big','','有两样东西忽然对上了。你从前没往这处想过。',
+        '机缘相合 · <span class="pos">'+esc(cm.n)+'</span> · 轨 '+cm.track+' · '+esc(cm.ef));
+      note(1, '机缘相合 · '+esc(cm.n));
+      playComboReveal(cm);
+      recomputeBound(); renderAll();
+    }
+  }catch(e){}
+}
+/* ---------- 见闻录 §6.3 ---------- */
+function renderCodex(){
+  try{
+    const grid = $('codex-grid'); if(!grid) return;
+    const total = COMBO_TBL.length, got = Object.keys(S.codex||{}).length;
+    const hint = $('codex-hint');
+    if(hint) hint.innerHTML = '机缘相合者已录 <b>'+cnNum(got)+'</b> / '+cnNum(total)+' · 未解锁者只余一句提示，不揭其名。';
+    grid.innerHTML = COMBO_TBL.map(cm=>{
+      if(S.codex[cm.id]){
+        return '<div class="codex-item"><div class="cn serif">'+esc(cm.n)+'</div>'
+          + '<div class="cm">'+cm.mem.map(m=>esc(m)).join(' · ')+'</div>'
+          + '<div class="cfx">'+esc(cm.ef)+'</div></div>';
+      }
+      return '<div class="codex-item codex-locked"><div class="cn serif">？ ？ ？</div>'
+        + '<div class="cm">'+cnNum(cm.mem.length)+' 张卡的呼应</div><div class="cfx">尚未相合</div></div>';
+    }).join('');
+  }catch(e){}
+}
+function openCodex(){ try{ renderCodex(); $('ov-codex').classList.remove('in'); }catch(e){} }
+
+/* ---------- R1 音频模块（纯 WebAudio 程序化 · 0 KB · 绝不报错） ---------- */
+let MUTE=false, MOTION_REDUCED=false, AC=null, MASTER=null;
+function persistSet(){ try{ localStorage.setItem('fdr013_set', JSON.stringify({m:MUTE?1:0, r:MOTION_REDUCED?1:0})); }catch(e){} }
+function loadSet(){ try{ const s=JSON.parse(localStorage.getItem('fdr013_set')||'{}'); MUTE=!!s.m; MOTION_REDUCED=!!s.r; }catch(e){} }
+function setMute(on){ MUTE=!!on; try{ if(MASTER) MASTER.gain.value = MUTE?0:0.18; }catch(e){} persistSet(); }
+function initAudio(){
+  try{
+    if(AC) return AC;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return null;
+    AC = new Ctx();
+    /* 音效总线（仅存音效一路） */
+    MASTER = AC.createGain(); MASTER.gain.value = MUTE?0:0.18;
+    try{
+      const comp = AC.createDynamicsCompressor(); comp.connect(AC.destination);
+      MASTER.connect(comp);
+    }catch(e){
+      try{ MASTER.connect(AC.destination); }catch(_){}
+    }
+    return AC;
+  }catch(e){ AC=null; return null; }
+}
+function resumeAudio(){ try{ if(AC && AC.state==='suspended') AC.resume(); }catch(e){} }
+function _env(g, t0, peak){ try{ g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(Math.max(0.001,peak), t0+0.008); g.gain.exponentialRampToValueAtTime(0.0001, t0+0.02+0.30); }catch(e){} }
+function _osc(type, f0, t0, dur, peak, f1, dest){
+  if(!AC) return;
+  try{
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type; o.frequency.setValueAtTime(f0, t0);
+    if(f1) o.frequency.exponentialRampToValueAtTime(Math.max(20,f1), t0+dur);
+    o.connect(g); g.connect(dest||MASTER);
+    try{ g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(Math.max(0.001,peak), t0+0.008); g.gain.exponentialRampToValueAtTime(0.0001, t0+dur); }catch(e){}
+    o.start(t0); o.stop(t0+dur+0.05);
+  }catch(e){}
+}
+function _noise(t0, dur, peak, cutoff, dest){
+  if(!AC) return;
+  try{
+    const len = Math.max(1, Math.floor(AC.sampleRate*dur));
+    const buf = AC.createBuffer(1, len, AC.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = (Math.random()*2-1)*(1-i/len);
+    const n = AC.createBufferSource(); n.buffer = buf;
+    const f = AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value = cutoff||800;
+    const g = AC.createGain(); g.gain.value = peak;
+    n.connect(f); f.connect(g); g.connect(dest||MASTER); n.start(t0);
+  }catch(e){}
+}
+function playSE(key){
+  try{
+    if(!AC || MUTE) return;
+    const t = AC.currentTime + 0.012;
+    switch(key){
+      case 'deal':      _osc('triangle', 880, t, 0.06, 0.16, 660); break;
+      case 'pick':      _osc('sine', 1320, t, 0.09, 0.18); _osc('sine', 2640, t, 0.09, 0.05); break;
+      case 'gain':      _osc('sine', 660, t, 0.11, 0.16, 990); break;
+      case 'loss':      _osc('sawtooth', 330, t, 0.15, 0.13, 220); break;
+      case 'curtain':   _osc('sine', 110, t, 0.6, 0.16); break;
+      case 'dice_win':  _osc('sine', 990, t, 0.3, 0.18); _osc('sine', 1480, t, 0.3, 0.08); break;
+      case 'dice_lose': _noise(t, 0.3, 0.26, 520); _osc('sine', 160, t, 0.4, 0.15); break;
+      case 'realm':     [523,587,659,784,880].forEach((f,i)=>_osc('sine', f, t+i*0.11, 0.26, 0.13)); break;
+      case 'strike':    _osc('square', 440, t, 0.05, 0.12); break;
+      case 'hit':       _noise(t, 0.08, 0.24, 700); break;
+      case 'tick':      _osc('square', 1200, t, 0.03, 0.10); break;
+      case 'fate_good': [523,659,784].forEach(f=>_osc('sine', f, t, 0.5, 0.12)); break;
+      case 'fate_bad':  _osc('sine', 440, t, 0.5, 0.12); _osc('sine', 466, t, 0.5, 0.09); _osc('sine', 80, t, 0.5, 0.12); break;
+      case 'combo':     _osc('sine', 440, t, 0.8, 0.13); _osc('sine', 660, t, 0.8, 0.08); _osc('sine', 1100, t, 0.8, 0.05); break;
+      case 'finale_dead':   _osc('sine', 220, t, 1.5, 0.16, 110); break;
+      case 'finale_ascend': [220,330,440,550].forEach((f,i)=>_osc('sine', f, t+i*0.12, 1.6, 0.10)); break;
+    }
+  }catch(e){}
+}
+
+
+/* ---------- R1 动画模块（全部为视觉叠加；状态推进与其无关） ---------- */
+function respectMotion(){
+  if(MOTION_REDUCED) return true;
+  try{ return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){ return false; }
+}
+function _fxHost(){ return $('fx'); }
+function playGateSeq(win, rollText){                       // A4 冲大境界（非阻塞：pointer-events:none）
+  try{
+    const host = _fxHost(); if(!host || respectMotion()) return;
+    const ov = document.createElement('div'); ov.className='fx-layer on';
+    const gate = document.createElement('div'); gate.className='fx-gate'; ov.appendChild(gate);
+    const dice = document.createElement('div'); dice.className='fx-dice rolling'; dice.textContent='◆'; ov.appendChild(dice);
+    host.appendChild(ov);
+    playSE('curtain');
+    try{ const st=S.stage; if(st>=15){ const b=document.createElement('div'); b.className='fx-bolt'; ov.appendChild(b); } }catch(e){}
+    setTimeout(()=>{ gate.classList.add('out'); }, 600);
+    setTimeout(()=>{ dice.classList.remove('rolling'); dice.classList.add('settle'); dice.textContent=rollText; }, 600);
+    setTimeout(()=>{ const v=document.createElement('div'); v.className='fx-verdict '+(win?'win':'lose'); v.textContent = win?'成':'败'; ov.appendChild(v); playSE(win?'dice_win':'dice_lose'); }, 1060);
+    setTimeout(()=>{ ov.style.transition='opacity .5s'; ov.style.opacity='0'; }, 1900);
+    setTimeout(()=>{ try{ ov.remove(); }catch(e){} }, 2450);
+  }catch(e){}
+}
+let _realmTs = 0;
+function playRealmUp(name){                                // A6 境界提升（非阻塞）
+  try{
+    const _now = Date.now(); if(_now - _realmTs < 1300) return; _realmTs = _now;
+    playSE('realm');
+    const host = _fxHost(); if(!host || respectMotion()) return;
+    const ov = document.createElement('div'); ov.className='fx-layer on';
+    const sweep = document.createElement('div'); sweep.className='fx-sweep'; ov.appendChild(sweep);
+    const big = document.createElement('div'); big.className='fx-big serif'; big.textContent=name; ov.appendChild(big);
+    host.appendChild(ov);
+    setTimeout(()=>{ ov.style.transition='opacity .5s'; ov.style.opacity='0'; }, 900);
+    setTimeout(()=>{ try{ ov.remove(); }catch(e){} }, 1500);
+  }catch(e){}
+}
+function playComboReveal(cm){                              // A9 组合揭示（非阻塞）
+  try{
+    playSE('combo');
+    const host = _fxHost(); if(!host || respectMotion()) return;
+    const ov = document.createElement('div'); ov.className='fx-combo';
+    const halo = document.createElement('div'); halo.className='fx-halo'; ov.appendChild(halo);
+    const bands = document.createElement('div'); bands.className='fx-bands';
+    const cols = ['--el-jin','--el-mu','--el-shui','--el-huo','--el-tu'];
+    (cm.mem||[]).forEach((m,i)=>{ const b=document.createElement('div'); b.className='fx-band';
+      b.style.background='var('+cols[i%5]+')'; b.style.animationDelay=(i*70)+'ms'; bands.appendChild(b); });
+    ov.appendChild(bands);
+    const nm = document.createElement('div'); nm.className='fx-cname serif'; nm.textContent=cm.n; nm.style.animationDelay='320ms'; ov.appendChild(nm);
+    const tg = document.createElement('div'); tg.className='fx-ctag'; tg.textContent='机缘相合 · 见闻录已录'; tg.style.animationDelay='460ms'; ov.appendChild(tg);
+    host.appendChild(ov);
+    requestAnimationFrame(()=>{ try{ ov.classList.add('on'); }catch(e){} });
+    setTimeout(()=>{ ov.style.transition='opacity .5s'; ov.style.opacity='0'; }, 1200);
+    setTimeout(()=>{ try{ ov.remove(); }catch(e){} }, 1760);
+  }catch(e){}
+}
+function playMist(level){                                  // A10 血煞红雾（L1–L3）
+  try{ if(respectMotion()) return; const host=_fxHost(); if(!host) return;
+    const el=document.createElement('div'); el.className='fx-mist'; el.style.opacity=String(level||1); host.appendChild(el);
+    setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 400);
+  }catch(e){}
+}
+function playQi(){                                         // A11 走火脉冲
+  try{ if(respectMotion()) return; const host=_fxHost(); if(!host) return;
+    const el=document.createElement('div'); el.className='fx-qi'; host.appendChild(el);
+    setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 700);
+  }catch(e){}
+}
+/* A3 结算数字跳动：HUD 数字自上一值递增到当前值（纯视觉） */
+const _cuLast = {};
+function animateHudNumbers(){
+  if(respectMotion()) return;
+  try{
+    document.querySelectorAll('#h-nums [data-cu]').forEach(b=>{
+      const key=b.getAttribute('data-cu'), to=Number(b.getAttribute('data-cv'))||0;
+      const from=_cuLast[key]; _cuLast[key]=to;
+      if(from==null || Math.abs(to-from)<1) return;
+      const t0=performance.now(), dur=400;
+      const stepfn=(now)=>{ const k=Math.min(1,(now-t0)/dur); b.textContent=fmtNum(Math.round(from+(to-from)*k));
+        if(k<1) requestAnimationFrame(stepfn); else b.classList.add('num-pop'); };
+      requestAnimationFrame(stepfn);
+    });
+  }catch(e){}
+}
+/* A7 终局：金雨（飞升）；纯视觉 */
+function playFinaleFx(ascend){
+  try{
+    playSE(ascend?'finale_ascend':'finale_dead');
+    if(!ascend || respectMotion()) return;
+    const host=_fxHost(); if(!host) return;
+    for(let i=0;i<14;i++){ const d=document.createElement('div'); d.className='fx-rain';
+      d.style.left=(6+i*6.4)+'%'; d.style.animationDelay=(i*0.12)+'s'; host.appendChild(d);
+      setTimeout(()=>{ try{ d.remove(); }catch(e){} }, 3200); }
+  }catch(e){}
+}
+/* A5 战斗交手：引擎行逐条浮现 + 跳过（纯视觉） */
+function playBattleSeq(entryEl){
+  try{
+    if(!entryEl || respectMotion()){ playSE('strike'); return; }
+    const lines = entryEl.querySelectorAll('.bl');
+    if(!lines.length){ playSE('strike'); return; }
+    playSE('strike');
+    const sk = document.createElement('button'); sk.className='mini-btn off'; sk.textContent='跳过'; sk.style.marginTop='6px';
+    sk.onclick = ()=>{ try{ lines.forEach(x=>{ x.style.animation='none'; }); }catch(e){} playSE('hit'); sk.remove(); };
+    entryEl.appendChild(sk);
+  }catch(e){}
+}
+
+/* ---------- 设置开关 ---------- */
+function toggleMute(){ setMute(!MUTE); try{ renderDrawer(); }catch(e){} }
+function toggleMotion(){ MOTION_REDUCED=!MOTION_REDUCED; try{ document.body.classList.toggle('reduce-motion', MOTION_REDUCED); }catch(e){} persistSet(); try{ renderDrawer(); }catch(e){} }
+let _detected=false;
+function detectLowEnd(){                                   // §1.4 低端机自动降级（一次性、只读）
+  if(_detected) return; _detected=true;
+  try{
+    const hc = navigator.hardwareConcurrency, dm = navigator.deviceMemory;
+    let low = (hc && hc<=4) || (dm && dm<=4);
+    let n=0, t0=performance.now(), sum=0;
+    const tick=(now)=>{ if(n>0) sum += (now-t0); t0=now;
+      if(++n<=32){ requestAnimationFrame(tick); }
+      else{ const avg=sum/31; if(avg>33) low=true;
+        if(low && !MOTION_REDUCED){ MOTION_REDUCED=true; try{ document.body.classList.toggle('reduce-motion',true); }catch(e){} persistSet(); } } };
+    requestAnimationFrame(tick);
+  }catch(e){}
+}
+
 /* ---------- 22. 绑定 ---------- */
-$('btn-start').onclick = start;
+$('btn-start').onclick = ()=>{ try{ initAudio(); resumeAudio(); }catch(e){} detectLowEnd(); start(); };   // 首次手势：懒创建 AudioContext（§1.3）
 $('btn-again').onclick = showOpening;
 $('btn-drawer').onclick = e=>{ $('drawer').classList.toggle('open'); e.target.classList.toggle('on'); };
 $('btn-eng').onclick = e=>{ document.body.classList.toggle('show-eng'); e.target.classList.toggle('on'); };
+/* FDR-011 批2 · R10 事件委托：抽屉器物区「换上 / 卸下」——不给每行 onclick（重渲染会泄漏） */
+$('dgrid').addEventListener('click', e=>{
+  const t = e.target;
+  if(!t || !t.classList) return;
+  /* FDR-013 批4 · R1 开关 / R6 见闻录入口（抽屉内，事件委托） */
+  if(t.id==='btn-sound'){ toggleMute(); return; }
+  if(t.id==='btn-motion'){ toggleMotion(); return; }
+  if(t.id==='btn-codex'){ openCodex(); return; }
+  if(t.classList.contains('swap') && t.dataset && t.dataset.i != null){ swapEquip(parseInt(t.dataset.i,10)); return; }
+  if(t.classList.contains('fix') && t.dataset && t.dataset.slot){ repairItem(t.dataset.slot); return; }
+  if(t.classList.contains('off') && t.dataset && t.dataset.slot){ if(t.disabled) return; unequipSlot(t.dataset.slot); return; }
+  /* FDR-014 · 功法「遗忘」：两击确认，防误触（2.2s 内再点方生效） */
+  if(t.classList.contains('forget') && t.dataset && t.dataset.art){ armForget(t); return; }
+});
+/* 两击确认：首击置「确认遗忘」，超时自动还原 */
+let _forgetArmT = null;
+function armForget(btn){
+  const name = btn.dataset.art;
+  if(btn.dataset.armed==='1'){
+    if(_forgetArmT){ clearTimeout(_forgetArmT); _forgetArmT=null; }
+    btn.dataset.armed=''; btn.textContent='遗忘'; btn.classList.remove('arm');
+    forgetArt(name);
+    return;
+  }
+  btn.dataset.armed='1'; btn.textContent='确认遗忘'; btn.classList.add('arm');
+  if(_forgetArmT) clearTimeout(_forgetArmT);
+  _forgetArmT = setTimeout(()=>{
+    _forgetArmT=null;
+    try{ btn.dataset.armed=''; btn.textContent='遗忘'; btn.classList.remove('arm'); }catch(e){}
+  }, 2200);
+}
+/* HUD 生效 spec chip → 跳详情 */
+$('h-nums').addEventListener('click', e=>{
+  const t = e.target && e.target.closest && e.target.closest('[data-jump="drawer"]');
+  if(!t) return;
+  $('drawer').classList.add('open');
+  $('btn-drawer').classList.add('on');
+});
 document.addEventListener('click', e=>{
   const dr = $('drawer');
   if(!dr.classList.contains('open')) return;
   if(dr.contains(e.target)) return;
+  /* 抽屉内按钮触发重渲染后，原 target 已脱离 DOM → contains() 失效误关；用 composedPath 兜住 */
+  if(e.composedPath && e.composedPath().indexOf(dr) >= 0) return;
   if(e.target.closest && e.target.closest('#btn-drawer')) return;
+  if(e.target.closest && e.target.closest('[data-jump="drawer"]')) return;
   dr.classList.remove('open');
   $('btn-drawer').classList.remove('on');
 });
@@ -2320,7 +3998,15 @@ $('btn-all').onclick = ()=>{
   Array.prototype.forEach.call(document.querySelectorAll('.turn'), d=>{ d.open=true; });
 };
 $('btn-re').onclick = ()=>{ if(confirm('重新开始？本局进度将清空。')) location.reload(); };
+/* FDR-013 批4 · R6 见闻录 收起；R1 首次任意手势懒创建音频（绝不自动播） */
+$('codex-go').onclick = ()=>{ $('ov-codex').classList.add('in'); };
+document.addEventListener('pointerdown', function _audioOnce(){
+  document.removeEventListener('pointerdown', _audioOnce);
+  try{ initAudio(); resumeAudio(); }catch(e){}
+}, {passive:true});
 
+loadSet();
+if(MOTION_REDUCED){ try{ document.body.classList.add('reduce-motion'); }catch(e){} }
 newGame();
 $('cards').style.display='none';
 showOpening();
